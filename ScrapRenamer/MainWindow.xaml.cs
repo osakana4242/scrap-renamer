@@ -30,4 +30,12 @@ public partial class MainWindow : Window {
 		EditorView.Source = new Uri(path);
 	}
 
+	void OnClearClicked(object sender, RoutedEventArgs e) {
+		// TODO
+	}
+
+	void OnExecuteClicked(object sender, RoutedEventArgs e) {
+		// TODO
+	}
+
 }
