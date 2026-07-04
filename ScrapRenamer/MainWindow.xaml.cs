@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.Web.WebView2.Core;
 
-namespace Starter;
+namespace ScrapRenamer;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -17,7 +17,7 @@ public partial class MainWindow : Window {
 		var env = await CoreWebView2Environment.CreateAsync(
 			userDataFolder: Path.Combine(
 				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-				"Starter",
+				"ScrapRenamer",
 				"WebView2"));
 
 		await EditorView.EnsureCoreWebView2Async(env);
