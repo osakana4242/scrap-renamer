@@ -1,6 +1,8 @@
 ﻿using System.Windows;
 using System.IO;
 using Microsoft.Web.WebView2.Core;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ScrapRenamer;
 
@@ -28,14 +30,46 @@ public partial class MainWindow : Window {
 		"index.html");
 
 		EditorView.Source = new Uri(path);
+		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
+	}
+
+	void EditorView_WebMessageReceived(
+		object? sender,
+		CoreWebView2WebMessageReceivedEventArgs e) {
+		var json = e.WebMessageAsJson;
+
+		MessageBox.Show(json);
+
+		var msg = JsonSerializer.Deserialize<EditorMessage>(json);
+
+		if (msg?.Type == "text") {
+			MessageBox.Show(msg.Text);
+		}
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
-		// TODO
+		EditorView.CoreWebView2.PostWebMessageAsJson("""
+{
+	"type": "clear"
+}
+""");
 	}
 
 	void OnExecuteClicked(object sender, RoutedEventArgs e) {
-		// TODO
+
+		EditorView.CoreWebView2.PostWebMessageAsJson("""
+{
+	"type": "getText"
+}
+""");
+
 	}
 
+
+	public class EditorMessage {
+		[JsonPropertyName("type")]
+		public string? Type { get; set; }
+		[JsonPropertyName("text")]
+		public string? Text { get; set; }
+	}
 }

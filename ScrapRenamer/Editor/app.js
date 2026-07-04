@@ -4,15 +4,17 @@ require.config({
 	}
 });
 
+let editor;
+
 require([
 	"vs/editor/editor.main"
 ], function () {
 
-	monaco.editor.create(
+	editor = monaco.editor.create(
 		document.getElementById("container"),
-	{
+		{
 			value:
-`foo.txt
+				`foo.txt
 bar.png
 baz.cs`,
 			language: "plaintext",
@@ -20,6 +22,21 @@ baz.cs`,
 			theme: "vs-dark",
 
 			automaticLayout: true
-	});
+		});
 });
 
+window.chrome.webview.addEventListener("message", e => {
+	console.log(e.data);
+
+	switch (e.data.type) {
+		case "clear":
+			editor.setValue("");
+			break;
+		case "getText":
+			window.chrome.webview.postMessage({
+				type: "text",
+				text: editor.getValue()
+			});
+			break;
+	}
+});
