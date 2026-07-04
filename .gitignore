@@ -24,3 +24,6 @@ publish/
 # NuGet
 packages/
 *.nupkg
+
+# Node.js
+node_modules/
