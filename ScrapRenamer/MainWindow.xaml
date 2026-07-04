@@ -7,8 +7,10 @@
 
 		xmlns:local="clr-namespace:ScrapRenamer"
 		mc:Ignorable="d"
+		AllowDrop="True"
+		DragOver="OnDragOver"
+		Drop="OnDrop"
 		Title="MainWindow" Height="450" Width="800">
-
 	<DockPanel>
 
 		<!-- メニューバー -->

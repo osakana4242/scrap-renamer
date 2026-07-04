@@ -38,5 +38,14 @@ window.chrome.webview.addEventListener("message", e => {
 				text: editor.getValue()
 			});
 			break;
+		case "appendLines": {
+			const text = e.data.lines.join("\n");
+
+			// 一番簡単
+			editor.setValue(
+				editor.getValue() + "\n" + text);
+
+			break;
+		}
 	}
 });

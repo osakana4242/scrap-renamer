@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Web.WebView2.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Diagnostics;
 
 namespace ScrapRenamer;
 
@@ -45,6 +46,36 @@ public partial class MainWindow : Window {
 		if (msg?.Type == "text") {
 			MessageBox.Show(msg.Text);
 		}
+	}
+
+	private void OnDragOver(object sender, DragEventArgs e) {
+		if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+			e.Effects = DragDropEffects.Copy;
+		} else {
+			e.Effects = DragDropEffects.None;
+		}
+
+		e.Handled = true;
+	}
+
+	private void OnDrop(object sender, DragEventArgs e) {
+		if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+			return;
+
+		var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+		foreach (var file in files) {
+			Debug.WriteLine(file);
+		}
+
+		var message = new {
+			type = "appendLines",
+			lines = files
+		};
+
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			JsonSerializer.Serialize(message));
+
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
