@@ -1,14 +1,6 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
+﻿using System.Windows;
 using System.Windows.Shapes;
-using Microsoft.Web.WebView2.Wpf;
+using System.IO;
 
 namespace Starter;
 
@@ -18,5 +10,18 @@ namespace Starter;
 public partial class MainWindow : Window {
 	public MainWindow() {
 		InitializeComponent();
+		Loaded += MainWindow_Loaded;
 	}
+
+	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
+		await EditorView.EnsureCoreWebView2Async();
+
+		var path = System.IO.Path.Combine(
+		AppContext.BaseDirectory,
+		"Editor",
+		"index.html");
+
+		EditorView.Source = new Uri(path);
+	}
+
 }
