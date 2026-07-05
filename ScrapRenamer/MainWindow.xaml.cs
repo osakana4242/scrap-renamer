@@ -17,15 +17,6 @@ public partial class MainWindow : Window {
 		Loaded += MainWindow_Loaded;
 	}
 
-	static bool IsDarkMode() {
-		object? value = Registry.GetValue(
-		@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
-		"AppsUseLightTheme",
-		1);
-
-		return value is int light && light == 0;
-	}
-
 	void OnUserPreferenceChanged(
 		object? sender,
 		UserPreferenceChangedEventArgs e) {
@@ -36,7 +27,7 @@ public partial class MainWindow : Window {
 	}
 
 	void UpdateTheme() {
-		string theme = IsDarkMode() ? "vs-dark" : "vs";
+		string theme = Env.IsDarkMode() ? "vs-dark" : "vs";
 
 		var message = new {
 			type = "setTheme",
@@ -60,7 +51,7 @@ public partial class MainWindow : Window {
 
 		// EditorView.CoreWebView2.OpenDevToolsWindow();
 
-		string theme = IsDarkMode() ? "vs-dark" : "vs";
+		string theme = Env.IsDarkMode() ? "vs-dark" : "vs";
 
 		await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
 			$$"""
@@ -73,44 +64,14 @@ public partial class MainWindow : Window {
 		AppContext.BaseDirectory,
 		"Editor",
 		"index.html");
-		EditorView.DefaultBackgroundColor = IsDarkMode() ?
+		EditorView.DefaultBackgroundColor = Env.IsDarkMode() ?
 			System.Drawing.Color.Black :
 			System.Drawing.Color.White;
 
 		EditorView.Source = new Uri(path);
 		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
 		// // 外部からのファイルドロップを禁止する
-		EditorView.AllowExternalDrop = true;
-		// ドロップ時に発生するURL遷移イベントを購読
-		// EditorView.CoreWebView2.NavigationStarting += EditorView_NavigationStarting;
-		// EditorView.AllowDrop = true;
-		// EditorView.DragOver += OnDragOver;
-		// EditorView.Drop += OnDrop;
-		SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
-	}
-
-	bool _firstJump = false;
-
-	void EditorView_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e) {
-		string url = e.Uri;
-		Debug.WriteLine($"NavigationStarting: {url}");
-		if (!_firstJump) {
-			_firstJump = true;
-			return;
-		}
-
-
-		// ファイルがドロップされた場合、URLは "file:///C:/..." などの形式になります
-		if (url.StartsWith("file:///", StringComparison.OrdinalIgnoreCase)) {
-			// 画面遷移をキャンセルしてブラウザでのファイル展開を防ぐ
-			e.Cancel = true;
-
-			// file:/// のプレフィックスを外して、通常のローカルパスに変換
-			string filePath = Uri.UnescapeDataString(new Uri(url).LocalPath);
-
-			// WPF側でやりたかった処理を呼び出す
-			// 例: ProcessDroppedFiles(filePath);
-		}
+		EditorView.AllowExternalDrop = false;
 	}
 
 	void EditorView_WebMessageReceived(
@@ -129,10 +90,7 @@ public partial class MainWindow : Window {
 		switch (msg.Type) {
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
-			// EditorView.Visibility = Visibility.Visible;
-			// UpdateLayout();
-			// EditorView.InvalidateMeasure();
-			// EditorView.InvalidateArrange();
+			SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 			break;
 		case "text":
 			MessageBox.Show(msg.Text);
@@ -190,6 +148,19 @@ public partial class MainWindow : Window {
 			""");
 
 	}
+
+	public static class Env {
+
+		public static bool IsDarkMode() {
+			object? value = Registry.GetValue(
+			@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+			"AppsUseLightTheme",
+			1);
+
+			return value is int light && light == 0;
+		}
+	}
+
 
 	public class EditorMessage {
 		[JsonPropertyName("type")]
