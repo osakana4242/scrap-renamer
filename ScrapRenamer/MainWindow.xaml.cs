@@ -12,6 +12,9 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
+
+	LineContainer _lineContainer = new();
+
 	public MainWindow() {
 		InitializeComponent();
 		Loaded += MainWindow_Loaded;
@@ -49,7 +52,7 @@ public partial class MainWindow : Window {
 
 		await EditorView.EnsureCoreWebView2Async(env);
 
-		// EditorView.CoreWebView2.OpenDevToolsWindow();
+		EditorView.CoreWebView2.OpenDevToolsWindow();
 
 		string theme = Env.IsDarkMode() ? "vs-dark" : "vs";
 
@@ -61,9 +64,9 @@ public partial class MainWindow : Window {
 			""");
 
 		var path = Path.Combine(
-		AppContext.BaseDirectory,
-		"Editor",
-		"index.html");
+			AppContext.BaseDirectory,
+			"Editor",
+			"index.html");
 		EditorView.DefaultBackgroundColor = Env.IsDarkMode() ?
 			System.Drawing.Color.Black :
 			System.Drawing.Color.White;
@@ -82,11 +85,11 @@ public partial class MainWindow : Window {
 		// MessageBox.Show(json);
 
 		var msg = JsonSerializer.Deserialize<EditorMessage>(json);
-		if(msg == null) {
+		if (msg == null) {
 			Debug.WriteLine("Failed to deserialize message.");
 			return;
 		}
-		
+
 		switch (msg.Type) {
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
@@ -94,6 +97,19 @@ public partial class MainWindow : Window {
 			break;
 		case "text":
 			MessageBox.Show(msg.Text);
+			string[] editedLines = null == msg.Text ?
+				new string[] {} :
+				msg.Text.Split('\n').ToArray();
+			
+			for (int i = 0; i < editedLines.Length; i++) {
+				if (i >= _lineContainer.Lines.Count)
+					break;
+				var line = _lineContainer.Lines[i];
+				line.editedLine = editedLines[i];
+			}
+
+			_lineContainer.Apply();
+
 			break;
 		}
 
@@ -114,14 +130,28 @@ public partial class MainWindow : Window {
 			return;
 
 		var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+		var lines = new List<Line>();
 
 		foreach (var file in files) {
 			Debug.WriteLine(file);
+			var line = new Line {
+				origPath = file,
+				editedLine = file
+			};
+			if (!_lineContainer.Add(line))
+				continue;
+			lines.Add(line);
+		}
+
+		if (lines.Count == 0) {
+			Debug.WriteLine("No new lines to add.");
+			return;
 		}
 
 		var message = new {
-			type = "appendLines",
-			lines = files
+			type = "setLines",
+			origPaths = lines.Select(i => i.origPath).ToArray(),
+			lines = lines.Select(i => i.editedLine).ToArray(),
 		};
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
@@ -130,6 +160,7 @@ public partial class MainWindow : Window {
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
+		_lineContainer = new LineContainer();
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			"""
 			{
@@ -167,5 +198,40 @@ public partial class MainWindow : Window {
 		public string? Type { get; set; }
 		[JsonPropertyName("text")]
 		public string? Text { get; set; }
+	}
+
+	class LineContainer {
+		public List<Line> Lines { get; set; } = new();
+
+		public bool Add(Line line) {
+			if (null != Lines.Find(l => l.origPath == line.origPath)) {
+				return false;
+			}
+			Lines.Add(line);
+			return true;
+		}
+
+		public void Apply() {
+			// Apply changes to the lines
+			for (int i = 0; i < Lines.Count; i++) {
+				var line = Lines[i];
+				if (line.origPath != line.editedLine) {
+					Debug.WriteLine($"Renaming: {line.origPath} -> {line.editedLine}");
+					try {
+						var nextPath = line.editedLine;
+						System.IO.File.Move(line.origPath, nextPath);
+						line.origPath = nextPath;
+					} catch (Exception ex) {
+						Debug.WriteLine($"Failed to rename: {ex.Message}");
+					}
+				}
+			}
+
+		}
+	}
+
+	class Line {
+		public string origPath = "";
+		public string editedLine = "";
 	}
 }

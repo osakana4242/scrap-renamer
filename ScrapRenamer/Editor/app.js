@@ -6,6 +6,7 @@ require.config({
 
 let scrapRenamer = {
 	editor: null,
+	pathDecorations: null,
 };
 
 require([
@@ -14,15 +15,17 @@ require([
 	scrapRenamer.editor = monaco.editor.create(
 		document.getElementById("container"),
 		{
-			value:
-				`foo.txt
-bar.png
-baz.cs`,
+			value: "",
 			language: "plaintext",
 
 			theme: window.scrapRenamer.theme,
-
-			automaticLayout: true
+			automaticLayout: true,
+			gryphMargin: false,
+			lineNumbers: "on",
+			renderWhitespace: "all",
+			minimap: {
+				enabled: false
+			},
 		});
 
 
@@ -65,12 +68,36 @@ window.chrome.webview.addEventListener("message", e => {
 				text: scrapRenamer.editor.getValue()
 			});
 			break;
-		case "appendLines": {
-			const text = e.data.lines.join("\n");
-
-			// 一番簡単
+		case "setLines": {
+			const text = e.data.lines.
+				join("\n");
 			scrapRenamer.editor.setValue(
-				scrapRenamer.editor.getValue() + "\n" + text);
+				text);
+
+			const decorations = [];
+
+			for (let i = 0; i < e.data.origPaths.length; i++) {
+
+				decorations.push({
+					range: new monaco.Range(i + 1, 1, i + 1, 1),
+					options: {
+						isWholeLine: true,
+						after: {
+							content: "HOGE", //e.data.origPaths[i], // "C:\\Users\\me\\Documents\\foo.txt",
+							inlineClassName: "path-decoration"
+						}
+					}
+				});
+			}
+
+			if (scrapRenamer.pathDecorations) {
+				scrapRenamer.pathDecorations.clear();
+			}
+
+			scrapRenamer.pathDecorations =
+				scrapRenamer.editor.createDecorationsCollection(decorations);
+
+
 
 			break;
 		}
