@@ -44,6 +44,9 @@ baz.cs`,
 		});
 	});
 
+	window.chrome.webview.postMessage({
+		type: "editorLoaded",
+	});
 });
 
 window.chrome.webview.addEventListener("message", e => {

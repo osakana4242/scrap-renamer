@@ -57,7 +57,8 @@ public partial class MainWindow : Window {
 				"WebView2"));
 
 		await EditorView.EnsureCoreWebView2Async(env);
-		EditorView.CoreWebView2.OpenDevToolsWindow();
+
+		// EditorView.CoreWebView2.OpenDevToolsWindow();
 
 		string theme = IsDarkMode() ? "vs-dark" : "vs";
 
@@ -72,6 +73,9 @@ public partial class MainWindow : Window {
 		AppContext.BaseDirectory,
 		"Editor",
 		"index.html");
+		EditorView.DefaultBackgroundColor = IsDarkMode() ?
+			System.Drawing.Color.Black :
+			System.Drawing.Color.White;
 
 		EditorView.Source = new Uri(path);
 		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
@@ -82,7 +86,6 @@ public partial class MainWindow : Window {
 		// EditorView.AllowDrop = true;
 		// EditorView.DragOver += OnDragOver;
 		// EditorView.Drop += OnDrop;
-		EditorView.Visibility = Visibility.Visible;
 		SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 	}
 
@@ -115,13 +118,27 @@ public partial class MainWindow : Window {
 		CoreWebView2WebMessageReceivedEventArgs e) {
 		var json = e.WebMessageAsJson;
 
-		MessageBox.Show(json);
+		// MessageBox.Show(json);
 
 		var msg = JsonSerializer.Deserialize<EditorMessage>(json);
-
-		if (msg?.Type == "text") {
-			MessageBox.Show(msg.Text);
+		if(msg == null) {
+			Debug.WriteLine("Failed to deserialize message.");
+			return;
 		}
+		
+		switch (msg.Type) {
+		case "editorLoaded":
+			Debug.WriteLine("Editor loaded.");
+			// EditorView.Visibility = Visibility.Visible;
+			// UpdateLayout();
+			// EditorView.InvalidateMeasure();
+			// EditorView.InvalidateArrange();
+			break;
+		case "text":
+			MessageBox.Show(msg.Text);
+			break;
+		}
+
 	}
 
 	private void OnDragOver(object sender, DragEventArgs e) {

@@ -37,9 +37,34 @@
 			</StackPanel>
 		</Border>
 
-		<wv2:WebView2
-			Visibility="Hidden"
-			x:Name="EditorView"/>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="80"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<Border
+				Grid.Row="0"
+				Margin="8"
+				HorizontalAlignment="Stretch"
+				BorderBrush="#808080"
+				BorderThickness="2"
+				CornerRadius="8"
+				Background="#10FFFFFF"
+				Padding="24">
+
+				<TextBlock
+					Text="ここにファイルをドラッグ＆ドロップ"
+					Background="{DynamicResource ControlBackgroundBrush}"
+					Foreground="{DynamicResource ControlForegroundBrush}"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Center"/>
+			</Border>
+
+			<wv2:WebView2
+				Grid.Row="1"
+				x:Name="EditorView"/>
+		</Grid>
 	</DockPanel>
 
 </Window>
