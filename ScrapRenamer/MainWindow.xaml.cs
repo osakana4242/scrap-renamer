@@ -100,7 +100,7 @@ public partial class MainWindow : Window {
 			string[] editedLines = null == msg.Text ?
 				new string[] {} :
 				msg.Text.Split('\n').ToArray();
-			
+
 			for (int i = 0; i < editedLines.Length; i++) {
 				if (i >= _lineContainer.Lines.Count)
 					break;
@@ -201,12 +201,23 @@ public partial class MainWindow : Window {
 	}
 
 	class LineContainer {
+		Mode _mode = Mode.Name;
 		public List<Line> Lines { get; set; } = new();
 
 		public bool Add(Line line) {
 			if (null != Lines.Find(l => l.origPath == line.origPath)) {
 				return false;
 			}
+
+			switch (_mode) {
+			case Mode.Name:
+				line.editedLine = Path.GetFileName(line.origPath);
+				break;
+			case Mode.FullPath:
+				line.editedLine = line.origPath;
+				break;
+			}
+
 			Lines.Add(line);
 			return true;
 		}
@@ -219,6 +230,14 @@ public partial class MainWindow : Window {
 					Debug.WriteLine($"Renaming: {line.origPath} -> {line.editedLine}");
 					try {
 						var nextPath = line.editedLine;
+						switch (_mode) {
+						case Mode.Name:
+							nextPath = Path.Combine(Path.GetDirectoryName(line.origPath) ?? "", line.editedLine);
+							break;
+						case Mode.FullPath:
+							nextPath = line.editedLine;
+							break;
+						}
 						System.IO.File.Move(line.origPath, nextPath);
 						line.origPath = nextPath;
 					} catch (Exception ex) {
@@ -233,5 +252,10 @@ public partial class MainWindow : Window {
 	class Line {
 		public string origPath = "";
 		public string editedLine = "";
+	}
+
+	enum Mode {
+		Name,
+		FullPath,
 	}
 }
