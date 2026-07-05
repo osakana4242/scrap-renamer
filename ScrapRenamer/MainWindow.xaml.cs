@@ -12,6 +12,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
+	static bool _isDebug = false;
 
 	LineContainer _lineContainer = new();
 
@@ -77,8 +78,9 @@ public partial class MainWindow : Window {
 				"WebView2"));
 
 		await EditorView.EnsureCoreWebView2Async(env);
-
-		EditorView.CoreWebView2.OpenDevToolsWindow();
+		if (_isDebug) {
+			EditorView.CoreWebView2.OpenDevToolsWindow();
+		}
 
 		string theme = Env.IsDarkMode() ? "vs-dark" : "vs";
 

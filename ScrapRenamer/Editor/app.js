@@ -44,6 +44,22 @@ require([
 
 	scrapRenamer.lineCount = scrapRenamer.editor.getModel().getLineCount();
 
+	scrapRenamer.editor.onDidScrollChange((e) => {
+		scrapRenamer.editor.layout();
+
+		const origPaths = scrapRenamer.origPaths;
+		const ranges = scrapRenamer.editor.getVisibleRanges();
+		const firstVisibleLine = ranges[0].startLineNumber;
+		const endVisibleLine = ranges[0].endLineNumber;
+
+		for (var n = firstVisibleLine; n <= endVisibleLine; n++) {
+			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
+				console.log("Setting data-path for decoration", i, origPaths[n - 1]);
+				el.setAttribute("data-path", origPaths[n - 1]);
+			});
+		}
+	});
+
 	scrapRenamer.editor.onDidChangeModelContent((e) => {
 		console.log("Content changed:", e);
 		const model = scrapRenamer.editor.getModel();
@@ -55,17 +71,23 @@ require([
 			return;
 		}
 
+		scrapRenamer.editor.layout();
+
+		const origPaths = scrapRenamer.origPaths;
+
 		e.changes.forEach(change => {
-			console.log("Change:", change);
-			change.range.startLineNumber;
+			const n = change.range.startLineNumber;
+			console.log("Change:", change, ", lineNumber:", n);
+			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
+				console.log("Setting data-path for decoration", i, origPaths[n - 1]);
+				el.setAttribute("data-path", origPaths[n - 1]);
+			});
 		});
 
-		// ずれる
-		// scrapRenamer.editor.layout();
-		// const origPaths = scrapRenamer.origPaths;
 		// const ranges = scrapRenamer.editor.getVisibleRanges();
 		// const firstVisibleLine = ranges[0].startLineNumber;
 		// console.log(firstVisibleLine);
+
 		// document.querySelectorAll(".path-decoration").forEach((el, i) => {
 		// 	console.log("Setting data-path for decoration", i, origPaths[firstVisibleLine - 1 + i]);
 		// 	el.setAttribute("data-path", origPaths[firstVisibleLine - 1 + i]);
@@ -159,7 +181,7 @@ function refreshDecorations2() {
 				lineMaxColumn
 			),
 			options: {
-				afterContentClassName: "path-decoration",
+				afterContentClassName: "path-decoration path-decoration-l" + (i + 1),
 				// after: {
 				// 	content: "|    " + origPaths[i], // "C:\\Users\\me\\Documents\\foo.txt",
 				// 	inlineClassName: "path-decoration",
@@ -198,7 +220,7 @@ function refreshDecorations2() {
 }
 
 function refreshDecorations() {
-	refreshDecorations1();
+	refreshDecorations2();
 }
 
 window.chrome.webview.addEventListener("message", e => {
