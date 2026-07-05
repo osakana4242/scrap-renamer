@@ -16,10 +16,15 @@
 		}
 
 		.path-decoration {
-			color: #888;
-			margin-left: 20px;
-			font-style: italic;
+			color: #888 !important;
 		}
+
+		.path-decoration::after {
+			margin-left: 1em;
+			color: #888;
+			content: attr(data-path);
+		}
+
 	</style>
 </head>
 
