@@ -1,9 +1,10 @@
-﻿using System.Windows;
+using System.Diagnostics;
 using System.IO;
-using Microsoft.Web.WebView2.Core;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Diagnostics;
+using System.Windows;
+using Microsoft.Web.WebView2.Core;
+using Microsoft.Win32;
 
 namespace ScrapRenamer;
 
@@ -16,6 +17,38 @@ public partial class MainWindow : Window {
 		Loaded += MainWindow_Loaded;
 	}
 
+	static bool IsDarkMode() {
+		object? value = Registry.GetValue(
+		@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+		"AppsUseLightTheme",
+		1);
+
+		return value is int light && light == 0;
+	}
+
+	void OnUserPreferenceChanged(
+		object? sender,
+		UserPreferenceChangedEventArgs e) {
+		Debug.WriteLine($"UserPreferenceChanged: {e.Category}");
+		if (e.Category == UserPreferenceCategory.General) {
+			UpdateTheme();
+		}
+	}
+
+	void UpdateTheme() {
+		string theme = IsDarkMode() ? "vs-dark" : "vs";
+
+		var message = new {
+			type = "setTheme",
+			theme = theme
+		};
+
+		Debug.WriteLine($"UpdateTheme: {theme}");
+
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			JsonSerializer.Serialize(message));
+	}
+
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
 		var env = await CoreWebView2Environment.CreateAsync(
 			userDataFolder: Path.Combine(
@@ -24,6 +57,16 @@ public partial class MainWindow : Window {
 				"WebView2"));
 
 		await EditorView.EnsureCoreWebView2Async(env);
+		EditorView.CoreWebView2.OpenDevToolsWindow();
+
+		string theme = IsDarkMode() ? "vs-dark" : "vs";
+
+		await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
+			$$"""
+			window.scrapRenamer = {
+				theme: "{{theme}}"
+			};
+			""");
 
 		var path = Path.Combine(
 		AppContext.BaseDirectory,
@@ -32,6 +75,38 @@ public partial class MainWindow : Window {
 
 		EditorView.Source = new Uri(path);
 		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
+		// // 外部からのファイルドロップを禁止する
+		EditorView.AllowExternalDrop = true;
+		// ドロップ時に発生するURL遷移イベントを購読
+		// EditorView.CoreWebView2.NavigationStarting += EditorView_NavigationStarting;
+		// EditorView.AllowDrop = true;
+		// EditorView.DragOver += OnDragOver;
+		// EditorView.Drop += OnDrop;
+		SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+	}
+
+	bool _firstJump = false;
+
+	void EditorView_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e) {
+		string url = e.Uri;
+		Debug.WriteLine($"NavigationStarting: {url}");
+		if (!_firstJump) {
+			_firstJump = true;
+			return;
+		}
+
+
+		// ファイルがドロップされた場合、URLは "file:///C:/..." などの形式になります
+		if (url.StartsWith("file:///", StringComparison.OrdinalIgnoreCase)) {
+			// 画面遷移をキャンセルしてブラウザでのファイル展開を防ぐ
+			e.Cancel = true;
+
+			// file:/// のプレフィックスを外して、通常のローカルパスに変換
+			string filePath = Uri.UnescapeDataString(new Uri(url).LocalPath);
+
+			// WPF側でやりたかった処理を呼び出す
+			// 例: ProcessDroppedFiles(filePath);
+		}
 	}
 
 	void EditorView_WebMessageReceived(
@@ -79,23 +154,24 @@ public partial class MainWindow : Window {
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
-		EditorView.CoreWebView2.PostWebMessageAsJson("""
-{
-	"type": "clear"
-}
-""");
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			"""
+			{
+				"type": "clear"
+			}
+			""");
 	}
 
 	void OnExecuteClicked(object sender, RoutedEventArgs e) {
 
-		EditorView.CoreWebView2.PostWebMessageAsJson("""
-{
-	"type": "getText"
-}
-""");
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			"""
+			{
+				"type": "getText"
+			}
+			""");
 
 	}
-
 
 	public class EditorMessage {
 		[JsonPropertyName("type")]

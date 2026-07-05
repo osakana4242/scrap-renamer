@@ -31,7 +31,8 @@
 			</ToolBar>
 		</ToolBarTray>
 
-		<wv2:WebView2 x:Name="EditorView"/>
+		<wv2:WebView2
+			x:Name="EditorView"/>
 	</DockPanel>
 
 </Window>
