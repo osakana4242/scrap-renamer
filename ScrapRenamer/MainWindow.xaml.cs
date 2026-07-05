@@ -17,6 +17,7 @@ public partial class MainWindow : Window {
 
 	public MainWindow() {
 		InitializeComponent();
+		UpdateTheme();
 		Loaded += MainWindow_Loaded;
 	}
 
@@ -30,7 +31,11 @@ public partial class MainWindow : Window {
 	}
 
 	void UpdateTheme() {
-		string theme = Env.IsDarkMode() ? "vs-dark" : "vs";
+		var isDark = Env.IsDarkMode();
+		SwitchTheme(isDark ? "Dark" : "Light");
+
+		if (null == EditorView?.CoreWebView2) return;
+		string theme = isDark ? "vs-dark" : "vs";
 
 		var message = new {
 			type = "setTheme",
@@ -41,6 +46,27 @@ public partial class MainWindow : Window {
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			JsonSerializer.Serialize(message));
+
+	}
+
+	void SwitchTheme(string themeName) {
+		var dicts = Application.Current.Resources.MergedDictionaries;
+
+		// 既存テーマ削除
+		var oldTheme = dicts.FirstOrDefault(d =>
+		d.Source != null &&
+		d.Source.OriginalString.Contains("Themes/"));
+
+		if (oldTheme != null) {
+			Debug.WriteLine($"Remove {oldTheme}");
+			dicts.Remove(oldTheme);
+		}
+
+		// 新しいテーマ追加
+		var newTheme = new ResourceDictionary();
+		newTheme.Source = new Uri($"Themes/{themeName}.xaml", UriKind.Relative);
+
+		dicts.Add(newTheme);
 	}
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
@@ -76,6 +102,8 @@ public partial class MainWindow : Window {
 		// // 外部からのファイルドロップを禁止する
 		EditorView.AllowExternalDrop = false;
 	}
+
+
 
 	void EditorView_WebMessageReceived(
 		object? sender,
