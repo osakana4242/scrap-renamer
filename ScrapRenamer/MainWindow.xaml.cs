@@ -82,6 +82,7 @@ public partial class MainWindow : Window {
 		// EditorView.AllowDrop = true;
 		// EditorView.DragOver += OnDragOver;
 		// EditorView.Drop += OnDrop;
+		EditorView.Visibility = Visibility.Visible;
 		SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 	}
 

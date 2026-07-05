@@ -10,28 +10,35 @@
 		AllowDrop="True"
 		DragOver="OnDragOver"
 		Drop="OnDrop"
+		Background="{DynamicResource ControlBackgroundBrush}"
 		Title="MainWindow" Height="450" Width="800">
 	<DockPanel>
 
 		<!-- メニューバー -->
-		<Menu DockPanel.Dock="Top">
+		<Menu DockPanel.Dock="Top"
+			Background="{DynamicResource ControlBackgroundBrush}"
+			Foreground="{DynamicResource ControlForegroundBrush}">
 			<MenuItem Header="_ファイル"/>
 			<MenuItem Header="_設定"/>
 			<MenuItem Header="_ヘルプ"/>
 		</Menu>
 
 		<!-- ツールバー -->
-		<ToolBarTray DockPanel.Dock="Top">
-			<ToolBar>
+		<Border DockPanel.Dock="Top"
+				Background="{DynamicResource ControlBackgroundBrush}">
+			<StackPanel Orientation="Horizontal">
 				<Button Content="▶ 実行"
+						Margin="2"
 						Click="OnExecuteClicked"/>
 
 				<Button Content="🗑 クリア"
+						Margin="2"
 						Click="OnClearClicked"/>
-			</ToolBar>
-		</ToolBarTray>
+			</StackPanel>
+		</Border>
 
 		<wv2:WebView2
+			Visibility="Hidden"
 			x:Name="EditorView"/>
 	</DockPanel>
 
