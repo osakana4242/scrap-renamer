@@ -79,28 +79,20 @@ require([
 			return;
 		}
 
-		scrapRenamer.editor.layout();
+		refreshDecorations();
+
+		//scrapRenamer.editor.layout();
 
 		const origPaths = scrapRenamer.origPaths;
 
 		e.changes.forEach(change => {
 			const n = change.range.startLineNumber;
-			console.log("Change:", change, ", lineNumber:", n);
+			//console.log("Change:", change, ", lineNumber:", n);
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
-				console.log("Setting data-path for decoration", i, origPaths[n - 1]);
+				//console.log("Setting data-path for decoration", i, origPaths[n - 1]);
 				el.setAttribute("data-path", origPaths[n - 1]);
 			});
 		});
-
-		// const ranges = scrapRenamer.editor.getVisibleRanges();
-		// const firstVisibleLine = ranges[0].startLineNumber;
-		// console.log(firstVisibleLine);
-
-		// document.querySelectorAll(".path-decoration").forEach((el, i) => {
-		// 	console.log("Setting data-path for decoration", i, origPaths[firstVisibleLine - 1 + i]);
-		// 	el.setAttribute("data-path", origPaths[firstVisibleLine - 1 + i]);
-		// });
-
 
 	});
 
@@ -174,22 +166,27 @@ function refreshDecorations2() {
 	const origPaths = scrapRenamer.origPaths;
 
 	for (let i = 0; i < origPaths.length; i++) {
+		const current = model.getLineContent(i + 1);
+		const changed = current !== scrapRenamer.lines[i];
+		const lineMaxColumn = model.getLineMaxColumn(i + 1);
+
 		console.log(
 			i + 1,
 			model.getLineContent(i + 1),
-			model.getLineMaxColumn(i + 1)
+			model.getLineMaxColumn(i + 1),
+			changed
 		);
-
-		const lineMaxColumn = model.getLineMaxColumn(i + 1);
 		decorations.push({
 			range: new monaco.Range(
 				i + 1,
-				lineMaxColumn - 1,
+				1,
 				i + 1,
 				lineMaxColumn
 			),
 			options: {
+				isWholeLine: true,
 				afterContentClassName: "path-decoration path-decoration-l" + (i + 1),
+				inlineClassName: changed ? "changed-line" : "",
 				// after: {
 				// 	content: "|    " + origPaths[i], // "C:\\Users\\me\\Documents\\foo.txt",
 				// 	inlineClassName: "path-decoration",
