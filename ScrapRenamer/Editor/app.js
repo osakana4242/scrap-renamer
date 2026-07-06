@@ -38,9 +38,17 @@ require([
 			scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
 		}
 	);
-
-
-
+	// 行の入れ替え無効化
+	scrapRenamer.editor.addCommand(
+		monaco.KeyMod.Alt | monaco.KeyCode.UpArrow,
+		() => {
+			scrapRenamer.editor.trigger("keyboard", "cursorUp", {});
+		});
+	scrapRenamer.editor.addCommand(
+		monaco.KeyMod.Alt | monaco.KeyCode.DownArrow,
+		() => {
+			scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
+		});
 
 	scrapRenamer.lineCount = scrapRenamer.editor.getModel().getLineCount();
 

@@ -12,7 +12,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
-	static bool _isDebug = false;
+	static bool _isDebug = true;
 
 	LineContainer _lineContainer = new();
 
@@ -78,6 +78,9 @@ public partial class MainWindow : Window {
 				"WebView2"));
 
 		await EditorView.EnsureCoreWebView2Async(env);
+		EditorView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+
+
 		if (_isDebug) {
 			EditorView.CoreWebView2.OpenDevToolsWindow();
 		}
