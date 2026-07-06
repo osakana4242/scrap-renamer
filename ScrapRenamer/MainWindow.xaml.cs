@@ -15,6 +15,8 @@ public partial class MainWindow : Window {
 	static bool _isDebug = true;
 
 	LineContainer _lineContainer = new();
+	System.Action? _onTextGet;
+
 
 	public MainWindow() {
 		InitializeComponent();
@@ -129,7 +131,6 @@ public partial class MainWindow : Window {
 			SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 			break;
 		case "text":
-			MessageBox.Show(msg.Text);
 			string[] editedLines = null == msg.Text ?
 				new string[] {} :
 				msg.Text.Split('\n').ToArray();
@@ -140,9 +141,9 @@ public partial class MainWindow : Window {
 				var line = _lineContainer.Lines[i];
 				line.editedLine = editedLines[i];
 			}
-
-			_lineContainer.Apply();
-
+			var act = _onTextGet;
+			_onTextGet = null;
+			act?.Invoke();
 			break;
 		}
 
@@ -203,6 +204,10 @@ public partial class MainWindow : Window {
 	}
 
 	void OnExecuteClicked(object sender, RoutedEventArgs e) {
+		_onTextGet = () => {
+			_lineContainer.Apply();
+			Editor_SetLines();
+		};
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			"""
@@ -210,7 +215,31 @@ public partial class MainWindow : Window {
 				"type": "getText"
 			}
 			""");
+	}
 
+	void OnSortClicked(object sender, RoutedEventArgs e) {
+		_onTextGet = () => {
+			_lineContainer.Sort();
+			Editor_SetLines();
+		};
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			"""
+			{
+				"type": "getText"
+			}
+			""");
+	}
+
+	// エディターに現テキストを設定する
+	void Editor_SetLines() {
+		var message = new {
+			type = "setLines",
+			origPaths = _lineContainer.Lines.Select(i => i.origPath).ToArray(),
+			lines = _lineContainer.Lines.Select(i => i.editedLine).ToArray(),
+		};
+
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			JsonSerializer.Serialize(message));
 	}
 
 	public static class Env {
@@ -253,6 +282,12 @@ public partial class MainWindow : Window {
 
 			Lines.Add(line);
 			return true;
+		}
+
+		public void Sort() {
+			Lines.Sort((a, b) => {
+				return a.origPath.CompareTo(b.origPath);
+			});
 		}
 
 		public void Apply() {
