@@ -14,7 +14,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
-	static bool _isDebug = true;
+	static bool _isDebug = false;
 
 	LineContainer _lineContainer = new();
 	System.Action? _onTextGet;
@@ -24,6 +24,7 @@ public partial class MainWindow : Window {
 		InitializeComponent();
 		UpdateTheme();
 		Loaded += MainWindow_Loaded;
+		Title = "ScrapRenamer v1.0.0a";
 	}
 
 	void UpdateTheme() {
