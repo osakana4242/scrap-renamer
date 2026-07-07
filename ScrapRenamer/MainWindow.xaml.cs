@@ -196,6 +196,7 @@ public partial class MainWindow : Window {
 			return;
 
 		var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+		System.Array.Sort(files, (a, b) => a.CompareTo(b));
 		var lines = new List<Line>();
 
 		foreach (var file in files) {
