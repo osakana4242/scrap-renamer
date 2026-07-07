@@ -38,7 +38,7 @@ require([
 	// 		scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
 	// 	}
 	// );
-	
+
 	// 行の入れ替え無効化
 	scrapRenamer.editor.addCommand(
 		monaco.KeyMod.Alt | monaco.KeyCode.UpArrow,
@@ -50,6 +50,13 @@ require([
 		() => {
 			scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
 		});
+	
+	// 機能しない...
+	// scrapRenamer.editor.addCommand(
+	// 	monaco.KeyMod.Ctrl | monaco.KeyMod.Shift | monaco.KeyCode.P,
+	// 	() => {
+	// 		scrapRenamer.editor.trigger("keyboard", "quickCommand", {});
+	// 	});
 
 	scrapRenamer.lineCount = scrapRenamer.editor.getModel().getLineCount();
 
@@ -98,21 +105,23 @@ require([
 	});
 
 	window.addEventListener("dragover", e => {
-		e.preventDefault();
-	});
-
-	window.addEventListener("drop", e => {
-		e.preventDefault();
-
-		const files = Array.from(e.dataTransfer.files);
-		// https://developer.mozilla.org/ja/docs/Web/API/File
-		const paths = files.map(f => f.name); // ← WebView2なら取れる
-
 		window.chrome.webview.postMessage({
-			type: "drop",
-			paths: paths
+			type: "dragover",
 		});
 	});
+
+	// window.addEventListener("drop", e => {
+	// 	e.preventDefault();
+
+	// 	const files = Array.from(e.dataTransfer.files);
+	// 	// https://developer.mozilla.org/ja/docs/Web/API/File
+	// 	const paths = files.map(f => f.name); // ← WebView2なら取れる
+
+	// 	window.chrome.webview.postMessage({
+	// 		type: "drop",
+	// 		paths: paths
+	// 	});
+	// });
 
 	window.chrome.webview.postMessage({
 		type: "editorLoaded",

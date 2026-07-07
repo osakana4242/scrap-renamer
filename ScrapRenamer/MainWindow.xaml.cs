@@ -3,7 +3,9 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
 
 namespace ScrapRenamer;
@@ -22,15 +24,6 @@ public partial class MainWindow : Window {
 		InitializeComponent();
 		UpdateTheme();
 		Loaded += MainWindow_Loaded;
-	}
-
-	void OnUserPreferenceChanged(
-		object? sender,
-		UserPreferenceChangedEventArgs e) {
-		Debug.WriteLine($"UserPreferenceChanged: {e.Category}");
-		if (e.Category == UserPreferenceCategory.General) {
-			UpdateTheme();
-		}
 	}
 
 	void UpdateTheme() {
@@ -107,7 +100,7 @@ public partial class MainWindow : Window {
 		EditorView.Source = new Uri(path);
 		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
 		// // 外部からのファイルドロップを禁止する
-		EditorView.AllowExternalDrop = false;
+		EditorView.AllowExternalDrop = true;
 	}
 
 
@@ -130,6 +123,11 @@ public partial class MainWindow : Window {
 			Debug.WriteLine("Editor loaded.");
 			SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 			break;
+		case "dragover":
+			Debug.WriteLine("dragover");
+			EditorView.Visibility = Visibility.Hidden;
+			DropOverlay.Visibility = Visibility.Visible;
+			break;
 		case "text":
 			string[] editedLines = null == msg.Text ?
 				new string[] {} :
@@ -149,7 +147,39 @@ public partial class MainWindow : Window {
 
 	}
 
+	protected override void OnActivated(EventArgs e) {
+		base.OnActivated(e);
+		Debug.Print($"OnActivated: {e}");
+		EditorView.Visibility = Visibility.Visible;
+	}
+	protected override void OnDeactivated(EventArgs e) {
+		base.OnDeactivated(e);
+		Debug.Print($"OnDeactivated: {e}");
+		// EditorView.Visibility = Visibility.Hidden;
+	}
+	protected override void OnGotFocus(RoutedEventArgs e) {
+		base.OnGotFocus(e);
+		Debug.Print($"OnGotFocus: {e}");
+		EditorView.Visibility = Visibility.Visible;
+	}
+
+	protected override void OnLostFocus(RoutedEventArgs e) {
+		base.OnLostFocus(e);
+		Debug.Print($"OnLostFocus: {e}");
+		EditorView.Visibility = Visibility.Hidden;
+	}
+	void OnUserPreferenceChanged(
+		object? sender,
+		UserPreferenceChangedEventArgs e) {
+		Debug.WriteLine($"UserPreferenceChanged: {e.Category}");
+		if (e.Category == UserPreferenceCategory.General) {
+			UpdateTheme();
+		}
+	}
+
 	private void OnDragOver(object sender, DragEventArgs e) {
+		Debug.Print($"OnDragOver: {e}");
+		// EditorView.Visibility = Visibility.Hidden;
 		if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
 			e.Effects = DragDropEffects.Copy;
 		} else {
@@ -160,6 +190,8 @@ public partial class MainWindow : Window {
 	}
 
 	private void OnDrop(object sender, DragEventArgs e) {
+		EditorView.Visibility = Visibility.Visible;
+		DropOverlay.Visibility = Visibility.Hidden;
 		if (!e.Data.GetDataPresent(DataFormats.FileDrop))
 			return;
 
@@ -190,7 +222,6 @@ public partial class MainWindow : Window {
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			JsonSerializer.Serialize(message));
-
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
