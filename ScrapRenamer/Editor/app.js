@@ -31,13 +31,14 @@ require([
 			},
 		});
 
-	// Enterキーで改行ではなく次の行に移動する
-	scrapRenamer.editor.addCommand(
-		monaco.KeyCode.Enter,
-		() => {
-			scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
-		}
-	);
+	// // Enterキーで改行ではなく次の行に移動する
+	// scrapRenamer.editor.addCommand(
+	// 	monaco.KeyCode.Enter,
+	// 	() => {
+	// 		scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
+	// 	}
+	// );
+	
 	// 行の入れ替え無効化
 	scrapRenamer.editor.addCommand(
 		monaco.KeyMod.Alt | monaco.KeyCode.UpArrow,
