@@ -216,8 +216,8 @@ public partial class MainWindow : Window {
 
 		var message = new {
 			type = "setLines",
-			origPaths = lines.Select(i => i.origPath).ToArray(),
-			lines = lines.Select(i => i.editedLine).ToArray(),
+			origPaths = _lineContainer.Lines.Select(i => i.origPath).ToArray(),
+			lines = _lineContainer.Lines.Select(i => i.editedLine).ToArray(),
 		};
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
