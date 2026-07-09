@@ -14,7 +14,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
-	static bool _isDebug = true;
+	static bool _isDebug = false;
 
 	LineContainer _lineContainer = new();
 	System.Action<(string text, System.Exception? ex)>? _onTextGet;
