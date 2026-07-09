@@ -9,7 +9,6 @@ let scrapRenamer = {
 	pathDecorations: null,
 	lineCount: 0,
 	lines: [],
-	origPaths: [],
 };
 
 require([
@@ -63,15 +62,14 @@ require([
 	scrapRenamer.editor.onDidScrollChange((e) => {
 		scrapRenamer.editor.layout();
 
-		const origPaths = scrapRenamer.origPaths;
 		const ranges = scrapRenamer.editor.getVisibleRanges();
 		const firstVisibleLine = ranges[0].startLineNumber;
 		const endVisibleLine = ranges[0].endLineNumber;
 
 		for (var n = firstVisibleLine; n <= endVisibleLine; n++) {
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
-				console.log("Setting data-path for decoration", i, origPaths[n - 1]);
-				el.setAttribute("data-path", origPaths[n - 1]);
+				console.log("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
+				el.setAttribute("data-path", scrapRenamer.lines[n - 1].origPath);
 			});
 		}
 	});
@@ -91,14 +89,12 @@ require([
 
 		//scrapRenamer.editor.layout();
 
-		const origPaths = scrapRenamer.origPaths;
-
 		e.changes.forEach(change => {
 			const n = change.range.startLineNumber;
 			//console.log("Change:", change, ", lineNumber:", n);
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
-				//console.log("Setting data-path for decoration", i, origPaths[n - 1]);
-				el.setAttribute("data-path", origPaths[n - 1]);
+				//console.log("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
+				el.setAttribute("data-path", scrapRenamer.lines[n - 1].origPath);
 			});
 		});
 
@@ -132,9 +128,8 @@ require([
 function refreshDecorations1() {
 	const decorations = [];
 	const model = scrapRenamer.editor.getModel();
-	const origPaths = scrapRenamer.origPaths;
 
-	for (let i = 0; i < origPaths.length; i++) {
+	for (let i = 0; i < scrapRenamer.lines.length; i++) {
 		console.log(
 			i + 1,
 			model.getLineContent(i + 1),
@@ -151,7 +146,7 @@ function refreshDecorations1() {
 			),
 			options: {
 				after: {
-					content: "|   " + origPaths[i],
+					content: "|   " + scrapRenamer.lines[i].origPath,
 					inlineClassName: "path-decoration"
 				},
 				cursorStops: monaco.editor.InjectedTextCursorStops.BEFORE
@@ -173,11 +168,11 @@ function refreshDecorations1() {
 function refreshDecorations2() {
 	const decorations = [];
 	const model = scrapRenamer.editor.getModel();
-	const origPaths = scrapRenamer.origPaths;
 
-	for (let i = 0; i < origPaths.length; i++) {
+	for (let i = 0; i < scrapRenamer.lines.length; i++) {
 		const current = model.getLineContent(i + 1);
-		const changed = current !== scrapRenamer.lines[i];
+		const changed = current !== scrapRenamer.lines[i].editedLine;
+		const isError = scrapRenamer.lines[i].error != "";
 		const lineMaxColumn = model.getLineMaxColumn(i + 1);
 
 		console.log(
@@ -196,13 +191,8 @@ function refreshDecorations2() {
 			options: {
 				isWholeLine: true,
 				afterContentClassName: "path-decoration path-decoration-l" + (i + 1),
-				inlineClassName: changed ? "changed-line" : "",
-				// after: {
-				// 	content: "|    " + origPaths[i], // "C:\\Users\\me\\Documents\\foo.txt",
-				// 	inlineClassName: "path-decoration",
-				// 	cursorStops: monaco.editor.InjectedTextCursorStops.NEVER,
-				// 	zIndex: 3,
-				// }
+				inlineClassName: changed ? "changed-line"
+					: isError ? "error-line" : "",
 			}
 		});
 	}
@@ -218,18 +208,13 @@ function refreshDecorations2() {
 		scrapRenamer.editor.createDecorationsCollection(decorations);
 	scrapRenamer.editor.layout();
 
-	// document.querySelectorAll(".path-decoration").forEach((el, i) => {
-	// 	console.log("Setting data-path for decoration", i, origPaths[i]);
-	// 	el.setAttribute("data-path", origPaths[i]);
-	// });
-
 	const ranges = scrapRenamer.editor.getVisibleRanges();
 
 	const firstVisibleLine = ranges[0].startLineNumber;
 	console.log(firstVisibleLine);
 	document.querySelectorAll(".path-decoration").forEach((el, i) => {
-		console.log("Setting data-path for decoration", i, origPaths[firstVisibleLine - 1 + i]);
-		el.setAttribute("data-path", origPaths[firstVisibleLine - 1 + i]);
+		console.log("Setting data-path for decoration", i, scrapRenamer.lines[firstVisibleLine - 1 + i].origPath);
+		el.setAttribute("data-path", scrapRenamer.lines[firstVisibleLine - 1 + i].origPath);
 	});
 
 }
@@ -255,11 +240,10 @@ window.chrome.webview.addEventListener("message", e => {
 			});
 			break;
 		case "setLines": {
-			const text = e.data.lines.
+			const text = e.data.lines.map(l => l.editedLine).
 				join("\n");
 			scrapRenamer.lineCount = e.data.lines.length;
 			scrapRenamer.editor.setValue(text);
-			scrapRenamer.origPaths = e.data.origPaths;
 			scrapRenamer.lines = e.data.lines;
 			refreshDecorations();
 			break;

@@ -14,7 +14,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
-	static bool _isDebug = false;
+	static bool _isDebug = true;
 
 	LineContainer _lineContainer = new();
 	System.Action<(string text, System.Exception? ex)>? _onTextGet;
@@ -204,15 +204,7 @@ public partial class MainWindow : Window {
 			Debug.WriteLine("No new lines to add.");
 			return;
 		}
-
-		var message = new {
-			type = "setLines",
-			origPaths = _lineContainer.Lines.Select(i => i.origPath).ToArray(),
-			lines = _lineContainer.Lines.Select(i => i.editedLine).ToArray(),
-		};
-
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
+		Editor_SetLines();
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
@@ -279,8 +271,11 @@ public partial class MainWindow : Window {
 	void Editor_SetLines() {
 		var message = new {
 			type = "setLines",
-			origPaths = _lineContainer.Lines.Select(i => i.origPath).ToArray(),
-			lines = _lineContainer.Lines.Select(i => i.editedLine).ToArray(),
+			lines = _lineContainer.Lines.Select(i => new {
+				origPath = i.origPath,
+				editedLine = i.editedLine,
+				error = i.error,
+			 }).ToArray(),
 		};
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(

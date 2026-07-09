@@ -51,6 +51,7 @@ class LineContainer {
 					line.origPath = nextPath;
 				} catch (Exception ex) {
 					Debug.WriteLine($"Failed to rename: {ex.Message}");
+					line.error = ex.Message;
 				}
 			}
 		}
