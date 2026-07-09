@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
@@ -17,7 +17,7 @@ public partial class MainWindow : Window {
 	static bool _isDebug = false;
 
 	LineContainer _lineContainer = new();
-	System.Action? _onTextGet;
+	System.Action<(string text, System.Exception? ex)>? _onTextGet;
 
 
 	public MainWindow() {
@@ -130,22 +130,11 @@ public partial class MainWindow : Window {
 			DropOverlay.Visibility = Visibility.Visible;
 			break;
 		case "text":
-			string[] editedLines = null == msg.Text ?
-				new string[] {} :
-				msg.Text.Split('\n').ToArray();
-
-			for (int i = 0; i < editedLines.Length; i++) {
-				if (i >= _lineContainer.Lines.Count)
-					break;
-				var line = _lineContainer.Lines[i];
-				line.editedLine = editedLines[i];
-			}
 			var act = _onTextGet;
 			_onTextGet = null;
-			act?.Invoke();
+			act?.Invoke((msg.Text ?? "", null));
 			break;
 		}
-
 	}
 
 	protected override void OnActivated(EventArgs e) {
@@ -236,10 +225,10 @@ public partial class MainWindow : Window {
 			""");
 	}
 
-	void OnExecuteClicked(object sender, RoutedEventArgs e) {
-		_onTextGet = () => {
-			_lineContainer.Apply();
-			Editor_SetLines();
+	async Task<string> GetTextAsync() {
+		(string text, System.Exception? ex)? ret = null;
+		_onTextGet = s => {
+			ret = s;
 		};
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
@@ -248,19 +237,42 @@ public partial class MainWindow : Window {
 				"type": "getText"
 			}
 			""");
+
+		while (null == ret) {
+			await Dispatcher.Yield();
+		}
+
+		if (null != ret.Value.ex) {
+			throw ret.Value.ex;
+		}
+
+		return ret.Value.text;
 	}
 
-	void OnSortClicked(object sender, RoutedEventArgs e) {
-		_onTextGet = () => {
-			_lineContainer.Sort();
-			Editor_SetLines();
-		};
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			"""
-			{
-				"type": "getText"
-			}
-			""");
+	async Task SyncTextFromEditorAsync() {
+		var text = await GetTextAsync();
+		string[] editedLines = null == text ?
+			new string[] {} :
+			text.Split('\n').ToArray();
+
+		for (int i = 0; i < editedLines.Length; i++) {
+			if (i >= _lineContainer.Lines.Count)
+				break;
+			var line = _lineContainer.Lines[i];
+			line.editedLine = editedLines[i];
+		}
+	}
+	
+	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
+		await SyncTextFromEditorAsync();
+		_lineContainer.Apply();
+		Editor_SetLines();
+	}
+
+	async void OnSortClicked(object sender, RoutedEventArgs e) {
+		await SyncTextFromEditorAsync();
+		_lineContainer.Sort();
+		Editor_SetLines();
 	}
 
 	// エディターに現テキストを設定する
@@ -285,13 +297,5 @@ public partial class MainWindow : Window {
 
 			return value is int light && light == 0;
 		}
-	}
-
-
-	public class EditorMessage {
-		[JsonPropertyName("type")]
-		public string? Type { get; set; }
-		[JsonPropertyName("text")]
-		public string? Text { get; set; }
 	}
 }
