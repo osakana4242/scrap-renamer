@@ -14,7 +14,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
-	static bool _isDebug = false;
+	static bool _isDebug = true;
 
 	LineContainer _lineContainer = new();
 	System.Action<(string text, System.Exception? ex)>? _onTextGet;
@@ -106,7 +106,7 @@ public partial class MainWindow : Window {
 
 
 
-	void EditorView_WebMessageReceived(
+	async void EditorView_WebMessageReceived(
 		object? sender,
 		CoreWebView2WebMessageReceivedEventArgs e) {
 		var json = e.WebMessageAsJson;
@@ -120,6 +120,11 @@ public partial class MainWindow : Window {
 		}
 
 		switch (msg.Type) {
+		case "apply":
+			Debug.WriteLine("Apply.");
+			await Apply();
+
+			break;
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
 			SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
@@ -255,10 +260,14 @@ public partial class MainWindow : Window {
 		}
 	}
 	
-	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
+	async Task Apply() {
 		await SyncTextFromEditorAsync();
 		_lineContainer.Apply();
 		Editor_SetLines();
+	}
+
+	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
+		await Apply();
 	}
 
 	async void OnSortClicked(object sender, RoutedEventArgs e) {

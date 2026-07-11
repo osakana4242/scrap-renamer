@@ -50,12 +50,27 @@ require([
 			scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
 		});
 	
-	// 機能しない...
-	// scrapRenamer.editor.addCommand(
-	// 	monaco.KeyMod.Ctrl | monaco.KeyMod.Shift | monaco.KeyCode.P,
-	// 	() => {
-	// 		scrapRenamer.editor.trigger("keyboard", "quickCommand", {});
-	// 	});
+	scrapRenamer.editor.addCommand(
+		monaco.KeyMod.WinCtrl | monaco.KeyMod.Shift | monaco.KeyCode.P,
+		() => {
+			console.log("quickCommand");
+			scrapRenamer.editor.trigger("keyboard", "quickCommand", {});
+		});
+
+	scrapRenamer.editor.addCommand(
+		monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
+		() => {
+			console.log("ctrl+enter");
+			window.chrome.webview.postMessage({
+				type: "apply",
+			});
+		});
+
+	console.log("KeyMod " + monaco.KeyMod + ", " +
+		monaco.KeyMod.WinCtrl + ", " +
+		monaco.KeyMod.CtrlCmd + ", " +
+		monaco.KeyMod.Ctrl + ", " +
+		monaco.KeyCode.Enter);
 
 	scrapRenamer.lineCount = scrapRenamer.editor.getModel().getLineCount();
 
