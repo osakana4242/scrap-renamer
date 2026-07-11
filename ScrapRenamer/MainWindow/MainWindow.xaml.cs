@@ -27,6 +27,7 @@ public partial class MainWindow : Window {
 
 	void UpdateTheme() {
 		var isDark = Env.IsDarkMode();
+		Dwm.SetWindowDarkMode(this, isDark);
 		SwitchTheme(isDark ? "Dark" : "Light");
 
 		if (null == EditorView?.CoreWebView2) return;
@@ -141,6 +142,11 @@ public partial class MainWindow : Window {
 			act?.Invoke((msg.Text ?? "", null));
 			break;
 		}
+	}
+
+	protected override void OnSourceInitialized(EventArgs e) {
+		base.OnSourceInitialized(e);
+		UpdateTheme();
 	}
 
 	protected override void OnActivated(EventArgs e) {
