@@ -11,6 +11,14 @@ let scrapRenamer = {
 	lines: [],
 };
 
+function debugLog(text) {
+	console.log(text);
+	window.chrome.webview.postMessage({
+		type: "debugLog",
+		text: "" + text,
+	});
+}
+
 require([
 	"vs/editor/editor.main"
 ], function () {
@@ -51,22 +59,22 @@ require([
 		});
 	
 	scrapRenamer.editor.addCommand(
-		monaco.KeyMod.WinCtrl | monaco.KeyMod.Shift | monaco.KeyCode.P,
+		monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.P,
 		() => {
-			console.log("quickCommand");
+			debugLog("quickCommand");
 			scrapRenamer.editor.trigger("keyboard", "quickCommand", {});
 		});
 
 	scrapRenamer.editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
 		() => {
-			console.log("ctrl+enter");
+			debugLog("ctrl+enter");
 			window.chrome.webview.postMessage({
 				type: "apply",
 			});
 		});
 
-	console.log("KeyMod " + monaco.KeyMod + ", " +
+	debugLog("KeyMod " + monaco.KeyMod + ", " +
 		monaco.KeyMod.WinCtrl + ", " +
 		monaco.KeyMod.CtrlCmd + ", " +
 		monaco.KeyMod.Ctrl + ", " +
@@ -87,20 +95,20 @@ require([
 				const data = line.error != "" ?
 					line.error + ", " + line.origPath :
 					line.origPath;
-				console.log("Setting data-path for decoration", i, line.origPath);
+				debugLog("Setting data-path for decoration", i, line.origPath);
 				el.setAttribute("data-path", data);
 			});
 		}
 	});
 
 	scrapRenamer.editor.onDidChangeModelContent((e) => {
-		console.log("Content changed:", e);
+		debugLog("Content changed:", e);
 		const model = scrapRenamer.editor.getModel();
 
 		if (model.getLineCount() !== scrapRenamer.lineCount) {
 			// 元に戻す
 			scrapRenamer.editor.trigger("keyboard", "undo", {});
-			console.log("Line count changed, undoing the change.");
+			debugLog("Line count changed, undoing the change.");
 			return;
 		}
 
@@ -110,9 +118,9 @@ require([
 
 		e.changes.forEach(change => {
 			const n = change.range.startLineNumber;
-			//console.log("Change:", change, ", lineNumber:", n);
+			//debugLog("Change:", change, ", lineNumber:", n);
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
-				//console.log("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
+				//debugLog("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
 				const line = scrapRenamer.lines[n - 1];
 				const data = line.error != "" ?
 					line.error + ", " + line.origPath:
@@ -153,7 +161,7 @@ function refreshDecorations1() {
 	const model = scrapRenamer.editor.getModel();
 
 	for (let i = 0; i < scrapRenamer.lines.length; i++) {
-		console.log(
+		debugLog(
 			i + 1,
 			model.getLineContent(i + 1),
 			model.getLineMaxColumn(i + 1)
@@ -198,7 +206,7 @@ function refreshDecorations2() {
 		const isError = scrapRenamer.lines[i].error != "";
 		const lineMaxColumn = model.getLineMaxColumn(i + 1);
 
-		console.log(
+		debugLog(
 			i + 1,
 			model.getLineContent(i + 1),
 			model.getLineMaxColumn(i + 1),
@@ -234,10 +242,10 @@ function refreshDecorations2() {
 	const ranges = scrapRenamer.editor.getVisibleRanges();
 
 	const firstVisibleLine = ranges[0].startLineNumber;
-	console.log(firstVisibleLine);
+	debugLog(firstVisibleLine);
 	document.querySelectorAll(".path-decoration").forEach((el, i) => {
 		const line = scrapRenamer.lines[firstVisibleLine - 1 + i];
-		console.log("Setting data-path for decoration", i, line.origPath);
+		debugLog("Setting data-path for decoration", i, line.origPath);
 		const data = line.error != "" ?
 			line.error + ", " + line.origPath:
 			line.origPath;
@@ -251,7 +259,7 @@ function refreshDecorations() {
 }
 
 window.chrome.webview.addEventListener("message", e => {
-	console.log(e.data);
+	debugLog(e.data);
 
 	switch (e.data.type) {
 		case "clear":

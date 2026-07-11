@@ -182,18 +182,19 @@ class LineContainer {
 					}
 				}
 				
-				var cycleLast = cycleList[cycleList.Count - 1];
+				var last = cycleList[cycleList.Count - 1];
+				cycleList.RemoveAt(cycleList.Count - 1);
 
 				// 工程を2つに分割する
 				// 1. 最初に一時的なパスに変更
 				// before -> tmp
 				var suffix = ".tmp_" + Guid.NewGuid().ToString("N");
-				var tmpPath = $"{cycleLast.after}{suffix}";
-				var lastBeforeToTmp = new WorkItem(cycleLast.index, cycleLast.before, tmpPath);
+				var tmpPath = $"{last.after}{suffix}";
+				var lastBeforeToTmp = new WorkItem(last.index, last.before, tmpPath);
 				// 2. 最後に目的のパスに変更
 				// tmp -> after
-				var lastTmpToAfter = new WorkItem(cycleLast.index, tmpPath, cycleLast.after);
-				RemoveWorkItem(cycleLast);
+				var lastTmpToAfter = new WorkItem(last.index, tmpPath, last.after);
+				RemoveWorkItem(last);
 
 				var preError = "";
 
@@ -214,6 +215,7 @@ class LineContainer {
 				} else if (preError != "") {
 					line.error = preError;
 				} else {
+					Debug.WriteLine($"Move, '{item.before}' to '{item.after}'");
 					System.IO.File.Move(item.before, item.after);
 					line.origPath = item.after;
 				}

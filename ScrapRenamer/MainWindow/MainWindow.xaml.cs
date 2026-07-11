@@ -2,10 +2,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
-using Microsoft.Web.WebView2.Wpf;
 using Microsoft.Win32;
 
 namespace ScrapRenamer;
@@ -14,7 +12,7 @@ namespace ScrapRenamer;
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow : Window {
-	static bool _isDebug = true;
+	static bool _isDebug = false;
 
 	LineContainer _lineContainer = new();
 	System.Action<(string text, System.Exception? ex)>? _onTextGet;
@@ -120,6 +118,9 @@ public partial class MainWindow : Window {
 		}
 
 		switch (msg.Type) {
+		case "debugLog":
+			Debug.WriteLine("from js: " + msg.Text);
+			break;
 		case "apply":
 			Debug.WriteLine("Apply.");
 			await Apply();
