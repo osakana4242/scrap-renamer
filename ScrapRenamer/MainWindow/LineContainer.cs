@@ -216,7 +216,11 @@ class LineContainer {
 					line.error = preError;
 				} else {
 					Debug.WriteLine($"Move, '{item.before}' to '{item.after}'");
-					System.IO.File.Move(item.before, item.after);
+					if (line.isDirectory) {
+						System.IO.Directory.Move(item.before, item.after);
+					} else {
+						System.IO.File.Move(item.before, item.after);
+					}
 					line.origPath = item.after;
 				}
 			} catch (System.Exception ex) {

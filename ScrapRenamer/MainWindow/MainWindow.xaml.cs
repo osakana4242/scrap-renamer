@@ -289,7 +289,7 @@ public partial class MainWindow : Window {
 				origPath = i.origPath,
 				editedLine = i.editedLine,
 				error = i.error,
-				isFolder = i.isFolder,
+				isFolder = i.isDirectory,
 			 }).ToArray(),
 		};
 
