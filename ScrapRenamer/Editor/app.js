@@ -68,8 +68,12 @@ require([
 
 		for (var n = firstVisibleLine; n <= endVisibleLine; n++) {
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
-				console.log("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
-				el.setAttribute("data-path", scrapRenamer.lines[n - 1].origPath);
+				const line = scrapRenamer.lines[n - 1];
+				const data = line.error != "" ?
+					line.error + ", " + line.origPath :
+					line.origPath;
+				console.log("Setting data-path for decoration", i, line.origPath);
+				el.setAttribute("data-path", data);
 			});
 		}
 	});
@@ -94,7 +98,11 @@ require([
 			//console.log("Change:", change, ", lineNumber:", n);
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
 				//console.log("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
-				el.setAttribute("data-path", scrapRenamer.lines[n - 1].origPath);
+				const line = scrapRenamer.lines[n - 1];
+				const data = line.error != "" ?
+					line.error + ", " + line.origPath:
+					line.origPath;
+				el.setAttribute("data-path", data);
 			});
 		});
 
@@ -213,8 +221,12 @@ function refreshDecorations2() {
 	const firstVisibleLine = ranges[0].startLineNumber;
 	console.log(firstVisibleLine);
 	document.querySelectorAll(".path-decoration").forEach((el, i) => {
-		console.log("Setting data-path for decoration", i, scrapRenamer.lines[firstVisibleLine - 1 + i].origPath);
-		el.setAttribute("data-path", scrapRenamer.lines[firstVisibleLine - 1 + i].origPath);
+		const line = scrapRenamer.lines[firstVisibleLine - 1 + i];
+		console.log("Setting data-path for decoration", i, line.origPath);
+		const data = line.error != "" ?
+			line.error + ", " + line.origPath:
+			line.origPath;
+		el.setAttribute("data-path", data);
 	});
 
 }
