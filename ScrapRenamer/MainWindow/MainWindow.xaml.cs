@@ -50,8 +50,9 @@ public partial class MainWindow : Window {
 
 		// 既存テーマ削除
 		var oldTheme = dicts.FirstOrDefault(d =>
-		d.Source != null &&
-		d.Source.OriginalString.Contains("Themes/"));
+			d.Source != null &&
+			d.Source.OriginalString.Contains("Themes/") &&
+			!d.Source.OriginalString.Contains("Themes/Common.xaml"));
 
 		if (oldTheme != null) {
 			Debug.WriteLine($"Remove {oldTheme}");
