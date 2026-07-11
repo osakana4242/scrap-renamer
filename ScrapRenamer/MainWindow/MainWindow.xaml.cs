@@ -197,10 +197,7 @@ public partial class MainWindow : Window {
 
 		foreach (var file in files) {
 			Debug.WriteLine(file);
-			var line = new Line {
-				origPath = file,
-				editedLine = file
-			};
+			var line = new Line(file);
 			if (!_lineContainer.Add(line))
 				continue;
 			lines.Add(line);
@@ -285,6 +282,7 @@ public partial class MainWindow : Window {
 				origPath = i.origPath,
 				editedLine = i.editedLine,
 				error = i.error,
+				isFolder = i.isFolder,
 			 }).ToArray(),
 		};
 

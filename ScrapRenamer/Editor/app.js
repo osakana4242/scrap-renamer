@@ -30,7 +30,7 @@ require([
 
 			theme: window.scrapRenamer.theme,
 			automaticLayout: true,
-			gryphMargin: false,
+			gryphMargin: true,
 			lineNumbers: "on",
 			renderWhitespace: "all",
 			minimap: {
@@ -38,33 +38,40 @@ require([
 			},
 		});
 
+	var editor = scrapRenamer.editor;
+
+	editor.updateOptions({
+		fontFamily: "'Cascadia Mono', monospace",
+		// fontSize: 14,
+	});
+
 	// // Enterキーで改行ではなく次の行に移動する
-	// scrapRenamer.editor.addCommand(
+	// editor.addCommand(
 	// 	monaco.KeyCode.Enter,
 	// 	() => {
-	// 		scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
+	// 		editor.trigger("keyboard", "cursorDown", {});
 	// 	}
 	// );
 
 	// 行の入れ替え無効化
-	scrapRenamer.editor.addCommand(
+	editor.addCommand(
 		monaco.KeyMod.Alt | monaco.KeyCode.UpArrow,
 		() => {
-			scrapRenamer.editor.trigger("keyboard", "cursorUp", {});
+			editor.trigger("keyboard", "cursorUp", {});
 		});
-	scrapRenamer.editor.addCommand(
+	editor.addCommand(
 		monaco.KeyMod.Alt | monaco.KeyCode.DownArrow,
 		() => {
-			scrapRenamer.editor.trigger("keyboard", "cursorDown", {});
+			editor.trigger("keyboard", "cursorDown", {});
 		});
 	
-	scrapRenamer.editor.addCommand(
+	editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
 		() => {
-			scrapRenamer.editor.trigger("keyboard", "editor.action.quickCommand", {});
+			editor.trigger("keyboard", "editor.action.quickCommand", {});
 		});
 
-	scrapRenamer.editor.addCommand(
+	editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
 		() => {
 			window.chrome.webview.postMessage({
@@ -81,12 +88,12 @@ require([
 	// 	monaco.KeyMod.Ctrl + ", " +
 	// 	monaco.KeyCode.Enter);
 
-	scrapRenamer.lineCount = scrapRenamer.editor.getModel().getLineCount();
+	scrapRenamer.lineCount = editor.getModel().getLineCount();
 
-	scrapRenamer.editor.onDidScrollChange((e) => {
-		scrapRenamer.editor.layout();
+	editor.onDidScrollChange((e) => {
+		editor.layout();
 
-		const ranges = scrapRenamer.editor.getVisibleRanges();
+		const ranges = editor.getVisibleRanges();
 		const firstVisibleLine = ranges[0].startLineNumber;
 		const endVisibleLine = ranges[0].endLineNumber;
 
@@ -102,20 +109,20 @@ require([
 		}
 	});
 
-	scrapRenamer.editor.onDidChangeModelContent((e) => {
+	editor.onDidChangeModelContent((e) => {
 		debugLog("Content changed:", e);
-		const model = scrapRenamer.editor.getModel();
+		const model = editor.getModel();
 
 		if (model.getLineCount() !== scrapRenamer.lineCount) {
 			// 元に戻す
-			scrapRenamer.editor.trigger("keyboard", "undo", {});
+			editor.trigger("keyboard", "undo", {});
 			debugLog("Line count changed, undoing the change.");
 			return;
 		}
 
 		refreshDecorations();
 
-		//scrapRenamer.editor.layout();
+		//editor.layout();
 
 		e.changes.forEach(change => {
 			const n = change.range.startLineNumber;
@@ -196,15 +203,17 @@ function refreshDecorations1() {
 }
 
 // 見た目、操作感ともこれが最高なのだが、
-// 行を編集したとたんに、装飾が消えてしまう。
+// 行を編集したとたんに、装飾が消えてしまうが、
+// 都度、装飾を更新すれば問題無い。
 function refreshDecorations2() {
 	const decorations = [];
 	const model = scrapRenamer.editor.getModel();
 
 	for (let i = 0; i < scrapRenamer.lines.length; i++) {
+		const line = scrapRenamer.lines[i];
 		const current = model.getLineContent(i + 1);
-		const changed = current !== scrapRenamer.lines[i].editedLine;
-		const isError = scrapRenamer.lines[i].error != "";
+		const changed = current !== line.editedLine;
+		const isError = line.error != "";
 		const lineMaxColumn = model.getLineMaxColumn(i + 1);
 
 		debugLog(
@@ -222,11 +231,23 @@ function refreshDecorations2() {
 			),
 			options: {
 				isWholeLine: true,
+				beforeContentClassName: line.isFolder ? "folder-icon" : "file-icon",
 				afterContentClassName: "path-decoration path-decoration-l" + (i + 1),
 				inlineClassName: changed ? "changed-line"
 					: isError ? "error-line" : "",
 			}
 		});
+		// decorations.push({
+		// 	range: new monaco.Range(
+		// 		i + 1,
+		// 		1,
+		// 		i + 1,
+		// 		1
+		// 	),
+		// 	options: {
+		// 		glyphMarginClassName: line.isFolder ? "folder-glyph" : "file-glyph",
+		// 	}
+		// });
 	}
 
 	if (scrapRenamer.pathDecorations) {
