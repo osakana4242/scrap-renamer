@@ -59,26 +59,27 @@ require([
 		});
 	
 	scrapRenamer.editor.addCommand(
-		monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.P,
+		monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
 		() => {
-			debugLog("quickCommand");
-			scrapRenamer.editor.trigger("keyboard", "quickCommand", {});
+			scrapRenamer.editor.trigger("keyboard", "editor.action.quickCommand", {});
 		});
 
 	scrapRenamer.editor.addCommand(
 		monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
 		() => {
-			debugLog("ctrl+enter");
 			window.chrome.webview.postMessage({
 				type: "apply",
 			});
 		});
 
-	debugLog("KeyMod " + monaco.KeyMod + ", " +
-		monaco.KeyMod.WinCtrl + ", " +
-		monaco.KeyMod.CtrlCmd + ", " +
-		monaco.KeyMod.Ctrl + ", " +
-		monaco.KeyCode.Enter);
+	// debugLog(
+	// 	"P: " + monaco.KeyCode.P + ", " +
+	// 	"KeyP: " + monaco.KeyCode.KeyP + ", " +
+	// 	"KeyMod " + monaco.KeyMod + ", " +
+	// 	monaco.KeyMod.WinCtrl + ", " +
+	// 	monaco.KeyMod.CtrlCmd + ", " +
+	// 	monaco.KeyMod.Ctrl + ", " +
+	// 	monaco.KeyCode.Enter);
 
 	scrapRenamer.lineCount = scrapRenamer.editor.getModel().getLineCount();
 
