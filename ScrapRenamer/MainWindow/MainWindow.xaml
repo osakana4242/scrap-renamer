@@ -11,23 +11,31 @@
 		DragOver="OnDragOver"
 		Drop="OnDrop"
 		Background="{DynamicResource ControlBackgroundBrush}"
-		Title="MainWindow" Height="450" Width="800">
+		Title="MainWindow" Height="450" Width="800"
+		ThemeMode="System">
 	<DockPanel>
 
 		<!-- メニューバー -->
 		<Menu DockPanel.Dock="Top"
-			Background="{DynamicResource ControlBackgroundBrush}"
-			Foreground="{DynamicResource ControlForegroundBrush}"
 			Padding="4 0">
-			<MenuItem Header="_ファイル"/>
+			<MenuItem Header="_ファイル">
+				<MenuItem
+					Header="_開く..."
+					Click="OnOpenMenuClick"/>
+				<MenuItem
+					Header="_終了"
+					Click="OnExitMenuClick"/>
+			</MenuItem>
 			<MenuItem Header="_設定"/>
-			<MenuItem Header="_ヘルプ"/>
+			<MenuItem Header="_ヘルプ">
+				<MenuItem
+					Header="_このアプリについて"
+					Click="OnOpenAboutClick"/>
+			</MenuItem>
 		</Menu>
 
 		<!-- ツールバー -->
 		<Border DockPanel.Dock="Top"
-				Background="{DynamicResource ControlBackgroundBrush}"
-				BorderBrush="{DynamicResource ControlBorderBrush}"
 				BorderThickness="0 1 0 1"
 				Padding="4 0">
 			<StackPanel Orientation="Horizontal">
@@ -68,7 +76,6 @@
 					CornerRadius="8"
 					BorderThickness="2"
 					BorderBrush="DodgerBlue"
-					Background="Transparent"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Stretch"
 					Margin="8,8">
@@ -76,8 +83,6 @@
 					<TextBlock
 						Text="ここにファイルをドロップ"
 						FontSize="24"
-						Background="Transparent"
-						Foreground="{DynamicResource ControlForegroundBrush}"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"/>
 				</Border>
@@ -87,15 +92,11 @@
 				Grid.Row="1"
 				x:Name="StatusBar"
 				HorizontalAlignment="Stretch"
-				Background="{DynamicResource ControlBackgroundBrush}"
-				BorderBrush="{DynamicResource ControlBorderBrush}"
 				BorderThickness="1"
 				Padding="4 0">
 
 				<TextBlock
 					Text="ステータスバー"
-					Background="Transparent"
-					Foreground="{DynamicResource ControlForegroundBrush}"
 					HorizontalAlignment="Stretch"
 					VerticalAlignment="Center"/>
 			</Border>

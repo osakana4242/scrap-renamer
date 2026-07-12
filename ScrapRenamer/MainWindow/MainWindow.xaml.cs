@@ -148,6 +148,36 @@ public partial class MainWindow : Window {
 		}
 	}
 
+
+	void OnOpenMenuClick(
+		object sender,
+		RoutedEventArgs e)
+	{
+		var dialog = new OpenFileDialog {
+			Title = "ファイルを選択",
+			Multiselect = true,
+			CheckFileExists = true
+		};
+
+		if (dialog.ShowDialog() != true) {
+			return;
+		}
+
+		OpenFiles(dialog.FileNames);
+	}
+
+	void OnExitMenuClick(
+		object sender,
+		RoutedEventArgs e) {
+		Application.Current.Shutdown();
+	}
+
+	void OnOpenAboutClick(
+		object sender,
+		RoutedEventArgs e) {
+		Application.Current.Shutdown();
+	}
+
 	void OnUserPreferenceChanged(
 		object? sender,
 		UserPreferenceChangedEventArgs e) {
@@ -168,11 +198,14 @@ public partial class MainWindow : Window {
 		e.Handled = true;
 	}
 
-	async void OnDrop(object sender, DragEventArgs e) {
+	void OnDrop(object sender, DragEventArgs e) {
 		if (!e.Data.GetDataPresent(DataFormats.FileDrop))
 			return;
-
 		var files = (string[])e.Data.GetData(DataFormats.FileDrop);
+		OpenFiles(files);
+	}
+
+	void OpenFiles(string[] files) {
 		System.Array.Sort(files, (a, b) => a.CompareTo(b));
 		var lines = new List<Line>();
 
