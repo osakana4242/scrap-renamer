@@ -10,7 +10,6 @@
 		AllowDrop="True"
 		DragOver="OnDragOver"
 		Drop="OnDrop"
-		Background="{DynamicResource ControlBackgroundBrush}"
 		Title="MainWindow" Height="450" Width="800"
 		ThemeMode="System">
 	<DockPanel>

@@ -175,7 +175,10 @@ public partial class MainWindow : Window {
 	void OnOpenAboutClick(
 		object sender,
 		RoutedEventArgs e) {
-		Application.Current.Shutdown();
+		var window = new AboutWindow() {
+			Owner = this
+		};
+		window.ShowDialog();
 	}
 
 	void OnUserPreferenceChanged(
