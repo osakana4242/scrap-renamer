@@ -145,32 +145,6 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	protected override void OnSourceInitialized(EventArgs e) {
-		base.OnSourceInitialized(e);
-		UpdateTheme();
-	}
-
-	protected override void OnActivated(EventArgs e) {
-		base.OnActivated(e);
-		Debug.Print($"OnActivated: {e}");
-		EditorView.Visibility = Visibility.Visible;
-	}
-	protected override void OnDeactivated(EventArgs e) {
-		base.OnDeactivated(e);
-		Debug.Print($"OnDeactivated: {e}");
-		// EditorView.Visibility = Visibility.Hidden;
-	}
-	protected override void OnGotFocus(RoutedEventArgs e) {
-		base.OnGotFocus(e);
-		Debug.Print($"OnGotFocus: {e}");
-		EditorView.Visibility = Visibility.Visible;
-	}
-
-	protected override void OnLostFocus(RoutedEventArgs e) {
-		base.OnLostFocus(e);
-		Debug.Print($"OnLostFocus: {e}");
-		EditorView.Visibility = Visibility.Hidden;
-	}
 	void OnUserPreferenceChanged(
 		object? sender,
 		UserPreferenceChangedEventArgs e) {
@@ -180,7 +154,7 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	private void OnDragOver(object sender, DragEventArgs e) {
+	void OnDragOver(object sender, DragEventArgs e) {
 		Debug.Print($"OnDragOver: {e}");
 		// EditorView.Visibility = Visibility.Hidden;
 		if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
@@ -192,7 +166,7 @@ public partial class MainWindow : Window {
 		e.Handled = true;
 	}
 
-	private void OnDrop(object sender, DragEventArgs e) {
+	void OnDrop(object sender, DragEventArgs e) {
 		EditorView.Visibility = Visibility.Visible;
 		DropOverlay.Visibility = Visibility.Hidden;
 		if (!e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -264,7 +238,7 @@ public partial class MainWindow : Window {
 			line.editedLine = editedLines[i];
 		}
 	}
-	
+
 	async Task Apply() {
 		await SyncTextFromEditorAsync();
 		_lineContainer.Apply();
@@ -290,22 +264,40 @@ public partial class MainWindow : Window {
 				editedLine = i.editedLine,
 				error = i.error,
 				isFolder = i.isDirectory,
-			 }).ToArray(),
+			}).ToArray(),
 		};
 
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			JsonSerializer.Serialize(message));
 	}
+	
+	// -------------------------------------------------------- MARK: override
 
-	public static class Env {
-
-		public static bool IsDarkMode() {
-			object? value = Registry.GetValue(
-			@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
-			"AppsUseLightTheme",
-			1);
-
-			return value is int light && light == 0;
-		}
+	protected override void OnSourceInitialized(EventArgs e) {
+		base.OnSourceInitialized(e);
+		UpdateTheme();
 	}
+
+	protected override void OnActivated(EventArgs e) {
+		base.OnActivated(e);
+		Debug.Print($"OnActivated: {e}");
+		EditorView.Visibility = Visibility.Visible;
+	}
+	protected override void OnDeactivated(EventArgs e) {
+		base.OnDeactivated(e);
+		Debug.Print($"OnDeactivated: {e}");
+		// EditorView.Visibility = Visibility.Hidden;
+	}
+	protected override void OnGotFocus(RoutedEventArgs e) {
+		base.OnGotFocus(e);
+		Debug.Print($"OnGotFocus: {e}");
+		EditorView.Visibility = Visibility.Visible;
+	}
+
+	protected override void OnLostFocus(RoutedEventArgs e) {
+		base.OnLostFocus(e);
+		Debug.Print($"OnLostFocus: {e}");
+		EditorView.Visibility = Visibility.Hidden;
+	}
+
 }
