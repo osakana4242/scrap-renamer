@@ -3,7 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F3F3F3"/>
-	<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FBFBFB"/>
+	<SolidColorBrush x:Key="ControlBackgroundBrush" Color="#F0F0F0"/>
 	<SolidColorBrush x:Key="ControlForegroundBrush" Color="#202020"/>
 	<SolidColorBrush x:Key="ControlBorderBrush" Color="#C8C8C8"/>
 	<SolidColorBrush x:Key="ButtonHoverBrush" Color="#F0F0F0"/>

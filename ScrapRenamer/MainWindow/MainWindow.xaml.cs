@@ -102,6 +102,10 @@ public partial class MainWindow : Window {
 		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
 		// // 外部からのファイルドロップを禁止する
 		EditorView.AllowExternalDrop = true;
+		EditorView.Visibility = Visibility.Visible;
+		DropOverlay.Visibility = Visibility.Visible;
+		StatusBar.Visibility = Visibility.Hidden;
+		UpdateVisibility(false);
 	}
 
 
@@ -134,8 +138,7 @@ public partial class MainWindow : Window {
 			break;
 		case "dragover":
 			Debug.WriteLine("dragover");
-			EditorView.Visibility = Visibility.Hidden;
-			DropOverlay.Visibility = Visibility.Visible;
+			UpdateVisibility(true);
 			break;
 		case "text":
 			var act = _onTextGet;
@@ -156,7 +159,6 @@ public partial class MainWindow : Window {
 
 	void OnDragOver(object sender, DragEventArgs e) {
 		Debug.Print($"OnDragOver: {e}");
-		// EditorView.Visibility = Visibility.Hidden;
 		if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
 			e.Effects = DragDropEffects.Copy;
 		} else {
@@ -166,9 +168,7 @@ public partial class MainWindow : Window {
 		e.Handled = true;
 	}
 
-	void OnDrop(object sender, DragEventArgs e) {
-		EditorView.Visibility = Visibility.Visible;
-		DropOverlay.Visibility = Visibility.Hidden;
+	async void OnDrop(object sender, DragEventArgs e) {
 		if (!e.Data.GetDataPresent(DataFormats.FileDrop))
 			return;
 
@@ -183,6 +183,8 @@ public partial class MainWindow : Window {
 				continue;
 			lines.Add(line);
 		}
+
+		UpdateVisibility(false);
 
 		if (lines.Count == 0) {
 			Debug.WriteLine("No new lines to add.");
@@ -199,6 +201,7 @@ public partial class MainWindow : Window {
 				"type": "clear"
 			}
 			""");
+		UpdateVisibility(false);
 	}
 
 	async Task<string> GetTextAsync() {
@@ -270,6 +273,18 @@ public partial class MainWindow : Window {
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			JsonSerializer.Serialize(message));
 	}
+
+	void UpdateVisibility(bool isDragging) {
+		if (0 < _lineContainer.Lines.Count && !isDragging) {
+			Debug.Print($"A, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
+			EditorView.Visibility = Visibility.Visible;
+			DropOverlay.Visibility = Visibility.Hidden;
+		} else {
+			Debug.Print($"B, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
+			EditorView.Visibility = Visibility.Hidden;
+			DropOverlay.Visibility = Visibility.Visible;
+		}
+	}
 	
 	// -------------------------------------------------------- MARK: override
 
@@ -281,23 +296,19 @@ public partial class MainWindow : Window {
 	protected override void OnActivated(EventArgs e) {
 		base.OnActivated(e);
 		Debug.Print($"OnActivated: {e}");
-		EditorView.Visibility = Visibility.Visible;
 	}
 	protected override void OnDeactivated(EventArgs e) {
 		base.OnDeactivated(e);
 		Debug.Print($"OnDeactivated: {e}");
-		// EditorView.Visibility = Visibility.Hidden;
 	}
 	protected override void OnGotFocus(RoutedEventArgs e) {
 		base.OnGotFocus(e);
 		Debug.Print($"OnGotFocus: {e}");
-		EditorView.Visibility = Visibility.Visible;
 	}
 
 	protected override void OnLostFocus(RoutedEventArgs e) {
 		base.OnLostFocus(e);
 		Debug.Print($"OnLostFocus: {e}");
-		EditorView.Visibility = Visibility.Hidden;
 	}
 
 }

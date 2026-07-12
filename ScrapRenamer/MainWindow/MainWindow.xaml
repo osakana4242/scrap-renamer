@@ -17,7 +17,8 @@
 		<!-- メニューバー -->
 		<Menu DockPanel.Dock="Top"
 			Background="{DynamicResource ControlBackgroundBrush}"
-			Foreground="{DynamicResource ControlForegroundBrush}">
+			Foreground="{DynamicResource ControlForegroundBrush}"
+			Padding="4 0">
 			<MenuItem Header="_ファイル"/>
 			<MenuItem Header="_設定"/>
 			<MenuItem Header="_ヘルプ"/>
@@ -25,7 +26,10 @@
 
 		<!-- ツールバー -->
 		<Border DockPanel.Dock="Top"
-				Background="{DynamicResource ControlBackgroundBrush}">
+				Background="{DynamicResource ControlBackgroundBrush}"
+				BorderBrush="{DynamicResource ControlBorderBrush}"
+				BorderThickness="0 1 0 1"
+				Padding="4 0">
 			<StackPanel Orientation="Horizontal">
 				<Button Content="▶ 実行"
 						Margin="2"
@@ -43,66 +47,62 @@
 
 		<Grid>
 			<Grid.RowDefinitions>
-			<!--
-				<RowDefinition Height="80"/>
-			-->
 				<RowDefinition Height="*"/>
+				<RowDefinition Height="24"/>
 			</Grid.RowDefinitions>
-			<!--
-				<Border
-					Grid.Row="0"
-					Margin="8"
-					HorizontalAlignment="Stretch"
-					BorderBrush="#808080"
-					BorderThickness="2"
-					CornerRadius="8"
-					Background="#10FFFFFF"
-					Padding="24">
 
-					<TextBlock
-						Text="ここにファイルをドラッグ＆ドロップ"
-						Background="{DynamicResource ControlBackgroundBrush}"
-						Foreground="{DynamicResource ControlForegroundBrush}"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Center"/>
-				</Border>
-			-->
 			<wv2:WebView2
 				Grid.Row="0"
 				x:Name="EditorView"/>
-
 
 			<Border
 				Grid.Row="0"
 				x:Name="DropOverlay"
 				Visibility="Collapsed"
-				Background="#80000000"
+				Background="Transparent"
 				AllowDrop="True"
 				DragOver="OnDragOver"
 				Drop="OnDrop">
 
 				<Border
-					Width="300"
-					Height="120"
 					CornerRadius="8"
 					BorderThickness="2"
 					BorderBrush="DodgerBlue"
-					Background="#E0202020"
-					HorizontalAlignment="Center"
-					VerticalAlignment="Center">
+					Background="Transparent"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					Margin="8,8">
 
 					<TextBlock
 						Text="ここにファイルをドロップ"
 						FontSize="24"
-						Background="{DynamicResource ControlBackgroundBrush}"
+						Background="Transparent"
 						Foreground="{DynamicResource ControlForegroundBrush}"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"/>
 				</Border>
 			</Border>
 
+			<Border
+				Grid.Row="1"
+				x:Name="StatusBar"
+				HorizontalAlignment="Stretch"
+				Background="{DynamicResource ControlBackgroundBrush}"
+				BorderBrush="{DynamicResource ControlBorderBrush}"
+				BorderThickness="1"
+				Padding="4 0">
 
+				<TextBlock
+					Text="ステータスバー"
+					Background="Transparent"
+					Foreground="{DynamicResource ControlForegroundBrush}"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Center"/>
+			</Border>
 		</Grid>
 	</DockPanel>
+
+
+
 
 </Window>
