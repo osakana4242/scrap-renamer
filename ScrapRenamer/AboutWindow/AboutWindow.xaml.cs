@@ -18,17 +18,12 @@ public partial class AboutWindow : Window {
 				AssemblyInformationalVersionAttribute>()
 			?.InformationalVersion ?? "";
 
-
 	void OnCopyClick(
 		object sender,
 		RoutedEventArgs e) {
 		var text = $"""
 		ScrapRenamer
-		Version {Version}
-
-		Copyright (C) 2026 おさかな
-
-		https://github.com/osakana4242/ScrapRenamer
+		Version: {Version}
 		""";
 
 		Clipboard.SetText(text);

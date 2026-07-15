@@ -181,6 +181,15 @@ public partial class MainWindow : Window {
 		window.ShowDialog();
 	}
 
+	void OnOpenSettingsClick(
+		object sender,
+		RoutedEventArgs e) {
+		var window = new SettingsWindow() {
+			Owner = this
+		};
+		window.ShowDialog();
+	}
+
 	void OnUserPreferenceChanged(
 		object? sender,
 		UserPreferenceChangedEventArgs e) {
