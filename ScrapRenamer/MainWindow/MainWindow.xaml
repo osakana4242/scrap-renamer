@@ -19,17 +19,17 @@
 			Padding="4 0">
 			<MenuItem Header="ファイル (_F)">
 				<MenuItem
-					Header="開く... (_O)"
+					Header="開く…  (_O)"
 					Click="OnOpenMenuClick"/>
 				<MenuItem
 					Header="終了 (_X)"
 					Click="OnExitMenuClick"/>
 			</MenuItem>
-			<MenuItem Header="設定... (_S)"
+			<MenuItem Header="設定…  (_S)"
 					Click="OnOpenSettingsClick"/>
 			<MenuItem Header="ヘルプ (_H)">
 				<MenuItem
-					Header="このアプリについて... (_A)"
+					Header="このアプリについて… (_A)"
 					Click="OnOpenAboutClick"/>
 			</MenuItem>
 		</Menu>

@@ -281,7 +281,7 @@ function refreshDecorations() {
 }
 
 window.chrome.webview.addEventListener("message", e => {
-	debugLog(e.data);
+	debugLog("type: " + e.data.type + ", data:" + JSON.stringify(e.data));
 
 	switch (e.data.type) {
 		case "clear":
@@ -295,6 +295,13 @@ window.chrome.webview.addEventListener("message", e => {
 				type: "text",
 				text: scrapRenamer.editor.getValue()
 			});
+			break;
+		case "updateOptions":
+			scrapRenamer.editor.updateOptions(e.data.options);
+			// scrapRenamer.editor.updateOptions({
+			// 	"fontFamily": e.data.options.fontFamily
+			// });
+			// debugLog("jsFontFamily: " + e.data.options.fontFamily);
 			break;
 		case "setLines": {
 			const text = e.data.lines.map(l => l.editedLine).

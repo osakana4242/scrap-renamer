@@ -23,6 +23,8 @@ public partial class MainWindow : Window {
 		UpdateTheme();
 		Loaded += MainWindow_Loaded;
 		Title = "ScrapRenamer v1.0.0a";
+		Settings.Instance.fontFamily.OnChanged += OnFontFamilyChanged;
+		Settings.Instance.fontSize.OnChanged += OnFontSizeChanged;
 	}
 
 	void UpdateTheme() {
@@ -292,6 +294,29 @@ public partial class MainWindow : Window {
 		_lineContainer.Apply();
 		Editor_SetLines();
 	}
+
+	void OnFontFamilyChanged(string fontFamily) {
+		var message = new {
+			type = "updateOptions",
+			options = new {
+				fontFamily = fontFamily,
+			}
+		};
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			JsonSerializer.Serialize(message));
+	}
+
+	void OnFontSizeChanged(int fontSize) {
+		var message = new {
+			type = "updateOptions",
+			options = new {
+				fontSize = fontSize,
+			}
+		};
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			JsonSerializer.Serialize(message));
+	}
+
 
 	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
 		await Apply();
