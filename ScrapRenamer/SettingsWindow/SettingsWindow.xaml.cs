@@ -10,8 +10,17 @@ namespace ScrapRenamer;
 public partial class SettingsWindow : Window {
 	public SettingsWindow() {
 		InitializeComponent();
+		ThemeMode = Settings.Instance.themeProp.Value;
 
-		var f = new FontFamily(Settings.Instance.fontFamily.Value);
+		ThemeComboBox.ItemsSource = new[] {
+			ThemeMode.System,
+			ThemeMode.Dark,
+			ThemeMode.Light,
+		};
+		ThemeComboBox.SelectedItem = Settings.Instance.themeProp.Value;
+		ThemeComboBox.SelectionChanged += OnThemeSelectionChanged;
+
+		var f = new FontFamily(Settings.Instance.fontFamilyProp.Value);
 
 		FontFamilyComboBox.ItemsSource = Fonts.SystemFontFamilies
 			.OrderBy(x => x.Source);
@@ -21,28 +30,30 @@ public partial class SettingsWindow : Window {
 		FontFamilyComboBox.SelectedItem = f;
 		FontFamilyComboBox.SelectionChanged += OnSelectionChanged;
 
-
 		FontSizeComboBox.ItemsSource = new double[] {
 			8, 9, 10, 11, 12, 14, 16, 18,
 			20, 22, 24, 26, 28, 36, 48, 72
 		};
 		FontSizeComboBox.SelectionChanged += OnFontSizeSelectionChanged;
-		FontSizeComboBox.Text = Settings.Instance.fontSize.Value.ToString();
+		FontSizeComboBox.Text = Settings.Instance.fontSizeProp.Value.ToString();
+	}
+
+	public void OnThemeSelectionChanged(object sender, SelectionChangedEventArgs e) {
+		if (ThemeComboBox.SelectedItem is not ThemeMode themeMode) return;
+		Settings.Instance.themeProp.Value = themeMode;
+		ThemeMode = themeMode;
 	}
 
 	public void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
 		if (FontFamilyComboBox.SelectedItem is not FontFamily font) return;
-		Settings.Instance.fontFamily.Value = font.Source;
+		Settings.Instance.fontFamilyProp.Value = font.Source;
 	}
 
 	public void OnFontSizeSelectionChanged(object sender, SelectionChangedEventArgs e) {
-			Debug.Print($"FontSize1 {FontSizeComboBox.SelectedItem}");
 		if (double.TryParse(FontSizeComboBox.Text, out var fontSize1)) {
-			Debug.Print("FontSize2");
-			Settings.Instance.fontSize.Value = (int)fontSize1;
+			Settings.Instance.fontSizeProp.Value = (int)fontSize1;
 		} else if (FontSizeComboBox.SelectedItem is double fontSize2) {
-			Debug.Print("FontSize3");
-			Settings.Instance.fontSize.Value = (int)fontSize2;
+			Settings.Instance.fontSizeProp.Value = (int)fontSize2;
 		}
 	}
 }

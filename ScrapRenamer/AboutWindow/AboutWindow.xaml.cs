@@ -8,6 +8,7 @@ namespace ScrapRenamer;
 public partial class AboutWindow : Window {
 	public AboutWindow() {
 		InitializeComponent();
+		ThemeMode = Settings.Instance.themeProp.Value;
 
 		VersionText.Text = $"バージョン {Version}";
 	}

@@ -23,14 +23,21 @@ public partial class MainWindow : Window {
 		UpdateTheme();
 		Loaded += MainWindow_Loaded;
 		Title = "ScrapRenamer v1.0.0a";
-		Settings.Instance.fontFamily.OnChanged += OnFontFamilyChanged;
-		Settings.Instance.fontSize.OnChanged += OnFontSizeChanged;
+		Settings.Instance.themeProp.OnChanged += OnThemeChanged;
+		Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
+		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
+		Settings.Instance.Load();
 	}
 
 	void UpdateTheme() {
-		var isDark = Env.IsDarkMode();
+		var isDark =
+			Settings.Instance.themeProp.Value == ThemeMode.Dark ||
+			Settings.Instance.themeProp.Value == ThemeMode.System &&
+			Env.IsDarkMode();
+
+
 		Dwm.SetWindowDarkMode(this, isDark);
-		SwitchTheme(isDark ? "Dark" : "Light");
+		ThemeMode = Settings.Instance.themeProp.Value;
 
 		if (null == EditorView?.CoreWebView2) return;
 		string theme = isDark ? "vs-dark" : "vs";
@@ -45,27 +52,6 @@ public partial class MainWindow : Window {
 		EditorView.CoreWebView2.PostWebMessageAsJson(
 			JsonSerializer.Serialize(message));
 
-	}
-
-	void SwitchTheme(string themeName) {
-		var dicts = Application.Current.Resources.MergedDictionaries;
-
-		// 既存テーマ削除
-		var oldTheme = dicts.FirstOrDefault(d =>
-			d.Source != null &&
-			d.Source.OriginalString.Contains("Themes/") &&
-			!d.Source.OriginalString.Contains("Themes/Common.xaml"));
-
-		if (oldTheme != null) {
-			Debug.WriteLine($"Remove {oldTheme}");
-			dicts.Remove(oldTheme);
-		}
-
-		// 新しいテーマ追加
-		var newTheme = new ResourceDictionary();
-		newTheme.Source = new Uri($"Themes/{themeName}.xaml", UriKind.Relative);
-
-		dicts.Add(newTheme);
 	}
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
@@ -83,14 +69,12 @@ public partial class MainWindow : Window {
 			EditorView.CoreWebView2.OpenDevToolsWindow();
 		}
 
-		string theme = Env.IsDarkMode() ? "vs-dark" : "vs";
-
 		await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
 			$$"""
 			window.scrapRenamer = {
-				theme: "{{theme}}"
 			};
 			""");
+		UpdateTheme();
 
 		var path = Path.Combine(
 			AppContext.BaseDirectory,
@@ -317,6 +301,9 @@ public partial class MainWindow : Window {
 			JsonSerializer.Serialize(message));
 	}
 
+	void OnThemeChanged(ThemeMode themeMode) {
+		UpdateTheme();
+	}
 
 	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
 		await Apply();
