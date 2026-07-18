@@ -2,6 +2,7 @@
 	x:Class="ScrapRenamer.AboutWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	Icon="pack://application:,,,/AppIcon/AppIcon.ico"
 	Title="このアプリについて"
 	SizeToContent="WidthAndHeight"
 	ResizeMode="NoResize"

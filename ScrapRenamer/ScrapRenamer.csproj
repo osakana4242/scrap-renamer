@@ -10,13 +10,12 @@
 		<RootNamespace>ScrapRenamer</RootNamespace>
 		<Version>1.0.1</Version>
 		<NoWarn>$(NoWarn);WPF0001</NoWarn>
+		<ApplicationIcon>AppIcon/AppIcon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Resource Include="AppIcon\AppIcon.ico" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Content Include="Editor\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
