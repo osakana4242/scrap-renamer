@@ -6,12 +6,13 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
 	xmlns:local="clr-namespace:ScrapRenamer"
+	xmlns:res="clr-namespace:ScrapRenamer.Localization.Strings"
 	mc:Ignorable="d"
 	Icon="pack://application:,,,/AppIcon/AppIcon.ico"
 	AllowDrop="True"
 	DragOver="OnDragOver"
 	Drop="OnDrop"
-	Title="MainWindow"
+	Title="{x:Static res:Strings.AppName}"
     Width="400"
     Height="500"
 	ThemeMode="System"
@@ -21,19 +22,19 @@
 		<!-- メニューバー -->
 		<Menu DockPanel.Dock="Top"
 			Padding="4 0">
-			<MenuItem Header="ファイル (_F)">
+			<MenuItem Header="{x:Static res:Strings.Menu_File}">
 				<MenuItem
-					Header="開く…  (_O)"
+					Header="{x:Static res:Strings.Menu_File_Open}"
 					Click="OnOpenMenuClick"/>
 				<MenuItem
-					Header="終了 (_X)"
+					Header="{x:Static res:Strings.Menu_File_Quit}"
 					Click="OnExitMenuClick"/>
 			</MenuItem>
-			<MenuItem Header="設定…  (_S)"
+			<MenuItem Header="{x:Static res:Strings.Menu_Settings}"
 					Click="OnOpenSettingsClick"/>
-			<MenuItem Header="ヘルプ (_H)">
+			<MenuItem Header="{x:Static res:Strings.Menu_Help}">
 				<MenuItem
-					Header="このアプリについて… (_A)"
+					Header="{x:Static res:Strings.Menu_Help_About}"
 					Click="OnOpenAboutClick"/>
 			</MenuItem>
 		</Menu>
@@ -43,15 +44,15 @@
 				BorderThickness="0 1 0 1"
 				Padding="4 0">
 			<StackPanel Orientation="Horizontal">
-				<Button Content="▶ 実行"
+				<Button Content="{x:Static res:Strings.Button_Apply}"
 						Margin="2"
 						Click="OnExecuteClicked"/>
 
-				<Button Content="🗑 クリア"
+				<Button Content="{x:Static res:Strings.Button_Clear}"
 						Margin="2"
 						Click="OnClearClicked"/>
 
-				<Button Content="ソート"
+				<Button Content="{x:Static res:Strings.Button_Sort}"
 						Margin="2"
 						Click="OnSortClicked"/>
 			</StackPanel>
@@ -85,7 +86,7 @@
 					Margin="8,8">
 
 					<TextBlock
-						Text="ここにファイルをドロップ"
+						Text="{x:Static res:Strings.DropFilesHere}"
 						FontSize="24"
 						HorizontalAlignment="Center"
 						VerticalAlignment="Center"/>

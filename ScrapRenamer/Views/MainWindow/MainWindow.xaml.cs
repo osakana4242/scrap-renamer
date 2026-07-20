@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.Resources;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Documents;
@@ -24,11 +25,17 @@ public partial class MainWindow : Window {
 		InitializeComponent();
 		UpdateTheme();
 		Loaded += MainWindow_Loaded;
-		Title = "ScrapRenamer v1.0.0a";
 		Settings.Instance.themeProp.OnChanged += OnThemeChanged;
 		Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
 		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
 		Settings.Instance.Load();
+
+
+
+		var resMgr = new ResourceManager(
+			"ScrapRenamer.Localization.Strings",
+			typeof(App).Assembly);
+		Debug.Print($"GetString: {resMgr.GetString("AppName")}");
 	}
 
 	void UpdateTheme() {
