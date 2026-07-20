@@ -115,6 +115,7 @@ class LineContainer {
 			for (int i = 0; i < Lines.Count; i++) {
 				var line = Lines[i];
 				line.error = "";
+				line.processed = false;
 			}
 			//
 			for (int i = 0; i < Lines.Count; i++) {
@@ -129,6 +130,8 @@ class LineContainer {
 					// リネームしてない
 					continue;
 				}
+
+				line.processed = true;
 
 				if (_afterPathDict.TryGetValue(nextPath, out var otherItem)) {
 					line.error = $"{otherItem.index}: {otherItem.before} とリネーム先が衝突";

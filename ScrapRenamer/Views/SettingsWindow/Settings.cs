@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Media;
 
 namespace ScrapRenamer;
 
@@ -14,6 +15,9 @@ public class Settings {
 
 
 	bool _isInLoad = false;
+
+
+	public FontFamily FontFamily => new FontFamily(Settings.Instance.fontFamilyProp.Value);
 
 
 	Settings() {

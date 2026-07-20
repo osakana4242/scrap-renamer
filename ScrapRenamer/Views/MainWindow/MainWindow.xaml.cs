@@ -2,6 +2,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Win32;
@@ -120,6 +122,7 @@ public partial class MainWindow : Window {
 			break;
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
+			UpdateTheme();
 			SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 			break;
 		case "dragover":
@@ -276,10 +279,74 @@ public partial class MainWindow : Window {
 	async Task Apply() {
 		await SyncTextFromEditorAsync();
 		_lineContainer.Apply();
+		var lines = _lineContainer.Lines.
+			Select((elem, i) => new {index = i, elem}).
+			Where((elem) => elem.elem.processed);
+		var errorLines = lines.Where(i => "" != i.elem.error).ToList();
+		var successLines = lines.Where(i => "" == i.elem.error).ToList();
+		var doc = new FlowDocument();
+
+		if (0 < errorLines.Count) {
+			{
+				var p = CreateParagraph();
+				p.Foreground = Brushes.Red;
+				var s = $"⛔失敗 {errorLines.Count} 件";
+				p.Inlines.Add(new Run(s));
+				doc.Blocks.Add(p);
+			}
+
+
+			foreach (var line in errorLines) {
+				AddParagraph(doc, $"行 {line.index}: ⛔失敗 {line.elem.origPath} → {line.elem.editedLine}");
+				AddParagraph(doc, $"({line.elem.error})");
+				AddParagraph(doc, $"");
+			}
+			AddParagraph(doc, "");
+		}
+
+		{
+			var p = CreateParagraph();
+			var s = $"✅成功 {successLines.Count} 件";
+			p.Inlines.Add(new Run(s));
+			doc.Blocks.Add(p);
+		}
+
+		foreach (var line in successLines) {
+			AddParagraph(doc, $"行 {line.index}: ✅成功 {line.elem.origPath} → {line.elem.editedLine}");
+		}
+
+		AddParagraph(doc, "");
+
+		var window = new ResultWindow(doc) {
+			Owner = this
+		};
+		window.ShowDialog();
 		Editor_SetLines();
+
 	}
 
+	static void AddParagraph(FlowDocument doc, string text) {
+		var p = new Paragraph() {
+			FontFamily = Settings.Instance.FontFamily,
+			FontSize = Settings.Instance.fontSizeProp.Value,
+			Margin = new Thickness(8),
+		};
+		p.Inlines.Add(new Run(text));
+		doc.Blocks.Add(p);
+	}
+
+	static Paragraph CreateParagraph() {
+		var p = new Paragraph() {
+			FontFamily = Settings.Instance.FontFamily,
+			FontSize = Settings.Instance.fontSizeProp.Value,
+			Margin = new Thickness(8),
+		};
+		return p;
+	}
+
+
 	void OnFontFamilyChanged(string fontFamily) {
+		if (null == EditorView.CoreWebView2) return;
 		var message = new {
 			type = "updateOptions",
 			options = new {
@@ -291,6 +358,7 @@ public partial class MainWindow : Window {
 	}
 
 	void OnFontSizeChanged(int fontSize) {
+		if (null == EditorView.CoreWebView2) return;
 		var message = new {
 			type = "updateOptions",
 			options = new {

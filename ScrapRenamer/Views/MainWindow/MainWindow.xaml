@@ -11,7 +11,9 @@
 	AllowDrop="True"
 	DragOver="OnDragOver"
 	Drop="OnDrop"
-	Title="MainWindow" Height="450" Width="800"
+	Title="MainWindow"
+    Width="400"
+    Height="500"
 	ThemeMode="System"
 	>
 	<DockPanel>
