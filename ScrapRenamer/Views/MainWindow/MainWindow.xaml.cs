@@ -54,17 +54,7 @@ public partial class MainWindow : Window {
 
 		if (null == EditorView?.CoreWebView2) return;
 		string theme = isDark ? "vs-dark" : "vs";
-
-		var message = new {
-			type = "setTheme",
-			theme = theme
-		};
-
-		Debug.WriteLine($"UpdateTheme: {theme}");
-
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-
+		Editor_SetTheme(theme);
 	}
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
@@ -114,8 +104,7 @@ public partial class MainWindow : Window {
 
 	void OnOpenMenuClick(
 		object sender,
-		RoutedEventArgs e)
-	{
+		RoutedEventArgs e) {
 		var dialog = new Microsoft.Win32.OpenFileDialog {
 			Title = "ファイルを選択",
 			Multiselect = true,
@@ -227,18 +216,18 @@ public partial class MainWindow : Window {
 	}
 
 	async Task SyncTextFromEditorAsync() {
-			var text = await GetTextAsync();
-			string[] editedLines = null == text ?
+		var text = await GetTextAsync();
+		string[] editedLines = null == text ?
 			new string[] {} :
 			text.Split('\n').ToArray();
 
-			for (int i = 0; i < editedLines.Length; i++) {
-				if (i >= _lineContainer.Lines.Count)
-					break;
-				var line = _lineContainer.Lines[i];
-				line.editedLine = editedLines[i];
-			}
+		for (int i = 0; i < editedLines.Length; i++) {
+			if (i >= _lineContainer.Lines.Count)
+				break;
+			var line = _lineContainer.Lines[i];
+			line.editedLine = editedLines[i];
 		}
+	}
 
 	async Task Apply() {
 		await SyncTextFromEditorAsync();
@@ -363,7 +352,20 @@ public partial class MainWindow : Window {
 		case "apply":
 			Debug.WriteLine("Apply.");
 			await Apply();
-
+			break;
+		case "cursorSelectionLineChanged":
+			if (int.TryParse(msg.Text, out var lineIndex)) {
+				if ((uint)lineIndex < (uint)_lineContainer.Lines.Count) {
+					var line = _lineContainer.Lines[lineIndex];
+					(
+						StatusBarTextBlockLeft.Text,
+						StatusBarTextBlockRight.Text
+					) = Util.SplitPathAtNthLastSeparator(line.origPath, 3);
+				} else {
+					StatusBarTextBlockLeft.Text = $"";
+					StatusBarTextBlockRight.Text = $"";
+				}
+			}
 			break;
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
@@ -434,6 +436,15 @@ public partial class MainWindow : Window {
 			JsonSerializer.Serialize(message));
 	}
 
+	void Editor_SetTheme(string theme) {
+		var message = new {
+			type = "setTheme",
+			theme = theme
+		};
+		EditorView.CoreWebView2.PostWebMessageAsJson(
+			JsonSerializer.Serialize(message));
+	}
+
 	// ------------------------------------------------------------ MARK: ----
 
 	void UpdateVisibility(bool isDragging) {
@@ -441,13 +452,15 @@ public partial class MainWindow : Window {
 			Debug.Print($"A, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
 			EditorView.Visibility = Visibility.Visible;
 			DropOverlay.Visibility = Visibility.Hidden;
+			StatusBar.Visibility = Visibility.Visible;
 		} else {
 			Debug.Print($"B, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
 			EditorView.Visibility = Visibility.Hidden;
 			DropOverlay.Visibility = Visibility.Visible;
+			StatusBar.Visibility = Visibility.Hidden;
 		}
 	}
-	
+
 	// -------------------------------------------------------- MARK: override
 
 	protected override void OnSourceInitialized(EventArgs e) {
@@ -473,4 +486,42 @@ public partial class MainWindow : Window {
 		Debug.Print($"OnLostFocus: {e}");
 	}
 
+	// ------------------------------------------------------------ MARK: ----
+
+	static class Util {
+		// 後ろから n 番目のセパレーターの位置でパスを分割する
+		public static (string prefix, string suffix) SplitPathAtNthLastSeparator(string path, int n) {
+			var index = GetNthLastSeparatorIndex(path, n);
+
+			if (index == -1) {
+				return (
+					"",
+					path);
+			} else {
+				return (
+					path[..index],
+					path[index..]);
+			}
+
+			static int GetNthLastSeparatorIndex(string text, int n) {
+				int separatorCount = 0;
+				int firstSeparatorIndex = -1;
+
+				for (int i = text.Length - 1; i >= 0; i--) {
+					if (text[i] != '\\') {
+						continue;
+					}
+
+					firstSeparatorIndex = i;
+					separatorCount++;
+
+					if (separatorCount == n) {
+						return i;
+					}
+				}
+
+				return firstSeparatorIndex;
+			}
+		}
+	}
 }

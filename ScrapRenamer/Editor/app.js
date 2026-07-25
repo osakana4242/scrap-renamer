@@ -9,6 +9,7 @@ let scrapRenamer = {
 	pathDecorations: null,
 	lineCount: 0,
 	lines: [],
+	lineIndex: 0,
 };
 
 function debugLog(text) {
@@ -41,11 +42,6 @@ require([
 		});
 
 	var editor = scrapRenamer.editor;
-
-	editor.updateOptions({
-		fontFamily: "'Cascadia Mono', monospace",
-		// fontSize: 14,
-	});
 
 	// // Enterキーで改行ではなく次の行に移動する
 	// editor.addCommand(
@@ -91,6 +87,21 @@ require([
 	// 	monaco.KeyCode.Enter);
 
 	scrapRenamer.lineCount = editor.getModel().getLineCount();
+
+	// 選択行の変化を通知
+	editor.onDidChangeCursorSelection((e) => {
+		const selections = editor.getSelections();
+		const lineIndex = selections.length === 1 ?
+			selections[0].positionLineNumber - 1:
+			-1;
+		if (scrapRenamer.lineIndex === lineIndex) return;
+		scrapRenamer.lineIndex = lineIndex;
+		window.chrome.webview.postMessage({
+			type: "cursorSelectionLineChanged",
+			text: "" + scrapRenamer.lineIndex,
+		});
+	});
+
 
 	editor.onDidScrollChange((e) => {
 		editor.layout();

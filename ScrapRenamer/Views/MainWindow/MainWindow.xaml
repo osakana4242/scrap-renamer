@@ -96,14 +96,28 @@
 			<Border
 				Grid.Row="1"
 				x:Name="StatusBar"
-				HorizontalAlignment="Stretch"
+				HorizontalAlignment="Left"
 				BorderThickness="1"
 				Padding="4 0">
 
-				<TextBlock
-					Text="ステータスバー"
-					HorizontalAlignment="Stretch"
-					VerticalAlignment="Center"/>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<TextBlock
+						x:Name="StatusBarTextBlockLeft"
+						Grid.Column="0"
+						Text=""
+						TextTrimming="CharacterEllipsis"/>
+
+					<TextBlock
+						x:Name="StatusBarTextBlockRight"
+						Grid.Column="1"
+						Text=""/>
+				</Grid>
+
 			</Border>
 		</Grid>
 	</DockPanel>
