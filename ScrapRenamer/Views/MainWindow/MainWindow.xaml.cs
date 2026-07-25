@@ -3,6 +3,7 @@ using System.IO;
 using System.Resources;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -21,7 +22,7 @@ public partial class MainWindow : Window {
 		false;
 #endif
 
-	LineContainer _lineContainer = new();
+	LineContainer _lineContainer;
 	System.Action<(string text, System.Exception? ex)>? _onTextGet;
 
 
@@ -34,12 +35,16 @@ public partial class MainWindow : Window {
 		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
 		Settings.Instance.Load();
 
+		_lineContainer = new(Settings.Instance.renameMode.Value);
+
+		RenameModeComboBox.ItemsSource = new[] {
+			RenameMode.FullPath,
+			RenameMode.Name,
+		};
+		RenameModeComboBox.SelectedItem = Settings.Instance.renameMode.Value;
+		RenameModeComboBox.SelectionChanged += OnRenameModeChanged;
 
 
-		var resMgr = new ResourceManager(
-			"ScrapRenamer.Localization.Strings",
-			typeof(App).Assembly);
-		Debug.Print($"GetString: {resMgr.GetString("AppName")}");
 	}
 
 	void UpdateTheme() {
@@ -191,7 +196,7 @@ public partial class MainWindow : Window {
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
-		_lineContainer = new LineContainer();
+		_lineContainer = new LineContainer(Settings.Instance.renameMode.Value);
 		EditorView_Clear();
 		UpdateVisibility(false);
 	}
@@ -234,7 +239,7 @@ public partial class MainWindow : Window {
 		_lineContainer.Apply();
 		var lines = _lineContainer.Lines.
 			Select((elem, i) => new {index = i, elem}).
-			Where((elem) => elem.elem.processed);
+			Where((elem) => elem.elem.processed).ToList();
 		var errorLines = lines.Where(i => "" != i.elem.error).ToList();
 		var successLines = lines.Where(i => "" == i.elem.error).ToList();
 		if (0 < errorLines.Count) {
@@ -244,11 +249,10 @@ public partial class MainWindow : Window {
 				{
 					var p = CreateParagraph();
 					p.Foreground = Brushes.Red;
-					var s = $"⛔失敗 {errorLines.Count} 件";
+					var s = $"⛔{errorLines.Count} 件のリネームに失敗しました";
 					p.Inlines.Add(new Run(s));
 					doc.Blocks.Add(p);
 				}
-
 
 				foreach (var line in errorLines) {
 					AddParagraph(doc, $"行 {line.index}: ⛔失敗 {System.IO.Path.GetFileName(line.elem.origPath)} → {line.elem.editedLine}");
@@ -259,17 +263,17 @@ public partial class MainWindow : Window {
 				AddParagraph(doc, "");
 			}
 
-			{
-				var p = CreateParagraph();
-				var s = $"✅成功 {successLines.Count} 件";
-				p.Inlines.Add(new Run(s));
-				doc.Blocks.Add(p);
-			}
+			// {
+			// 	var p = CreateParagraph();
+			// 	var s = $"✅成功 {successLines.Count} 件";
+			// 	p.Inlines.Add(new Run(s));
+			// 	doc.Blocks.Add(p);
+			// }
 
-			foreach (var line in successLines) {
+			// foreach (var line in successLines) {
 
-				AddParagraph(doc, $"行 {line.index}: ✅成功 {System.IO.Path.GetFileName(line.elem.origPath)} → {line.elem.editedLine}");
-			}
+			// 	AddParagraph(doc, $"行 {line.index}: ✅成功 {System.IO.Path.GetFileName(line.elem.origPath)} → {line.elem.editedLine}");
+			// }
 
 			AddParagraph(doc, "");
 
@@ -318,6 +322,18 @@ public partial class MainWindow : Window {
 
 	void OnThemeChanged(ThemeMode themeMode) {
 		UpdateTheme();
+	}
+
+	async void OnRenameModeChanged(object sender, SelectionChangedEventArgs e) {
+		if (RenameModeComboBox.SelectedItem is not RenameMode mode) return;
+
+		if (null == EditorView.CoreWebView2) {
+			_lineContainer.SetMode(mode);
+		} else {
+			await SyncTextFromEditorAsync();
+			_lineContainer.SetMode(mode);
+			EditorView_SetLines();
+		}
 	}
 
 	async void OnExecuteClicked(object sender, RoutedEventArgs e) {

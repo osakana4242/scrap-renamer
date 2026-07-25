@@ -12,6 +12,7 @@ public class Settings {
 	public ObservableProperty<ThemeMode> themeProp = new(ThemeMode.System);
 	public ObservableProperty<string> fontFamilyProp = new("MS ゴシック");
 	public ObservableProperty<int> fontSizeProp = new(14);
+	public ObservableProperty<RenameMode> renameMode = new(RenameMode.Name);
 
 
 	bool _isInLoad = false;
@@ -24,6 +25,7 @@ public class Settings {
 		themeProp.OnChanged += v => OnChanged();
 		fontFamilyProp.OnChanged += v => OnChanged();
 		fontSizeProp.OnChanged += v => OnChanged();
+		renameMode.OnChanged += v => OnChanged();
 	}
 
 	public void Load() {
@@ -47,6 +49,7 @@ public class Settings {
 					ThemeMode.System;
 			fontFamilyProp.Value = data.fontFamily;
 			fontSizeProp.Value = data.fontSize;
+			renameMode.Value = (RenameMode)data.renameMode;
 		} catch (Exception ex) {
 			Debug.Print(ex.ToString());
 		}
@@ -65,6 +68,7 @@ public class Settings {
 				theme = themeProp.Value.Value,
 				fontFamily = fontFamilyProp.Value,
 				fontSize = fontSizeProp.Value,
+				renameMode = (int)renameMode.Value,
 			};
 			var json = JsonSerializer.Serialize(
 				data,
@@ -94,6 +98,7 @@ public class Settings {
 		public string theme { get; set; } = ThemeMode.System.Value;
 		public string fontFamily { get; set; } = "";
 		public int fontSize { get; set; }
+		public int renameMode { get; set; }
 	}
 
 	public class ObservableProperty<T> {

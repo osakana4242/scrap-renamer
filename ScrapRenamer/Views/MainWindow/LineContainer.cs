@@ -4,8 +4,28 @@ using System.IO;
 namespace ScrapRenamer;
 
 class LineContainer {
-	Mode _mode = Mode.Name;
+	RenameMode _mode;
 	public List<Line> Lines { get; set; } = new();
+
+	public LineContainer(RenameMode mode) {
+		_mode = mode;
+	}
+
+	public void SetMode(RenameMode mode) {
+		if (_mode == mode) return;
+		foreach (var line in Lines) {
+			var p = line.GetNextPath(RenameMode.FullPath);
+			switch (_mode) {
+			case RenameMode.Name:
+				line.editedLine = Path.GetFileName(p);
+				break;
+			case RenameMode.FullPath:
+				line.editedLine = p;
+				break;
+			}
+		}
+		_mode = mode;
+	}
 
 	public bool Add(Line line) {
 		if (null != Lines.Find(l => l.origPath == line.origPath)) {
@@ -13,10 +33,10 @@ class LineContainer {
 		}
 
 		switch (_mode) {
-		case Mode.Name:
+		case RenameMode.Name:
 			line.editedLine = Path.GetFileName(line.origPath);
 			break;
-		case Mode.FullPath:
+		case RenameMode.FullPath:
 			line.editedLine = line.origPath;
 			break;
 		}
@@ -99,16 +119,7 @@ class LineContainer {
 
 		Line GetLine(WorkItem item) => Lines[item.index];
 
-		string GetNextPath(Line line) {
-			switch (_owner._mode) {
-			case Mode.Name:
-				return Path.Combine(Path.GetDirectoryName(line.origPath) ?? "", line.editedLine);
-			case Mode.FullPath:
-				return line.editedLine;
-			default:
-				throw new System.NotSupportedException($"{_owner._mode}");
-			}
-		}
+		string GetNextPath(Line line) => line.GetNextPath(_owner._mode);
 
 		void BuildWorkList() {
 			// エラーをリセット
@@ -220,7 +231,7 @@ class LineContainer {
 				} else {
 					Debug.WriteLine($"Move, '{item.before}' to '{item.after}'");
 
-					if (_owner._mode == Mode.FullPath) {
+					if (_owner._mode == RenameMode.FullPath) {
 						var parent = Path.GetDirectoryName(item.after);
 						if (parent != null) {
 							Directory.CreateDirectory(parent);

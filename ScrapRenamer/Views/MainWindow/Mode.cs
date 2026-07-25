@@ -1,6 +1,6 @@
 namespace ScrapRenamer;
 
-enum Mode {
+public enum RenameMode {
 	Name,
 	FullPath,
 }
