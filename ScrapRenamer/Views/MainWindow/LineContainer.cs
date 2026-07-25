@@ -184,7 +184,7 @@ class LineContainer {
 						item1 = item2;
 					}
 				}
-				
+
 				var last = cycleList[cycleList.Count - 1];
 				cycleList.RemoveAt(cycleList.Count - 1);
 
@@ -219,11 +219,28 @@ class LineContainer {
 					line.error = preError;
 				} else {
 					Debug.WriteLine($"Move, '{item.before}' to '{item.after}'");
+
+					if (_owner._mode == Mode.FullPath) {
+						var parent = Path.GetDirectoryName(item.after);
+						if (parent != null) {
+							Directory.CreateDirectory(parent);
+						}
+					}
+
+					var protectedDirectory = GetProtectedDirectory(item.before, item.after);
+
 					if (line.isDirectory) {
 						System.IO.Directory.Move(item.before, item.after);
+						DeleteEmptyDirectories(
+							item.before,
+							protectedDirectory);
 					} else {
 						System.IO.File.Move(item.before, item.after);
+						DeleteEmptyDirectories(
+							Path.GetDirectoryName(item.before),
+							protectedDirectory);
 					}
+
 					line.origPath = item.after;
 				}
 			} catch (System.Exception ex) {
@@ -234,6 +251,61 @@ class LineContainer {
 				RemoveWorkItem(item);
 			}
 		}
+
+		// 空ディレクトリを再帰的に削除する。
+		// ただし protectedDirectory は削除しない。
+		static void DeleteEmptyDirectories(
+			string? directory,
+			string protectedDirectory) {
+			while (!string.IsNullOrEmpty(directory)) {
+				try {
+					if (string.Equals(
+							directory,
+							protectedDirectory,
+							StringComparison.OrdinalIgnoreCase)) {
+
+						break;
+					}
+
+					if (Directory.EnumerateFileSystemEntries(directory).Any()) {
+						break;
+					}
+
+					Directory.Delete(directory);
+
+					directory = Path.GetDirectoryName(directory);
+				} catch (System.Exception ex) {
+					Debug.Print($"ex: {ex}, directory: {directory}");
+				}
+			}
+		}
+
+		static string GetProtectedDirectory(string before, string after) {
+			var beforeDir = Path.GetDirectoryName(before)!;
+			var afterDir = Path.GetDirectoryName(after)!;
+
+			var beforeParts = beforeDir.Split('\\');
+			var afterParts = afterDir.Split('\\');
+
+			int count = Math.Min(beforeParts.Length, afterParts.Length);
+
+			int sameCount = 0;
+			while (sameCount < count &&
+				string.Equals(
+					beforeParts[sameCount],
+					afterParts[sameCount],
+					StringComparison.OrdinalIgnoreCase)) {
+
+				sameCount++;
+			}
+
+			if (sameCount == 0) {
+				return "";
+			}
+
+			return string.Join('\\', beforeParts[..sameCount]);
+		}
+
 
 		WorkItem? FindChainFirst() {
 
