@@ -12,6 +12,7 @@ let scrapRenamer = {
 };
 
 function debugLog(text) {
+	if (!window.scrapRenamer.isDebug) return;
 	console.log(text);
 	window.chrome.webview.postMessage({
 		type: "debugLog",
@@ -22,6 +23,7 @@ function debugLog(text) {
 require([
 	"vs/editor/editor.main"
 ], function () {
+	debugLog("isDebug: " + window.scrapRenamer.isDebug);
 	scrapRenamer.editor = monaco.editor.create(
 		document.getElementById("container"),
 		{
@@ -100,9 +102,7 @@ require([
 		for (var n = firstVisibleLine; n <= endVisibleLine; n++) {
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
 				const line = scrapRenamer.lines[n - 1];
-				const data = line.error != "" ?
-					line.error + ", " + line.origPath :
-					line.origPath;
+				const data = getAfterDecoration(line);
 				debugLog("Setting data-path for decoration", i, line.origPath);
 				el.setAttribute("data-path", data);
 			});
@@ -130,10 +130,7 @@ require([
 			document.querySelectorAll(".path-decoration-l" + n).forEach((el, i) => {
 				//debugLog("Setting data-path for decoration", i, scrapRenamer.lines[n - 1].origPath);
 				const line = scrapRenamer.lines[n - 1];
-				const data = line.error != "" ?
-					line.error + ", " + line.origPath:
-					line.origPath;
-				el.setAttribute("data-path", data);
+				el.setAttribute("data-path", getAfterDecoration(line));
 			});
 		});
 
@@ -145,23 +142,25 @@ require([
 		});
 	});
 
-	// window.addEventListener("drop", e => {
-	// 	e.preventDefault();
-
-	// 	const files = Array.from(e.dataTransfer.files);
-	// 	// https://developer.mozilla.org/ja/docs/Web/API/File
-	// 	const paths = files.map(f => f.name); // ← WebView2なら取れる
-
-	// 	window.chrome.webview.postMessage({
-	// 		type: "drop",
-	// 		paths: paths
-	// 	});
-	// });
-
 	window.chrome.webview.postMessage({
 		type: "editorLoaded",
 	});
 });
+
+// 行末に表示する情報
+function getAfterDecoration(line) {
+	var s = "";
+	if (line.error != "") {
+		s = line.error;
+	}
+	if (window.scrapRenamer.showFullPathInAfter) {
+		if (s != "") {
+			s += ", ";
+		}
+		s += line.origPath;
+	}
+	return s;
+}
 
 // カーソルが decoration まで移動してしまう問題がある
 function refreshDecorations1() {
@@ -185,7 +184,7 @@ function refreshDecorations1() {
 			),
 			options: {
 				after: {
-					content: "|   " + scrapRenamer.lines[i].origPath,
+					content: "|   " + getAfterDecoration(scrapRenamer.lines[i]),
 					inlineClassName: "path-decoration"
 				},
 				cursorStops: monaco.editor.InjectedTextCursorStops.BEFORE
@@ -237,25 +236,11 @@ function refreshDecorations2() {
 					: isError ? "error-line" : "",
 			}
 		});
-		// decorations.push({
-		// 	range: new monaco.Range(
-		// 		i + 1,
-		// 		1,
-		// 		i + 1,
-		// 		1
-		// 	),
-		// 	options: {
-		// 		glyphMarginClassName: line.isFolder ? "folder-glyph" : "file-glyph",
-		// 	}
-		// });
 	}
 
 	if (scrapRenamer.pathDecorations) {
 		scrapRenamer.pathDecorations.clear();
 	}
-
-	// scrapRenamer.pathDecorations =
-	// 	scrapRenamer.editor.createDecorationsCollection(decorations);
 
 	scrapRenamer.pathDecorations =
 		scrapRenamer.editor.createDecorationsCollection(decorations);
@@ -268,10 +253,7 @@ function refreshDecorations2() {
 	document.querySelectorAll(".path-decoration").forEach((el, i) => {
 		const line = scrapRenamer.lines[firstVisibleLine - 1 + i];
 		debugLog("Setting data-path for decoration", i, line.origPath);
-		const data = line.error != "" ?
-			line.error + ", " + line.origPath:
-			line.origPath;
-		el.setAttribute("data-path", data);
+		el.setAttribute("data-path", getAfterDecoration(line));
 	});
 
 }
@@ -289,6 +271,11 @@ window.chrome.webview.addEventListener("message", e => {
 			break;
 		case "setTheme":
 			monaco.editor.setTheme(e.data.theme);
+			break;
+		case "setSettings":
+			for (let key in e.data.settings) {
+				scrapRenamer.settings[key] = e.data.settings[key];
+			}
 			break;
 		case "getText":
 			window.chrome.webview.postMessage({
