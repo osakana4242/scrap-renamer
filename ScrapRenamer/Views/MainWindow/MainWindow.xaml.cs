@@ -7,7 +7,6 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
-using Microsoft.Win32;
 
 namespace ScrapRenamer;
 
@@ -42,10 +41,10 @@ public partial class MainWindow : Window {
 		var isDark =
 			Settings.Instance.themeProp.Value == ThemeMode.Dark ||
 			Settings.Instance.themeProp.Value == ThemeMode.System &&
-			Env.IsDarkMode();
+			Platform.Windows.Theme.IsDarkMode();
 
 
-		Dwm.SetWindowDarkMode(this, isDark);
+		Platform.Windows.Dwm.SetWindowDarkMode(this, isDark);
 		ThemeMode = Settings.Instance.themeProp.Value;
 
 		if (null == EditorView?.CoreWebView2) return;
@@ -89,7 +88,7 @@ public partial class MainWindow : Window {
 			AppContext.BaseDirectory,
 			"Editor",
 			"index.html");
-		EditorView.DefaultBackgroundColor = Env.IsDarkMode() ?
+		EditorView.DefaultBackgroundColor = Platform.Windows.Theme.IsDarkMode() ?
 			System.Drawing.Color.Black :
 			System.Drawing.Color.White;
 
@@ -130,7 +129,7 @@ public partial class MainWindow : Window {
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
 			UpdateTheme();
-			SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 			break;
 		case "dragover":
 			Debug.WriteLine("dragover");
@@ -149,7 +148,7 @@ public partial class MainWindow : Window {
 		object sender,
 		RoutedEventArgs e)
 	{
-		var dialog = new OpenFileDialog {
+		var dialog = new Microsoft.Win32.OpenFileDialog {
 			Title = "ファイルを選択",
 			Multiselect = true,
 			CheckFileExists = true
@@ -188,9 +187,9 @@ public partial class MainWindow : Window {
 
 	void OnUserPreferenceChanged(
 		object? sender,
-		UserPreferenceChangedEventArgs e) {
+		Microsoft.Win32.UserPreferenceChangedEventArgs e) {
 		Debug.WriteLine($"UserPreferenceChanged: {e.Category}");
-		if (e.Category == UserPreferenceCategory.General) {
+		if (e.Category == Microsoft.Win32.UserPreferenceCategory.General) {
 			UpdateTheme();
 		}
 	}
@@ -291,43 +290,47 @@ public partial class MainWindow : Window {
 			Where((elem) => elem.elem.processed);
 		var errorLines = lines.Where(i => "" != i.elem.error).ToList();
 		var successLines = lines.Where(i => "" == i.elem.error).ToList();
-		var doc = new FlowDocument();
-
 		if (0 < errorLines.Count) {
+			var doc = new FlowDocument();
+
+			if (0 < errorLines.Count) {
+				{
+					var p = CreateParagraph();
+					p.Foreground = Brushes.Red;
+					var s = $"⛔失敗 {errorLines.Count} 件";
+					p.Inlines.Add(new Run(s));
+					doc.Blocks.Add(p);
+				}
+
+
+				foreach (var line in errorLines) {
+					AddParagraph(doc, $"行 {line.index}: ⛔失敗 {System.IO.Path.GetFileName(line.elem.origPath)} → {line.elem.editedLine}");
+					AddParagraph(doc, $"フルパス: {line.elem.origPath}");
+					AddParagraph(doc, $"理由: {line.elem.error}");
+					AddParagraph(doc, $"");
+				}
+				AddParagraph(doc, "");
+			}
+
 			{
 				var p = CreateParagraph();
-				p.Foreground = Brushes.Red;
-				var s = $"⛔失敗 {errorLines.Count} 件";
+				var s = $"✅成功 {successLines.Count} 件";
 				p.Inlines.Add(new Run(s));
 				doc.Blocks.Add(p);
 			}
 
+			foreach (var line in successLines) {
 
-			foreach (var line in errorLines) {
-				AddParagraph(doc, $"行 {line.index}: ⛔失敗 {line.elem.origPath} → {line.elem.editedLine}");
-				AddParagraph(doc, $"({line.elem.error})");
-				AddParagraph(doc, $"");
+				AddParagraph(doc, $"行 {line.index}: ✅成功 {System.IO.Path.GetFileName(line.elem.origPath)} → {line.elem.editedLine}");
 			}
+
 			AddParagraph(doc, "");
+
+			var window = new ResultWindow(doc) {
+				Owner = this
+			};
+			window.ShowDialog();
 		}
-
-		{
-			var p = CreateParagraph();
-			var s = $"✅成功 {successLines.Count} 件";
-			p.Inlines.Add(new Run(s));
-			doc.Blocks.Add(p);
-		}
-
-		foreach (var line in successLines) {
-			AddParagraph(doc, $"行 {line.index}: ✅成功 {line.elem.origPath} → {line.elem.editedLine}");
-		}
-
-		AddParagraph(doc, "");
-
-		var window = new ResultWindow(doc) {
-			Owner = this
-		};
-		window.ShowDialog();
 		Editor_SetLines();
 
 	}

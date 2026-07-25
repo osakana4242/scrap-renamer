@@ -2,15 +2,11 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Platform.Windows;
 
-static class Dwm {
-	[DllImport("dwmapi.dll")]
-	static extern int DwmSetWindowAttribute(
-		IntPtr hwnd,
-		int dwAttribute,
-		ref int pvAttribute,
-		int cbAttribute);
+// ウィンドウのタイトルバーの配色を設定する
+// Dwm: Desktop Window Manager
+public static class Dwm {
 
 	const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
@@ -24,4 +20,11 @@ static class Dwm {
 			ref enabled,
 			sizeof(int));
 	}
+
+	[DllImport("dwmapi.dll")]
+	static extern int DwmSetWindowAttribute(
+		IntPtr hwnd,
+		int dwAttribute,
+		ref int pvAttribute,
+		int cbAttribute);
 }
