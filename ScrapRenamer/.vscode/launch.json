@@ -1,0 +1,27 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Debug",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-debug",
+			"program": "${workspaceFolder}/bin/Debug/net10.0-windows/ScrapRenamer.exe"
+		},
+		{
+			"name": "Release",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build-release",
+			"program": "${workspaceFolder}/bin/Release/net10.0-windows/ScrapRenamer.exe"
+		},
+		{
+			"name": ".NET Core Attach",
+			"type": "coreclr",
+			"request": "attach"
+		},
+	],
+	// "env": {
+	// 	"WEBVIEW2_USER_DATA_FOLDER": "${workspaceFolder}/.webview2"
+	// }
+}
