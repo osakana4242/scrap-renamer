@@ -180,7 +180,7 @@ public partial class MainWindow : Window {
 
 		foreach (var file in files) {
 			Debug.WriteLine(file);
-			var line = new Line(file);
+			var line = new Line(file, Settings.Instance.renameMode.Value);
 			if (!_lineContainer.Add(line))
 				continue;
 			lines.Add(line);

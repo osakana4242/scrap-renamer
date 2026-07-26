@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 
 namespace ScrapRenamer;
@@ -12,17 +12,8 @@ class LineContainer {
 	}
 
 	public void SetMode(RenameMode mode) {
-		if (_mode == mode) return;
 		foreach (var line in Lines) {
-			var p = line.GetNextPath(RenameMode.FullPath);
-			switch (_mode) {
-			case RenameMode.Name:
-				line.editedLine = Path.GetFileName(p);
-				break;
-			case RenameMode.FullPath:
-				line.editedLine = p;
-				break;
-			}
+			line.Mode = mode;
 		}
 		_mode = mode;
 	}
@@ -31,16 +22,6 @@ class LineContainer {
 		if (null != Lines.Find(l => l.origPath == line.origPath)) {
 			return false;
 		}
-
-		switch (_mode) {
-		case RenameMode.Name:
-			line.editedLine = Path.GetFileName(line.origPath);
-			break;
-		case RenameMode.FullPath:
-			line.editedLine = line.origPath;
-			break;
-		}
-
 		Lines.Add(line);
 		return true;
 	}
@@ -119,7 +100,7 @@ class LineContainer {
 
 		Line GetLine(WorkItem item) => Lines[item.index];
 
-		string GetNextPath(Line line) => line.GetNextPath(_owner._mode);
+		string GetNextPath(Line line) => line.GetNextPath();
 
 		void BuildWorkList() {
 			// エラーをリセット
@@ -231,7 +212,7 @@ class LineContainer {
 				} else {
 					Debug.WriteLine($"Move, '{item.before}' to '{item.after}'");
 
-					if (_owner._mode == RenameMode.FullPath) {
+					if (line.Mode == RenameMode.FullPath) {
 						var parent = Path.GetDirectoryName(item.after);
 						if (parent != null) {
 							Directory.CreateDirectory(parent);
