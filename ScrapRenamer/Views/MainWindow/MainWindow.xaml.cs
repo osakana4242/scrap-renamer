@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Resources;
 using System.Text.Json;
@@ -38,8 +38,9 @@ public partial class MainWindow : Window {
 		_lineContainer = new(Settings.Instance.renameMode.Value);
 
 		RenameModeComboBox.ItemsSource = new[] {
-			RenameMode.FullPath,
 			RenameMode.Name,
+			RenameMode.NameWithoutExtention,
+			RenameMode.FullPath,
 		};
 		RenameModeComboBox.SelectedItem = Settings.Instance.renameMode.Value;
 		RenameModeComboBox.SelectionChanged += OnRenameModeChanged;

@@ -17,11 +17,14 @@ class Line {
 		set {
 			if (_mode == value) return;
 			_mode = value;
-			
+
 			var p = GetNextPath();
 			switch (_mode) {
 			case RenameMode.Name:
 				editedLine = Path.GetFileName(origPath);
+				break;
+			case RenameMode.NameWithoutExtention:
+				editedLine = Path.GetFileNameWithoutExtension(origPath);
 				break;
 			case RenameMode.FullPath:
 				editedLine = origPath;
@@ -49,6 +52,9 @@ class Line {
 		case RenameMode.Name:
 			editedLine = Path.GetFileName(origPath);
 			break;
+		case RenameMode.NameWithoutExtention:
+			editedLine = Path.GetFileNameWithoutExtension(origPath);
+			break;
 		case RenameMode.FullPath:
 			editedLine = origPath;
 			break;
@@ -58,24 +64,18 @@ class Line {
 	public string GetNextPath() {
 		switch (_mode) {
 		case RenameMode.Name:
-			return Path.Combine(Path.GetDirectoryName(origPath) ?? "", editedLine);
+			return Path.Combine(
+				Path.GetDirectoryName(origPath) ?? "",
+				editedLine);
+		case RenameMode.NameWithoutExtention:
+			return Path.Combine(
+				Path.GetDirectoryName(origPath) ?? "",
+				editedLine) +
+				Path.GetExtension(origPath);
 		case RenameMode.FullPath:
 			return editedLine;
 		default:
 			throw new System.NotSupportedException($"{_mode}");
 		}
 	}
-
-	public string GetNextPath(RenameMode mode) {
-		var p = GetNextPath();
-		switch (mode) {
-		case RenameMode.Name:
-			return Path.Combine(Path.GetDirectoryName(origPath) ?? "", editedLine);
-		case RenameMode.FullPath:
-			return editedLine;
-		default:
-			throw new System.NotSupportedException($"{mode}");
-		}
-	}
-
 }
