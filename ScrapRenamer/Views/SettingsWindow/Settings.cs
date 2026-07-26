@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -12,7 +12,7 @@ public class Settings {
 	public ObservableProperty<ThemeMode> themeProp = new(ThemeMode.System);
 	public ObservableProperty<string> fontFamilyProp = new("MS ゴシック");
 	public ObservableProperty<int> fontSizeProp = new(14);
-	public ObservableProperty<RenameMode> renameMode = new(RenameMode.Name);
+	public ObservableProperty<RenameMode> renameMode = new(RenameMode.FileName);
 
 
 	bool _isInLoad = false;

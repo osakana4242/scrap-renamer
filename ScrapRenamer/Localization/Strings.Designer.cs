@@ -118,5 +118,29 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string RenameModeComboBox_Label {
+            get {
+                return ResourceManager.GetString("RenameModeComboBox_Label", resourceCulture);
+            }
+        }
+
+        public static string RenameModeItems_FileName {
+            get {
+                return ResourceManager.GetString("RenameModeItems_FileName", resourceCulture);
+            }
+        }
+
+        public static string RenameModeItems_FileNameWithoutExtention {
+            get {
+                return ResourceManager.GetString("RenameModeItems_FileNameWithoutExtention", resourceCulture);
+            }
+        }
+
+        public static string RenameModeItems_FullPath {
+            get {
+                return ResourceManager.GetString("RenameModeItems_FullPath", resourceCulture);
+            }
+        }
+
     }
 }

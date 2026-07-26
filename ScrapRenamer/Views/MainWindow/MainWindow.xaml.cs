@@ -37,12 +37,20 @@ public partial class MainWindow : Window {
 
 		_lineContainer = new(Settings.Instance.renameMode.Value);
 
-		RenameModeComboBox.ItemsSource = new[] {
-			RenameMode.Name,
-			RenameMode.NameWithoutExtention,
-			RenameMode.FullPath,
-		};
-		RenameModeComboBox.SelectedItem = Settings.Instance.renameMode.Value;
+
+		RenameModeComboBox.ItemsSource =  new[] {
+				RenameMode.FileName,
+				RenameMode.FileNameWithoutExtention,
+				RenameMode.FullPath,
+			}.
+			Select(item => new {
+				Value = item,
+				Text = item.GetDisplayName(),
+			}).
+			ToArray();
+		RenameModeComboBox.SelectedValue = Settings.Instance.renameMode.Value;
+		RenameModeComboBox.DisplayMemberPath = "Text";
+		RenameModeComboBox.SelectedValuePath = "Value";
 		RenameModeComboBox.SelectionChanged += OnRenameModeChanged;
 
 
@@ -326,7 +334,7 @@ public partial class MainWindow : Window {
 	}
 
 	async void OnRenameModeChanged(object sender, SelectionChangedEventArgs e) {
-		if (RenameModeComboBox.SelectedItem is not RenameMode mode) return;
+		if (RenameModeComboBox.SelectedValue is not RenameMode mode) return;
 
 		Settings.Instance.renameMode.Value = mode;
 

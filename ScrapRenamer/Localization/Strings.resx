@@ -96,4 +96,20 @@
     <value>ここにファイルをドロップ</value>
   </data>
 
+  <data name="RenameModeComboBox_Label" xml:space="preserve">
+    <value>モード</value>
+  </data>
+
+  <data name="RenameModeItems_FileName" xml:space="preserve">
+    <value>ファイル名</value>
+  </data>
+
+  <data name="RenameModeItems_FileNameWithoutExtention" xml:space="preserve">
+    <value>ファイル名(拡張子なし)</value>
+  </data>
+
+  <data name="RenameModeItems_FullPath" xml:space="preserve">
+    <value>フルパス</value>
+  </data>
+
 </root>
