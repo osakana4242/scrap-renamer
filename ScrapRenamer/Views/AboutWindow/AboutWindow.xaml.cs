@@ -1,6 +1,7 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Navigation;
 
 namespace ScrapRenamer;
@@ -10,7 +11,9 @@ public partial class AboutWindow : Window {
 		InitializeComponent();
 		ThemeMode = Settings.Instance.themeProp.Value;
 
-		VersionText.Text = $"バージョン {Version}";
+		VersionText.Text = string.Format(
+			Localization.Strings.Strings.AboutWindow_VersionFormat,
+			Version);
 	}
 
 	string Version =>
@@ -38,10 +41,13 @@ public partial class AboutWindow : Window {
 	private void OnRequestNavigate(
 		object sender,
 		RequestNavigateEventArgs e) {
-		Process.Start(new ProcessStartInfo {
-			FileName = e.Uri.AbsoluteUri,
-			UseShellExecute = true,
-		});
+
+		if (sender is Hyperlink hyperlink &&
+				hyperlink.Inlines.FirstInline is Run run) {
+			Process.Start(new ProcessStartInfo(run.Text) {
+				UseShellExecute = true,
+			});
+		}
 
 		e.Handled = true;
 	}

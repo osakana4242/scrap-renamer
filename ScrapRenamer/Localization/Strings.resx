@@ -112,4 +112,28 @@
     <value>フルパス</value>
   </data>
 
+  <data name="AboutWindow_Title" xml:space="preserve">
+    <value>このアプリについて</value>
+  </data>
+
+  <data name="AboutWindow_Copyright" xml:space="preserve">
+    <value>Copyright © 2026 三川おさかな</value>
+  </data>
+
+  <data name="AboutWindow_RepositoryURL" xml:space="preserve">
+    <value>https://github.com/osakana4242/scrap-renamer</value>
+  </data>
+
+  <data name="AboutWindow_OKButton" xml:space="preserve">
+    <value>OK</value>
+  </data>
+
+  <data name="AboutWindow_CopyInfoButton" xml:space="preserve">
+    <value>情報をコピー</value>
+  </data>
+
+  <data name="AboutWindow_VersionFormat" xml:space="preserve">
+    <value>バージョン {0}</value>
+  </data>
+
 </root>

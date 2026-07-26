@@ -15,6 +15,7 @@
 
 	<ItemGroup>
 		<Resource Include="AppIcon\AppIcon.ico" />
+		<Resource Include="AppIcon\AppIcon_x32.png" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
 		<Content Include="Editor\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

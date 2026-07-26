@@ -34,6 +34,42 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string AboutWindow_CopyInfoButton {
+            get {
+                return ResourceManager.GetString("AboutWindow_CopyInfoButton", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_Copyright {
+            get {
+                return ResourceManager.GetString("AboutWindow_Copyright", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_OKButton {
+            get {
+                return ResourceManager.GetString("AboutWindow_OKButton", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_RepositoryURL {
+            get {
+                return ResourceManager.GetString("AboutWindow_RepositoryURL", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_Title {
+            get {
+                return ResourceManager.GetString("AboutWindow_Title", resourceCulture);
+            }
+        }
+
+        public static string AboutWindow_VersionFormat {
+            get {
+                return ResourceManager.GetString("AboutWindow_VersionFormat", resourceCulture);
+            }
+        }
+
         public static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
