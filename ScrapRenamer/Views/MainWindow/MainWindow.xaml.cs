@@ -228,7 +228,7 @@ public partial class MainWindow : Window {
 			text.Split('\n').ToArray();
 
 		for (int i = 0; i < editedLines.Length; i++) {
-			if (i >= _lineContainer.Lines.Count)
+			if (_lineContainer.Lines.Count <= i)
 				break;
 			var line = _lineContainer.Lines[i];
 			line.editedLine = editedLines[i];
@@ -327,6 +327,8 @@ public partial class MainWindow : Window {
 
 	async void OnRenameModeChanged(object sender, SelectionChangedEventArgs e) {
 		if (RenameModeComboBox.SelectedItem is not RenameMode mode) return;
+
+		Settings.Instance.renameMode.Value = mode;
 
 		if (null == EditorView.CoreWebView2) {
 			_lineContainer.SetMode(mode);

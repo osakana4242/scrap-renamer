@@ -16,18 +16,20 @@ class Line {
 		get => _mode;
 		set {
 			if (_mode == value) return;
+
+			var nextFullPath = GetNextPath();
+
 			_mode = value;
 
-			var p = GetNextPath();
 			switch (_mode) {
 			case RenameMode.Name:
-				editedLine = Path.GetFileName(origPath);
+				editedLine = Path.GetFileName(nextFullPath);
 				break;
 			case RenameMode.NameWithoutExtention:
-				editedLine = Path.GetFileNameWithoutExtension(origPath);
+				editedLine = Path.GetFileNameWithoutExtension(nextFullPath);
 				break;
 			case RenameMode.FullPath:
-				editedLine = origPath;
+				editedLine = nextFullPath;
 				break;
 			}
 		}
