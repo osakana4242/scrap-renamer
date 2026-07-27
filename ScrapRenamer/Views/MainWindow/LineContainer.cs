@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using ScrapRenamer.View;
 
 namespace ScrapRenamer;
 
@@ -227,7 +228,26 @@ class LineContainer {
 							item.before,
 							protectedDirectory);
 					} else {
-						System.IO.File.Move(item.before, item.after);
+
+
+						bool overwrite = false;
+
+						if (System.IO.File.Exists(item.after)) {
+							var window = new OverwriteWindow();
+							window.ShowDialog();
+							switch (window.Result) {
+							case OverwriteWindowResult.Skip:
+								line.error = $"同名のファイルが存在";
+								return;
+							case OverwriteWindowResult.Overwrite:
+								overwrite = true;
+								break;
+							case OverwriteWindowResult.Cancel:
+								throw new System.OperationCanceledException();
+							}
+						}
+
+						System.IO.File.Move(item.before, item.after, overwrite);
 						DeleteEmptyDirectories(
 							Path.GetDirectoryName(item.before),
 							protectedDirectory);
