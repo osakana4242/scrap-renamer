@@ -76,6 +76,7 @@ class LineContainer {
 		readonly Dictionary<string, WorkItem> _afterPathDict = new();
 		readonly LineContainer _owner;
 
+		OverwriteWindowResult? _lastOverwriteWindowResult;
 
 		IReadOnlyList<Line> Lines => _owner.Lines;
 
@@ -85,12 +86,16 @@ class LineContainer {
 		}
 
 		public void Apply() {
-			Debug.WriteLine("Apply");
-			BuildWorkList();
-			// Chain を片付ける
-			ProcessChain();
-			// 残りは Cycle
-			ProcessCycle();
+			try {
+				Debug.WriteLine("Apply");
+				BuildWorkList();
+				// Chain を片付ける
+				ProcessChain();
+				// 残りは Cycle
+				ProcessCycle();
+			} catch (System.OperationCanceledException ex) {
+				Debug.Print($"canceled, ex: {ex}");
+			}
 		}
 
 		void RemoveWorkItem(WorkItem item) {
@@ -233,15 +238,28 @@ class LineContainer {
 						bool overwrite = false;
 
 						if (System.IO.File.Exists(item.after)) {
-							var window = new OverwriteWindow();
-							window.ShowDialog();
-							switch (window.Result) {
+							switch (_lastOverwriteWindowResult) {
+							case OverwriteWindowResult.SkipAll:
+							case OverwriteWindowResult.OverwriteAll:
+								// 前回の結果を流用する
+								break;
+							default:
+								// ユーザーに対応方法を確認する
+								var window = new OverwriteWindow();
+								window.ShowDialog();
+								_lastOverwriteWindowResult = window.Result;
+								break;
+							}
+
+							switch (_lastOverwriteWindowResult) {
 							case OverwriteWindowResult.Skip:
+							case OverwriteWindowResult.SkipAll:
 								line.error = $"同名のファイルが存在";
 								return;
 							case OverwriteWindowResult.Overwrite:
+							case OverwriteWindowResult.OverwriteAll:
 								overwrite = true;
-								break;
+								return;
 							case OverwriteWindowResult.Cancel:
 								throw new System.OperationCanceledException();
 							}
@@ -255,6 +273,8 @@ class LineContainer {
 
 					line.origPath = item.after;
 				}
+			} catch (System.OperationCanceledException) {
+				throw;
 			} catch (System.Exception ex) {
 				line.error = $"{ex.Message}";
 				preError = $"{line.origPath} のリネーム失敗に引きずられて失敗";

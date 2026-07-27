@@ -4,54 +4,83 @@
 		xmlns:res="clr-namespace:ScrapRenamer.Localization.Strings"
 		Title="ファイルの競合"
 		Width="420"
-		Height="190"
+		MinWidth="420"
+		SizeToContent="Height"
 		ResizeMode="NoResize"
 		WindowStartupLocation="CenterOwner"
 		ShowInTaskbar="False">
 
 	<Grid Margin="16">
+
 		<Grid.RowDefinitions>
-			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
 		<TextBlock
+			Grid.Row="0"
 			TextWrapping="Wrap"
 			Text="リネーム先に同名のファイルが存在します。&#10;&#10;このファイルを上書きしますか？"/>
 
-		<CheckBox
-			x:Name="ApplyToAllCheckBox"
+		<Grid
 			Grid.Row="1"
-			Margin="0 16 0 0"
-			Content="以降も同様の処理を行う"/>
-
-		<StackPanel
-			Grid.Row="2"
-			Orientation="Horizontal"
-			HorizontalAlignment="Right"
 			Margin="0 20 0 0">
 
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="12"/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+
 			<Button
-				Width="90"
-				Margin="0 0 8 0"
+				Grid.Column="0"
+				Height="32"
 				Content="上書き"
-				IsDefault="True"
 				Click="OnOverwriteClicked"/>
 
 			<Button
-				Width="90"
-				Margin="0 0 8 0"
+				Grid.Column="2"
+				Height="32"
+				Content="すべて上書き"
+				Click="OnOverwriteAllClicked"/>
+
+		</Grid>
+
+		<Grid
+			Grid.Row="2"
+			Margin="0 8 0 0">
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition/>
+				<ColumnDefinition Width="12"/>
+				<ColumnDefinition/>
+			</Grid.ColumnDefinitions>
+
+			<Button
+				Grid.Column="0"
+				Height="32"
 				Content="スキップ"
 				Click="OnSkipClicked"/>
 
 			<Button
-				Width="90"
-				Content="キャンセル"
-				IsCancel="True"
-				Click="OnCancelClicked"/>
+				Grid.Column="2"
+				Height="32"
+				Content="すべてスキップ"
+				Click="OnSkipAllClicked"/>
 
-		</StackPanel>
+		</Grid>
+
+		<Button
+			Grid.Row="3"
+			Width="120"
+			Height="32"
+			HorizontalAlignment="Right"
+			Margin="0 16 0 0"
+			Content="キャンセル"
+			IsCancel="True"
+			Click="OnCancelClicked"/>
 
 	</Grid>
 
