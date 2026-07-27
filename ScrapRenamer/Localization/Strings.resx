@@ -136,4 +136,20 @@
     <value>バージョン {0}</value>
   </data>
 
+  <data name="SettingsWindow_Title" xml:space="preserve">
+    <value>設定</value>
+  </data>
+
+  <data name="SettingsWindow_ThemeLabel" xml:space="preserve">
+    <value>テーマ</value>
+  </data>
+
+  <data name="SettingsWindow_FontFamilyLabel" xml:space="preserve">
+    <value>フォント</value>
+  </data>
+
+  <data name="SettingsWindow_FontSizeLabel" xml:space="preserve">
+    <value>サイズ</value>
+  </data>
+
 </root>

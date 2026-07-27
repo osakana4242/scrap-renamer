@@ -178,5 +178,29 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string SettingsWindow_FontFamilyLabel {
+            get {
+                return ResourceManager.GetString("SettingsWindow_FontFamilyLabel", resourceCulture);
+            }
+        }
+
+        public static string SettingsWindow_FontSizeLabel {
+            get {
+                return ResourceManager.GetString("SettingsWindow_FontSizeLabel", resourceCulture);
+            }
+        }
+
+        public static string SettingsWindow_ThemeLabel {
+            get {
+                return ResourceManager.GetString("SettingsWindow_ThemeLabel", resourceCulture);
+            }
+        }
+
+        public static string SettingsWindow_Title {
+            get {
+                return ResourceManager.GetString("SettingsWindow_Title", resourceCulture);
+            }
+        }
+
     }
 }
