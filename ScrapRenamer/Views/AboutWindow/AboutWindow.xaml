@@ -58,6 +58,7 @@
 			<TextBlock Margin="0 8 0 0">
 
 				<Hyperlink
+					NavigateUri="#"
 					RequestNavigate="OnRequestNavigate">
 					<Run Text="{x:Static res:Strings.AboutWindow_RepositoryURL}" />
 				</Hyperlink>
