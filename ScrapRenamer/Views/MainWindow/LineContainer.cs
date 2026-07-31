@@ -209,6 +209,11 @@ class LineContainer {
 		}
 
 		void RenameItem(WorkItem item, ref string preError) {
+			// 想定できるエラー
+			// - before が存在しない
+			// - before がロックされている
+			// - after がすでに存在する
+
 			var line = GetLine(item);
 			try {
 				if (line.error != "") {
@@ -276,8 +281,44 @@ class LineContainer {
 			} catch (System.OperationCanceledException) {
 				throw;
 			} catch (System.Exception ex) {
-				line.error = $"{ex.Message}";
-				preError = $"{line.origPath} のリネーム失敗に引きずられて失敗";
+				switch (ex) {
+				case System.IO.FileNotFoundException:
+					// 移動元のファイルが存在しません
+					line.error = Localization.Strings.Strings.Error_SrcFileNotFound;
+					break;
+				case System.IO.DirectoryNotFoundException:
+					if (!System.IO.Path.Exists(line.origPath)) {
+						// 移動元のディレクトリが存在しません
+						line.error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
+					} else {
+						// 移動先のディレクトリが存在しません
+						line.error = Localization.Strings.Strings.Error_DestinationDirectoryNotFound;
+					}
+					break;
+				case System.IO.IOException ex2:
+					if (line.isDirectory) {
+						// 移動元のディレクトリ以下が使用中の可能性があります
+						line.error = Localization.Strings.Strings.Error_SrcDirectoryLocked;
+					} else {
+						// 移動元のファイルが使用中の可能性があります
+						line.error = Localization.Strings.Strings.Error_SrcFileLocked;
+					}
+					break;
+				case System.UnauthorizedAccessException:
+					if (line.isDirectory) {
+						// Error_DirectoryUnautorizedAccess: ディレクトリを移動する権限がありません
+						line.error = Localization.Strings.Strings.Error_DirectoryUnautorizedAccess;
+					} else {
+						// Error_FileUnautorizedAccess: ファイルを移動する権限がありません
+						line.error = Localization.Strings.Strings.Error_FileUnautorizedAccess;
+					}
+					break;
+				default:
+					line.error = $"{ex.Message}";
+					break;
+				}
+				// preError = $"{line.origPath} の移動失敗に引きずられて失敗しました";
+				preError = string.Format(Localization.Strings.Strings.Error_AnotherPathMoveErrorChained, line.origPath);
 				Debug.WriteLine($"ex: {ex}, before: {item.before}, after: {item.after}");
 			} finally {
 				RemoveWorkItem(item);

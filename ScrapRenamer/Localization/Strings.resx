@@ -92,6 +92,38 @@
     <value>ファイルが見つかりません。</value>
   </data>
 
+  <data name="Error_SrcFileNotFound" xml:space="preserve">
+    <value>移動元のファイルが存在しません</value>
+  </data>
+
+  <data name="Error_SrcDirectoryNotFound" xml:space="preserve">
+    <value>移動元のディレクトリが存在しません</value>
+  </data>
+
+  <data name="Error_DestinationDirectoryNotFound" xml:space="preserve">
+    <value>移動先のディレクトリが存在しません</value>
+  </data>
+
+  <data name="Error_SrcFileLocked" xml:space="preserve">
+    <value>移動元のファイルが使用中の可能性があります</value>
+  </data>
+
+  <data name="Error_SrcDirectoryLocked" xml:space="preserve">
+    <value>移動元のディレクトリ以下が使用中の可能性があります</value>
+  </data>
+
+  <data name="Error_FileUnautorizedAccess" xml:space="preserve">
+    <value>ファイルを移動する権限がありません</value>
+  </data>
+
+  <data name="Error_DirectoryUnautorizedAccess" xml:space="preserve">
+    <value>ディレクトリを移動する権限がありません</value>
+  </data>
+
+  <data name="Error_AnotherPathMoveErrorChained" xml:space="preserve">
+    <value>{0} の移動失敗に引きずられて失敗しました</value>
+  </data>
+
   <data name="DropFilesHere" xml:space="preserve">
     <value>ここにファイルをドロップ</value>
   </data>

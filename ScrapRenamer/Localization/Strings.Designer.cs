@@ -106,9 +106,57 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Error_AnotherPathMoveErrorChained {
+            get {
+                return ResourceManager.GetString("Error_AnotherPathMoveErrorChained", resourceCulture);
+            }
+        }
+
+        public static string Error_DestinationDirectoryNotFound {
+            get {
+                return ResourceManager.GetString("Error_DestinationDirectoryNotFound", resourceCulture);
+            }
+        }
+
+        public static string Error_DirectoryUnautorizedAccess {
+            get {
+                return ResourceManager.GetString("Error_DirectoryUnautorizedAccess", resourceCulture);
+            }
+        }
+
         public static string Error_FileNotFound {
             get {
                 return ResourceManager.GetString("Error_FileNotFound", resourceCulture);
+            }
+        }
+
+        public static string Error_FileUnautorizedAccess {
+            get {
+                return ResourceManager.GetString("Error_FileUnautorizedAccess", resourceCulture);
+            }
+        }
+
+        public static string Error_SrcDirectoryLocked {
+            get {
+                return ResourceManager.GetString("Error_SrcDirectoryLocked", resourceCulture);
+            }
+        }
+
+        public static string Error_SrcDirectoryNotFound {
+            get {
+                return ResourceManager.GetString("Error_SrcDirectoryNotFound", resourceCulture);
+            }
+        }
+
+        public static string Error_SrcFileLocked {
+            get {
+                return ResourceManager.GetString("Error_SrcFileLocked", resourceCulture);
+            }
+        }
+
+        public static string Error_SrcFileNotFound {
+            get {
+                return ResourceManager.GetString("Error_SrcFileNotFound", resourceCulture);
             }
         }
 
