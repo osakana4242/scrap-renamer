@@ -72,6 +72,7 @@ class LineContainer {
 	//
 	class RenameContext {
 		readonly List<WorkItem> _workList = new();
+		readonly Dictionary<string, WorkItem> _beforeDirectoryDict = new();
 		readonly Dictionary<string, WorkItem> _beforePathDict = new();
 		readonly Dictionary<string, WorkItem> _afterPathDict = new();
 		readonly LineContainer _owner;
@@ -137,9 +138,26 @@ class LineContainer {
 					otherLine.error = $"{item.index}: {item.before} とリネーム先が衝突";
 					continue;
 				}
+				if (line.isDirectory) {
+					_beforeDirectoryDict.Add(line.origPath, item);
+				}
 				_afterPathDict.Add(nextPath, item);
 				_beforePathDict.Add(line.origPath, item);
 				_workList.Add(item);
+			}
+			//
+			for (int i = 0; i < _workList.Count; i++) {
+				var work = _workList[i];
+				foreach (var kv in _beforeDirectoryDict) {
+					if (IsUnderDirectory(work.before, kv.Key)) {
+						var parentLine = GetLine(kv.Value);
+						var childLine = GetLine(work);
+						childLine.error =
+							string.Format(Localization.Strings.Strings.Error_ParentChildPathOperationNotSupported_Parent, parentLine.origPath);
+						parentLine.error =
+							string.Format(Localization.Strings.Strings.Error_ParentChildPathOperationNotSupported_Child, childLine.origPath);
+					}
+				}
 			}
 		}
 
@@ -259,7 +277,11 @@ class LineContainer {
 							switch (_lastOverwriteWindowResult) {
 							case OverwriteWindowResult.Skip:
 							case OverwriteWindowResult.SkipAll:
-								line.error = $"同名のファイルが存在";
+								if (line.isDirectory) {
+									line.error = Localization.Strings.Strings.Error_DestinationDirectoryExists;
+								} else {
+									line.error = Localization.Strings.Strings.Error_DestinationFileExists;
+								}
 								return;
 							case OverwriteWindowResult.Overwrite:
 							case OverwriteWindowResult.OverwriteAll:
@@ -390,6 +412,16 @@ class LineContainer {
 				}
 			}
 			return null;
+		}
+
+		// 指定ディレクトリ自身を除いた、その配下にあるパス
+		static bool IsUnderDirectory(string path, string directory) {
+			string prefix = directory
+				.TrimEnd(Path.DirectorySeparatorChar)
+				+ Path.DirectorySeparatorChar;
+
+			return path
+				.StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
 		}
 
 		record class WorkItem(int index, string before, string after);

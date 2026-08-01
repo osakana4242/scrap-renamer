@@ -104,6 +104,14 @@
     <value>移動先のディレクトリが存在しません</value>
   </data>
 
+  <data name="Error_DestinationDirectoryExists" xml:space="preserve">
+    <value>移動先に同名のディレクトリが存在します</value>
+  </data>
+
+  <data name="Error_DestinationFileExists" xml:space="preserve">
+    <value>移動先に同名のファイルが存在します</value>
+  </data>
+
   <data name="Error_SrcFileLocked" xml:space="preserve">
     <value>移動元のファイルが使用中の可能性があります</value>
   </data>
@@ -122,6 +130,14 @@
 
   <data name="Error_AnotherPathMoveErrorChained" xml:space="preserve">
     <value>{0} の移動失敗に引きずられて失敗しました</value>
+  </data>
+
+  <data name="Error_ParentChildPathOperationNotSupported_Parent" xml:space="preserve">
+    <value>親子関係にあるパスの同時操作は対応していません。親: {0}</value>
+  </data>
+
+  <data name="Error_ParentChildPathOperationNotSupported_Child" xml:space="preserve">
+    <value>親子関係にあるパスの同時操作は対応していません。子: {0}</value>
   </data>
 
   <data name="DropFilesHere" xml:space="preserve">

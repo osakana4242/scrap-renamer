@@ -112,9 +112,21 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Error_DestinationDirectoryExists {
+            get {
+                return ResourceManager.GetString("Error_DestinationDirectoryExists", resourceCulture);
+            }
+        }
+
         public static string Error_DestinationDirectoryNotFound {
             get {
                 return ResourceManager.GetString("Error_DestinationDirectoryNotFound", resourceCulture);
+            }
+        }
+
+        public static string Error_DestinationFileExists {
+            get {
+                return ResourceManager.GetString("Error_DestinationFileExists", resourceCulture);
             }
         }
 
@@ -133,6 +145,18 @@ namespace ScrapRenamer.Localization.Strings {
         public static string Error_FileUnautorizedAccess {
             get {
                 return ResourceManager.GetString("Error_FileUnautorizedAccess", resourceCulture);
+            }
+        }
+
+        public static string Error_ParentChildPathOperationNotSupported_Child {
+            get {
+                return ResourceManager.GetString("Error_ParentChildPathOperationNotSupported_Child", resourceCulture);
+            }
+        }
+
+        public static string Error_ParentChildPathOperationNotSupported_Parent {
+            get {
+                return ResourceManager.GetString("Error_ParentChildPathOperationNotSupported_Parent", resourceCulture);
             }
         }
 
