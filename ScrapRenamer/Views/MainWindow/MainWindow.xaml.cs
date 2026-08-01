@@ -33,6 +33,7 @@ public partial class MainWindow : Window {
 		Settings.Instance.themeProp.OnChanged += OnThemeChanged;
 		Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
 		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
+		Settings.Instance.renameMode.OnChanged += OnRenameModeChanged;
 		Settings.Instance.Load();
 
 		_lineContainer = new(Settings.Instance.renameMode.Value);
@@ -40,7 +41,7 @@ public partial class MainWindow : Window {
 
 		RenameModeComboBox.ItemsSource =  new[] {
 				RenameMode.FileName,
-				RenameMode.FileNameWithoutExtention,
+				RenameMode.FileNameWithoutExtension,
 				RenameMode.FullPath,
 			}.
 			Select(item => new {
@@ -53,6 +54,7 @@ public partial class MainWindow : Window {
 		RenameModeComboBox.SelectedValuePath = "Value";
 		RenameModeComboBox.SelectionChanged += OnRenameModeChanged;
 
+		OnRenameModeChanged(Settings.Instance.renameMode.Value);
 
 	}
 
@@ -136,6 +138,14 @@ public partial class MainWindow : Window {
 		object sender,
 		RoutedEventArgs e) {
 		Application.Current.Shutdown();
+	}
+
+	void OnRenameModeMenuClick(
+		object sender,
+		RoutedEventArgs e) {
+		if (sender is not MenuItem menuItem) return;
+		if (menuItem.Tag is not RenameMode mode) return;
+		RenameModeComboBox.SelectedValue = mode;
 	}
 
 	void OnOpenAboutClick(
@@ -337,6 +347,14 @@ public partial class MainWindow : Window {
 
 	void OnThemeChanged(ThemeMode themeMode) {
 		UpdateTheme();
+	}
+
+	void OnRenameModeChanged(RenameMode mode) { 
+		foreach (var item in RenameModeMenu.Items) {
+			if (item is not MenuItem menuItem2) continue;
+			if (menuItem2.Tag is not RenameMode mode2) continue;
+			menuItem2.IsChecked = mode2 == mode;
+		}
 	}
 
 	async void OnRenameModeChanged(object sender, SelectionChangedEventArgs e) {

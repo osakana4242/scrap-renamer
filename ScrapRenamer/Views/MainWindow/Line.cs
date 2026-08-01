@@ -25,7 +25,7 @@ class Line {
 			case RenameMode.FileName:
 				editedLine = Path.GetFileName(nextFullPath);
 				break;
-			case RenameMode.FileNameWithoutExtention:
+			case RenameMode.FileNameWithoutExtension:
 				editedLine = Path.GetFileNameWithoutExtension(nextFullPath);
 				break;
 			case RenameMode.FullPath:
@@ -57,7 +57,7 @@ class Line {
 		case RenameMode.FileName:
 			editedLine = Path.GetFileName(origPath);
 			break;
-		case RenameMode.FileNameWithoutExtention:
+		case RenameMode.FileNameWithoutExtension:
 			editedLine = Path.GetFileNameWithoutExtension(origPath);
 			break;
 		case RenameMode.FullPath:
@@ -74,7 +74,7 @@ class Line {
 			return Path.Combine(
 				Path.GetDirectoryName(origPath) ?? "",
 				editedLine);
-		case RenameMode.FileNameWithoutExtention:
+		case RenameMode.FileNameWithoutExtension:
 			return Path.Combine(
 				Path.GetDirectoryName(origPath) ?? "",
 				editedLine) +

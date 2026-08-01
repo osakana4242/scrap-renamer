@@ -94,9 +94,9 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
-        public static string Button_Sort {
+        public static string Button_Sort_FileName {
             get {
-                return ResourceManager.GetString("Button_Sort", resourceCulture);
+                return ResourceManager.GetString("Button_Sort_FileName", resourceCulture);
             }
         }
 
@@ -190,6 +190,12 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Menu_Edit {
+            get {
+                return ResourceManager.GetString("Menu_Edit", resourceCulture);
+            }
+        }
+
         public static string Menu_File {
             get {
                 return ResourceManager.GetString("Menu_File", resourceCulture);
@@ -220,9 +226,27 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Menu_RenameMode {
+            get {
+                return ResourceManager.GetString("Menu_RenameMode", resourceCulture);
+            }
+        }
+
         public static string Menu_Settings {
             get {
                 return ResourceManager.GetString("Menu_Settings", resourceCulture);
+            }
+        }
+
+        public static string Menu_Sort {
+            get {
+                return ResourceManager.GetString("Menu_Sort", resourceCulture);
+            }
+        }
+
+        public static string Menu_Sort_FileName {
+            get {
+                return ResourceManager.GetString("Menu_Sort_FileName", resourceCulture);
             }
         }
 
@@ -244,9 +268,9 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
-        public static string RenameModeItems_FileNameWithoutExtention {
+        public static string RenameModeItems_FileNameWithoutExtension {
             get {
-                return ResourceManager.GetString("RenameModeItems_FileNameWithoutExtention", resourceCulture);
+                return ResourceManager.GetString("RenameModeItems_FileNameWithoutExtension", resourceCulture);
             }
         }
 
@@ -277,6 +301,12 @@ namespace ScrapRenamer.Localization.Strings {
         public static string SettingsWindow_Title {
             get {
                 return ResourceManager.GetString("SettingsWindow_Title", resourceCulture);
+            }
+        }
+
+        public static string SortLabel {
+            get {
+                return ResourceManager.GetString("SortLabel", resourceCulture);
             }
         }
 

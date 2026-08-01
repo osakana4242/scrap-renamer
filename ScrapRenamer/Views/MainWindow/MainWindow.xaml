@@ -30,8 +30,40 @@
 					Header="{x:Static res:Strings.Menu_File_Quit}"
 					Click="OnExitMenuClick"/>
 			</MenuItem>
-			<MenuItem Header="{x:Static res:Strings.Menu_Settings}"
-					Click="OnOpenSettingsClick"/>
+			<MenuItem Header="{x:Static res:Strings.Menu_Edit}">
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_RenameMode}"
+					x:Name="RenameModeMenu">
+					<MenuItem
+						Header="{x:Static res:Strings.RenameModeItems_FileName}"
+						Tag="{x:Static local:RenameMode.FileName}"
+						IsCheckable="True"
+						Click="OnRenameModeMenuClick"/>
+
+					<MenuItem
+						Header="{x:Static res:Strings.RenameModeItems_FileNameWithoutExtension}"
+						Tag="{x:Static local:RenameMode.FileNameWithoutExtension}"
+						IsCheckable="True"
+						Click="OnRenameModeMenuClick"/>
+
+					<MenuItem
+						Header="{x:Static res:Strings.RenameModeItems_FullPath}"
+						Tag="{x:Static local:RenameMode.FullPath}"
+						IsCheckable="True"
+						Click="OnRenameModeMenuClick"/>
+				</MenuItem>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Sort}">
+					<MenuItem
+						Header="{x:Static res:Strings.Menu_Sort_FileName}"
+						Click="OnSortClicked"/>
+				</MenuItem>
+
+				<MenuItem Header="{x:Static res:Strings.Menu_Settings}"
+						Click="OnOpenSettingsClick"/>
+			</MenuItem>
+
 			<MenuItem Header="{x:Static res:Strings.Menu_Help}">
 				<MenuItem
 					Header="{x:Static res:Strings.Menu_Help_About}"
@@ -55,13 +87,15 @@
 				<Button Content="{x:Static res:Strings.Button_Clear}"
 						Margin="2"
 						Click="OnClearClicked"/>
-
-				<Button Content="{x:Static res:Strings.Button_Sort}"
-						Margin="2"
-						Click="OnSortClicked"/>
-
-				<Separator />
-
+			</DockPanel>
+		</Border>
+		
+		<!-- ツールバー -->
+		<Border DockPanel.Dock="Top"
+				BorderThickness="0 1 0 1"
+				Padding="4 0"
+				Visibility="Collapsed">
+			<DockPanel LastChildFill="False">
 				<TextBlock
 					Text="{x:Static res:Strings.RenameModeComboBox_Label}"
 					VerticalAlignment="Center"
@@ -71,6 +105,23 @@
 					x:Name="RenameModeComboBox"
 					Width="180">
 				</ComboBox>
+			</DockPanel>
+		</Border>
+
+		<!-- ツールバー -->
+		<Border DockPanel.Dock="Top"
+				BorderThickness="0 1 0 1"
+				Padding="4 0"
+				Visibility="Collapsed">
+			<DockPanel LastChildFill="False">
+				<TextBlock
+					Text="{x:Static res:Strings.SortLabel}"
+					VerticalAlignment="Center"
+					Margin="4,0,4,0" />
+
+				<Button Content="{x:Static res:Strings.Button_Sort_FileName}"
+						Margin="2"
+						Click="OnSortClicked"/>
 			</DockPanel>
 		</Border>
 
