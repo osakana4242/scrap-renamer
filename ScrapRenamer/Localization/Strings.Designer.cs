@@ -88,6 +88,12 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Button_Reset {
+            get {
+                return ResourceManager.GetString("Button_Reset", resourceCulture);
+            }
+        }
+
         public static string Button_Sort {
             get {
                 return ResourceManager.GetString("Button_Sort", resourceCulture);

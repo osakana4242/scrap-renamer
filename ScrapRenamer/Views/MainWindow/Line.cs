@@ -49,7 +49,10 @@ class Line {
 		this.origPath = origPath;
 		isDirectory = System.IO.Directory.Exists(origPath);
 		_mode = mode;
+		Reset();
+	}
 
+	public void Reset() {
 		switch (_mode) {
 		case RenameMode.FileName:
 			editedLine = Path.GetFileName(origPath);
@@ -61,6 +64,8 @@ class Line {
 			editedLine = origPath;
 			break;
 		}
+		error = "";
+		processed = false;		
 	}
 
 	public string GetNextPath() {

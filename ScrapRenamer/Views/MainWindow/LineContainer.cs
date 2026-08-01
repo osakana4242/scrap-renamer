@@ -27,6 +27,12 @@ class LineContainer {
 		return true;
 	}
 
+	public void Reset() {
+		foreach (var line in Lines) {
+			line.Reset();
+		}
+	}
+
 	public void Sort() {
 		Lines.Sort((a, b) => {
 			return a.origPath.CompareTo(b.origPath);

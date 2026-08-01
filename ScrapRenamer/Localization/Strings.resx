@@ -72,8 +72,12 @@
     <value>▶ 実行</value>
   </data>
 
+  <data name="Button_Reset" xml:space="preserve">
+    <value>↩ リセット</value>
+  </data>
+
   <data name="Button_Clear" xml:space="preserve">
-    <value>🗑 クリア</value>
+    <value>🗑 空にする</value>
   </data>
 
   <data name="Button_Sort" xml:space="preserve">

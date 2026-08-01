@@ -48,6 +48,10 @@
 						Margin="2"
 						Click="OnExecuteClicked"/>
 
+				<Button Content="{x:Static res:Strings.Button_Reset}"
+						Margin="2"
+						Click="OnResetClicked"/>
+
 				<Button Content="{x:Static res:Strings.Button_Clear}"
 						Margin="2"
 						Click="OnClearClicked"/>

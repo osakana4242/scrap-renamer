@@ -204,6 +204,12 @@ public partial class MainWindow : Window {
 		EditorView_SetLines();
 	}
 
+	void OnResetClicked(object sender, RoutedEventArgs e) {
+		_lineContainer.Reset();
+		EditorView_SetLines();
+		UpdateVisibility(false);
+	}
+
 	void OnClearClicked(object sender, RoutedEventArgs e) {
 		_lineContainer = new LineContainer(Settings.Instance.renameMode.Value);
 		EditorView_Clear();
