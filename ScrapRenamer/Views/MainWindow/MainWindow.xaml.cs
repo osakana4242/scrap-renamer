@@ -194,7 +194,6 @@ public partial class MainWindow : Window {
 	}
 
 	void OpenFiles(string[] files) {
-		System.Array.Sort(files, (a, b) => a.CompareTo(b));
 		var lines = new List<Line>();
 
 		foreach (var file in files) {
@@ -204,6 +203,7 @@ public partial class MainWindow : Window {
 				continue;
 			lines.Add(line);
 		}
+		_lineContainer.Sort();
 
 		UpdateVisibility(false);
 
@@ -376,8 +376,12 @@ public partial class MainWindow : Window {
 	}
 
 	async void OnSortClicked(object sender, RoutedEventArgs e) {
+		if (sender is not MenuItem menuItem) return;
+		if (menuItem.Tag is not SortType sortType) return;
+
 		await SyncTextFromEditorAsync();
-		_lineContainer.Sort();
+		
+		_lineContainer.Sort(sortType);
 		EditorView_SetLines();
 	}
 

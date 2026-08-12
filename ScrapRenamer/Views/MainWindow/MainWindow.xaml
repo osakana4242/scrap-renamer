@@ -56,7 +56,20 @@
 				<MenuItem
 					Header="{x:Static res:Strings.Menu_Sort}">
 					<MenuItem
-						Header="{x:Static res:Strings.Menu_Sort_FileName}"
+						Header="{x:Static res:Strings.SortTypeItems_FileName}"
+						Tag="{x:Static local:SortType.FileName}"
+						Click="OnSortClicked"/>
+					<MenuItem
+						Header="{x:Static res:Strings.SortTypeItems_ExtensionFileName}"
+						Tag="{x:Static local:SortType.ExtensionFileName}"
+						Click="OnSortClicked"/>
+					<MenuItem
+						Header="{x:Static res:Strings.SortTypeItems_FullPath}"
+						Tag="{x:Static local:SortType.FullPath}"
+						Click="OnSortClicked"/>
+					<MenuItem
+						Header="{x:Static res:Strings.SortTypeItems_FullPathExtension}"
+						Tag="{x:Static local:SortType.FullPathExtension}"
 						Click="OnSortClicked"/>
 				</MenuItem>
 
@@ -123,6 +136,21 @@
 						Margin="2"
 						Click="OnSortClicked"/>
 			</DockPanel>
+		</Border>
+
+		<Border DockPanel.Dock="Top"
+				BorderThickness="0 1 0 1"
+				Padding="4 0"
+				Visibility="Collapsed">
+			<ListView>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Header="ファイル名" />
+						<GridViewColumn Header="種類" />
+						<GridViewColumn Header="更新日時" />
+					</GridView>
+				</ListView.View>
+			</ListView>		
 		</Border>
 
 		<Grid>

@@ -33,10 +33,53 @@ class LineContainer {
 		}
 	}
 
-	public void Sort() {
-		Lines.Sort((a, b) => {
-			return a.origPath.CompareTo(b.origPath);
-		});
+	public void Sort(SortType sortType = SortType.FullPath) {
+		Debug.WriteLine($"Sort, sortType: {sortType}");
+		switch (sortType) {
+		case SortType.FileName:
+			Lines.Sort((a, b) => {
+				var cmp = System.IO.Path.GetFileName(a.origPath).
+					CompareTo(System.IO.Path.GetFileName(b.origPath));
+				if (cmp != 0) return cmp;
+
+				return a.origPath.CompareTo(b.origPath);
+			});
+			break;
+		case SortType.ExtensionFileName:
+			Lines.Sort((a, b) => {
+				var aExt = Path.GetExtension(a.origPath);
+				var bExt = Path.GetExtension(b.origPath);
+				var cmp = aExt.CompareTo(bExt);
+				if (cmp != 0) return cmp;
+
+				cmp = System.IO.Path.GetFileName(a.origPath).
+					CompareTo(System.IO.Path.GetFileName(b.origPath));
+				if (cmp != 0) return cmp;
+
+				return a.origPath.CompareTo(b.origPath);
+			});
+			break;
+		case SortType.FullPath:
+			Lines.Sort((a, b) => {
+				return a.origPath.CompareTo(b.origPath);
+			});
+			break;
+		case SortType.FullPathExtension:
+			Lines.Sort((a, b) => {
+				var aDir = Path.GetDirectoryName(a.origPath) ?? "";
+				var bDir = Path.GetDirectoryName(b.origPath) ?? "";
+				var cmp = aDir.CompareTo(bDir);
+				if (cmp != 0) return cmp;
+
+				var aExt = Path.GetExtension(a.origPath);
+				var bExt = Path.GetExtension(b.origPath);
+				cmp = aExt.CompareTo(bExt);
+				if (cmp != 0) return cmp;
+
+				return a.origPath.CompareTo(b.origPath);
+			});
+			break;
+		}
 	}
 
 	public void Apply() {

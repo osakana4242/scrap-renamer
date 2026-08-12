@@ -244,6 +244,12 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Menu_Sort_Extension {
+            get {
+                return ResourceManager.GetString("Menu_Sort_Extension", resourceCulture);
+            }
+        }
+
         public static string Menu_Sort_FileName {
             get {
                 return ResourceManager.GetString("Menu_Sort_FileName", resourceCulture);
@@ -307,6 +313,30 @@ namespace ScrapRenamer.Localization.Strings {
         public static string SortLabel {
             get {
                 return ResourceManager.GetString("SortLabel", resourceCulture);
+            }
+        }
+
+        public static string SortTypeItems_ExtensionFileName {
+            get {
+                return ResourceManager.GetString("SortTypeItems_ExtensionFileName", resourceCulture);
+            }
+        }
+
+        public static string SortTypeItems_FileName {
+            get {
+                return ResourceManager.GetString("SortTypeItems_FileName", resourceCulture);
+            }
+        }
+
+        public static string SortTypeItems_FullPath {
+            get {
+                return ResourceManager.GetString("SortTypeItems_FullPath", resourceCulture);
+            }
+        }
+
+        public static string SortTypeItems_FullPathExtension {
+            get {
+                return ResourceManager.GetString("SortTypeItems_FullPathExtension", resourceCulture);
             }
         }
 

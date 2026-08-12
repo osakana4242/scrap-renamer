@@ -84,6 +84,10 @@
     <value>ファイル名</value>
   </data>
 
+  <data name="Menu_Sort_Extension" xml:space="preserve">
+    <value>種類</value>
+  </data>
+
   <data name="Button_Apply" xml:space="preserve">
     <value>▶ 実行</value>
   </data>
@@ -182,6 +186,22 @@
 
   <data name="RenameModeItems_FullPath" xml:space="preserve">
     <value>フルパス</value>
+  </data>
+
+  <data name="SortTypeItems_FileName" xml:space="preserve">
+    <value>ファイル名</value>
+  </data>
+
+  <data name="SortTypeItems_ExtensionFileName" xml:space="preserve">
+    <value>拡張子とファイル名</value>
+  </data>
+
+  <data name="SortTypeItems_FullPath" xml:space="preserve">
+    <value>フルパス</value>
+  </data>
+
+  <data name="SortTypeItems_FullPathExtension" xml:space="preserve">
+    <value>フルパスと拡張子</value>
   </data>
 
   <data name="AboutWindow_Title" xml:space="preserve">
