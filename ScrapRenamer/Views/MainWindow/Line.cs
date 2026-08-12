@@ -35,7 +35,22 @@ class Line {
 		}
 	}
 
-	public string error {
+	public string OrigLine {
+		get {
+			switch (_mode) {
+			case RenameMode.FileName:
+				return Path.GetFileName(origPath);
+			case RenameMode.FileNameWithoutExtension:
+				return Path.GetFileNameWithoutExtension(origPath);
+			case RenameMode.FullPath:
+				return origPath;
+			default:
+				throw new System.NotSupportedException($"{_mode}");
+			}
+		}
+	}
+
+	public string Error {
 		get => _error;
 		set {
 			if (value != "") {
@@ -64,7 +79,7 @@ class Line {
 			editedLine = origPath;
 			break;
 		}
-		error = "";
+		Error = "";
 		processed = false;		
 	}
 

@@ -169,7 +169,7 @@ class LineContainer {
 			// エラーをリセット
 			for (int i = 0; i < Lines.Count; i++) {
 				var line = Lines[i];
-				line.error = "";
+				line.Error = "";
 				line.processed = false;
 			}
 			//
@@ -189,9 +189,9 @@ class LineContainer {
 				line.processed = true;
 
 				if (_afterPathDict.TryGetValue(nextPath, out var otherItem)) {
-					line.error = $"{otherItem.index}: {otherItem.before} とリネーム先が衝突";
+					line.Error = $"{otherItem.index}: {otherItem.before} とリネーム先が衝突";
 					var otherLine = GetLine(otherItem);
-					otherLine.error = $"{item.index}: {item.before} とリネーム先が衝突";
+					otherLine.Error = $"{item.index}: {item.before} とリネーム先が衝突";
 					continue;
 				}
 				if (line.isDirectory) {
@@ -208,9 +208,9 @@ class LineContainer {
 					if (IsUnderDirectory(work.before, kv.Key)) {
 						var parentLine = GetLine(kv.Value);
 						var childLine = GetLine(work);
-						childLine.error =
+						childLine.Error =
 							string.Format(Localization.Strings.Strings.Error_ParentChildPathOperationNotSupported_Parent, parentLine.origPath);
-						parentLine.error =
+						parentLine.Error =
 							string.Format(Localization.Strings.Strings.Error_ParentChildPathOperationNotSupported_Child, childLine.origPath);
 					}
 				}
@@ -290,10 +290,10 @@ class LineContainer {
 
 			var line = GetLine(item);
 			try {
-				if (line.error != "") {
-					preError = line.error;
+				if (line.Error != "") {
+					preError = line.Error;
 				} else if (preError != "") {
-					line.error = preError;
+					line.Error = preError;
 				} else {
 					Debug.WriteLine($"Move, '{item.before}' to '{item.after}'");
 
@@ -334,9 +334,9 @@ class LineContainer {
 							case OverwriteWindowResult.Skip:
 							case OverwriteWindowResult.SkipAll:
 								if (line.isDirectory) {
-									line.error = Localization.Strings.Strings.Error_DestinationDirectoryExists;
+									line.Error = Localization.Strings.Strings.Error_DestinationDirectoryExists;
 								} else {
-									line.error = Localization.Strings.Strings.Error_DestinationFileExists;
+									line.Error = Localization.Strings.Strings.Error_DestinationFileExists;
 								}
 								return;
 							case OverwriteWindowResult.Overwrite:
@@ -362,37 +362,37 @@ class LineContainer {
 				switch (ex) {
 				case System.IO.FileNotFoundException:
 					// 移動元のファイルが存在しません
-					line.error = Localization.Strings.Strings.Error_SrcFileNotFound;
+					line.Error = Localization.Strings.Strings.Error_SrcFileNotFound;
 					break;
 				case System.IO.DirectoryNotFoundException:
 					if (!System.IO.Path.Exists(line.origPath)) {
 						// 移動元のディレクトリが存在しません
-						line.error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
+						line.Error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
 					} else {
 						// 移動先のディレクトリが存在しません
-						line.error = Localization.Strings.Strings.Error_DestinationDirectoryNotFound;
+						line.Error = Localization.Strings.Strings.Error_DestinationDirectoryNotFound;
 					}
 					break;
 				case System.IO.IOException ex2:
 					if (line.isDirectory) {
 						// 移動元のディレクトリ以下が使用中の可能性があります
-						line.error = Localization.Strings.Strings.Error_SrcDirectoryLocked;
+						line.Error = Localization.Strings.Strings.Error_SrcDirectoryLocked;
 					} else {
 						// 移動元のファイルが使用中の可能性があります
-						line.error = Localization.Strings.Strings.Error_SrcFileLocked;
+						line.Error = Localization.Strings.Strings.Error_SrcFileLocked;
 					}
 					break;
 				case System.UnauthorizedAccessException:
 					if (line.isDirectory) {
 						// Error_DirectoryUnautorizedAccess: ディレクトリを移動する権限がありません
-						line.error = Localization.Strings.Strings.Error_DirectoryUnautorizedAccess;
+						line.Error = Localization.Strings.Strings.Error_DirectoryUnautorizedAccess;
 					} else {
 						// Error_FileUnautorizedAccess: ファイルを移動する権限がありません
-						line.error = Localization.Strings.Strings.Error_FileUnautorizedAccess;
+						line.Error = Localization.Strings.Strings.Error_FileUnautorizedAccess;
 					}
 					break;
 				default:
-					line.error = $"{ex.Message}";
+					line.Error = $"{ex.Message}";
 					break;
 				}
 				// preError = $"{line.origPath} の移動失敗に引きずられて失敗しました";

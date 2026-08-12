@@ -1,4 +1,4 @@
-require.config({
+﻿require.config({
 	paths: {
 		vs: "monaco/vs"
 	}
@@ -222,7 +222,7 @@ function refreshDecorations2() {
 	for (let i = 0; i < scrapRenamer.lines.length; i++) {
 		const line = scrapRenamer.lines[i];
 		const current = model.getLineContent(i + 1);
-		const changed = current !== line.editedLine;
+		const changed = current !== line.origLine;
 		const isError = line.error != "";
 		const lineMaxColumn = model.getLineMaxColumn(i + 1);
 

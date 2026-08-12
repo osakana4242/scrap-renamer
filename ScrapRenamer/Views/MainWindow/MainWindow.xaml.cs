@@ -267,8 +267,8 @@ public partial class MainWindow : Window {
 		var lines = _lineContainer.Lines.
 			Select((elem, i) => new {index = i, elem}).
 			Where((elem) => elem.elem.processed).ToList();
-		var errorLines = lines.Where(i => "" != i.elem.error).ToList();
-		var successLines = lines.Where(i => "" == i.elem.error).ToList();
+		var errorLines = lines.Where(i => "" != i.elem.Error).ToList();
+		var successLines = lines.Where(i => "" == i.elem.Error).ToList();
 		if (0 < errorLines.Count) {
 			var doc = new FlowDocument();
 
@@ -284,7 +284,7 @@ public partial class MainWindow : Window {
 				foreach (var line in errorLines) {
 					AddParagraph(doc, $"行 {line.index}: ⛔失敗 {System.IO.Path.GetFileName(line.elem.origPath)} → {line.elem.editedLine}");
 					AddParagraph(doc, $"フルパス: {line.elem.origPath}");
-					AddParagraph(doc, $"理由: {line.elem.error}");
+					AddParagraph(doc, $"理由: {line.elem.Error}");
 					AddParagraph(doc, $"");
 				}
 				AddParagraph(doc, "");
@@ -486,8 +486,9 @@ public partial class MainWindow : Window {
 			type = "setLines",
 			lines = _lineContainer.Lines.Select(i => new {
 				origPath = i.origPath,
+				origLine = i.OrigLine,
 				editedLine = i.editedLine,
-				error = i.error,
+				error = i.Error,
 				isFolder = i.isDirectory,
 			}).ToArray(),
 		};
