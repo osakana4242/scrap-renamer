@@ -13,6 +13,8 @@ public class Settings {
 	public ObservableProperty<string> fontFamilyProp = new("MS ゴシック");
 	public ObservableProperty<int> fontSizeProp = new(14);
 	public ObservableProperty<RenameMode> renameMode = new(RenameMode.FileName);
+	public ObservableProperty<bool> sortOnAdd = new(true);
+	public ObservableProperty<SortType> sortType = new(SortType.EditedFileName);
 
 
 	bool _isInLoad = false;
@@ -26,6 +28,8 @@ public class Settings {
 		fontFamilyProp.OnChanged += v => OnChanged();
 		fontSizeProp.OnChanged += v => OnChanged();
 		renameMode.OnChanged += v => OnChanged();
+		sortOnAdd.OnChanged += v => OnChanged();
+		sortType.OnChanged += v => OnChanged();
 	}
 
 	public void Load() {

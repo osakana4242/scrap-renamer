@@ -45,6 +45,13 @@ class LineContainer {
 				return a.origPath.CompareTo(b.origPath);
 			});
 			break;
+		case SortType.EditedFileName:
+			Lines.Sort((a, b) => {
+				var cmp = a.editedLine.CompareTo(b.editedLine);
+				if (cmp != 0) return cmp;
+				return a.origPath.CompareTo(b.origPath);
+			});
+			break;
 		case SortType.ExtensionFileName:
 			Lines.Sort((a, b) => {
 				var aExt = Path.GetExtension(a.origPath);

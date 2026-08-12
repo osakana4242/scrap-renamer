@@ -44,12 +44,16 @@
     <value>ScrapRenamer</value>
   </data>
 
+  <data name="Menu_App" xml:space="preserve">
+    <value>アプリ(_A)</value>
+  </data>
+
   <data name="Menu_File" xml:space="preserve">
     <value>ファイル(_F)</value>
   </data>
 
   <data name="Menu_RenameMode" xml:space="preserve">
-    <value>モード</value>
+    <value>モード(_M)</value>
   </data>
 
   <data name="Menu_Settings" xml:space="preserve">
@@ -98,6 +102,10 @@
 
   <data name="Button_Clear" xml:space="preserve">
     <value>🗑 空にする</value>
+  </data>
+
+  <data name="Button_Sort" xml:space="preserve">
+    <value>⇅ 並び替え</value>
   </data>
 
   <data name="SortLabel" xml:space="preserve">

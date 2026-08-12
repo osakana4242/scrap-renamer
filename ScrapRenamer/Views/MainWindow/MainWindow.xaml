@@ -13,8 +13,8 @@
 	DragOver="OnDragOver"
 	Drop="OnDrop"
 	Title="{x:Static res:Strings.AppName}"
-    Width="400"
-    Height="500"
+	Width="480"
+	Height="560"
 	ThemeMode="System"
 	>
 	<DockPanel>
@@ -22,6 +22,19 @@
 		<!-- メニューバー -->
 		<Menu DockPanel.Dock="Top"
 			Padding="4 0">
+			<MenuItem Header="{x:Static res:Strings.Menu_App}">
+				<MenuItem Header="{x:Static res:Strings.Menu_Settings}"
+						Click="OnOpenSettingsClick"/>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Help_About}"
+					Click="OnOpenAboutClick"/>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_File_Quit}"
+					Click="OnExitMenuClick"/>
+			</MenuItem>
+			<!--
 			<MenuItem Header="{x:Static res:Strings.Menu_File}">
 				<MenuItem
 					Header="{x:Static res:Strings.Menu_File_Open}"
@@ -30,29 +43,30 @@
 					Header="{x:Static res:Strings.Menu_File_Quit}"
 					Click="OnExitMenuClick"/>
 			</MenuItem>
-			<MenuItem Header="{x:Static res:Strings.Menu_Edit}">
+			-->
+			<MenuItem
+				Header="{x:Static res:Strings.Menu_RenameMode}"
+				x:Name="RenameModeMenu">
 				<MenuItem
-					Header="{x:Static res:Strings.Menu_RenameMode}"
-					x:Name="RenameModeMenu">
-					<MenuItem
-						Header="{x:Static res:Strings.RenameModeItems_FileName}"
-						Tag="{x:Static local:RenameMode.FileName}"
-						IsCheckable="True"
-						Click="OnRenameModeMenuClick"/>
+					Header="{x:Static res:Strings.RenameModeItems_FileName}"
+					Tag="{x:Static local:RenameMode.FileName}"
+					IsCheckable="True"
+					Click="OnRenameModeMenuClick"/>
 
-					<MenuItem
-						Header="{x:Static res:Strings.RenameModeItems_FileNameWithoutExtension}"
-						Tag="{x:Static local:RenameMode.FileNameWithoutExtension}"
-						IsCheckable="True"
-						Click="OnRenameModeMenuClick"/>
+				<MenuItem
+					Header="{x:Static res:Strings.RenameModeItems_FileNameWithoutExtension}"
+					Tag="{x:Static local:RenameMode.FileNameWithoutExtension}"
+					IsCheckable="True"
+					Click="OnRenameModeMenuClick"/>
 
-					<MenuItem
-						Header="{x:Static res:Strings.RenameModeItems_FullPath}"
-						Tag="{x:Static local:RenameMode.FullPath}"
-						IsCheckable="True"
-						Click="OnRenameModeMenuClick"/>
-				</MenuItem>
+				<MenuItem
+					Header="{x:Static res:Strings.RenameModeItems_FullPath}"
+					Tag="{x:Static local:RenameMode.FullPath}"
+					IsCheckable="True"
+					Click="OnRenameModeMenuClick"/>
+			</MenuItem>
 
+			<!--
 				<MenuItem
 					Header="{x:Static res:Strings.Menu_Sort}">
 					<MenuItem
@@ -72,16 +86,15 @@
 						Tag="{x:Static local:SortType.FullPathExtension}"
 						Click="OnSortClicked"/>
 				</MenuItem>
+			-->
 
-				<MenuItem Header="{x:Static res:Strings.Menu_Settings}"
-						Click="OnOpenSettingsClick"/>
-			</MenuItem>
-
+			<!--
 			<MenuItem Header="{x:Static res:Strings.Menu_Help}">
 				<MenuItem
 					Header="{x:Static res:Strings.Menu_Help_About}"
 					Click="OnOpenAboutClick"/>
 			</MenuItem>
+			-->
 		</Menu>
 
 		<!-- ツールバー -->
@@ -100,6 +113,10 @@
 				<Button Content="{x:Static res:Strings.Button_Clear}"
 						Margin="2"
 						Click="OnClearClicked"/>
+
+				<Button Content="{x:Static res:Strings.Button_Sort}"
+						Margin="2"
+						Click="OnSortClicked"/>
 			</DockPanel>
 		</Border>
 		

@@ -5,6 +5,7 @@ public enum SortType {
 	ExtensionFileName,
 	FullPath,
 	FullPathExtension,
+	EditedFileName,
 }
 
 public static class SortTypeExt {

@@ -203,7 +203,9 @@ public partial class MainWindow : Window {
 				continue;
 			lines.Add(line);
 		}
-		_lineContainer.Sort();
+		if (Settings.Instance.sortOnAdd.Value) {
+			_lineContainer.Sort(Settings.Instance.sortType.Value);
+		}
 
 		UpdateVisibility(false);
 
@@ -376,8 +378,11 @@ public partial class MainWindow : Window {
 	}
 
 	async void OnSortClicked(object sender, RoutedEventArgs e) {
-		if (sender is not MenuItem menuItem) return;
-		if (menuItem.Tag is not SortType sortType) return;
+		if (sender is not FrameworkElement menuItem) return;
+		if (menuItem.Tag is not SortType sortType) {
+			// 指定が無い場合はフルパスでソートする
+			sortType = Settings.Instance.sortType.Value;
+		}
 
 		await SyncTextFromEditorAsync();
 		

@@ -94,6 +94,12 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Button_Sort {
+            get {
+                return ResourceManager.GetString("Button_Sort", resourceCulture);
+            }
+        }
+
         public static string Button_Sort_FileName {
             get {
                 return ResourceManager.GetString("Button_Sort_FileName", resourceCulture);
@@ -187,6 +193,12 @@ namespace ScrapRenamer.Localization.Strings {
         public static string Error_SrcFileNotFound {
             get {
                 return ResourceManager.GetString("Error_SrcFileNotFound", resourceCulture);
+            }
+        }
+
+        public static string Menu_App {
+            get {
+                return ResourceManager.GetString("Menu_App", resourceCulture);
             }
         }
 
