@@ -22,7 +22,8 @@
 		<!-- メニューバー -->
 		<Menu DockPanel.Dock="Top"
 			Padding="4 0">
-			<MenuItem Header="{x:Static res:Strings.Menu_App}">
+			<MenuItem Header="{x:Static res:Strings.Menu_App}"
+				x:Name="AppMenu">
 				<MenuItem Header="{x:Static res:Strings.Menu_Settings}"
 						Click="OnOpenSettingsClick"/>
 

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
@@ -39,7 +40,7 @@ public partial class MainWindow : Window {
 		_lineContainer = new(Settings.Instance.renameMode.Value);
 
 
-		RenameModeComboBox.ItemsSource =  new[] {
+		RenameModeComboBox.ItemsSource = new[] {
 				RenameMode.FileName,
 				RenameMode.FileNameWithoutExtension,
 				RenameMode.FullPath,
@@ -56,6 +57,9 @@ public partial class MainWindow : Window {
 
 		OnRenameModeChanged(Settings.Instance.renameMode.Value);
 
+		PreviewLostKeyboardFocus += Window_PreviewLostKeyboardFocus;
+		PreviewGotKeyboardFocus += Window_PreviewGotKeyboardFocus;
+		PreviewKeyDown += Window_PreviewKeyDown;
 	}
 
 	void UpdateTheme() {
@@ -71,6 +75,18 @@ public partial class MainWindow : Window {
 		if (null == EditorView?.CoreWebView2) return;
 		string theme = isDark ? "vs-dark" : "vs";
 		Editor_SetTheme(theme);
+	}
+	void CloseMenuAndFocusParent(MenuItem menuItem) {
+		var parentMenuItem = WpfUtil.FindParent<MenuItem>(menuItem);
+
+		menuItem.IsSubmenuOpen = false;
+
+		if (parentMenuItem != null) {
+			parentMenuItem.Focus();
+			return;
+		}
+
+		EditorView.Focus();
 	}
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
@@ -116,6 +132,48 @@ public partial class MainWindow : Window {
 		DropOverlay.Visibility = Visibility.Visible;
 		StatusBar.Visibility = Visibility.Hidden;
 		UpdateVisibility(false);
+	}
+
+	void Window_PreviewKeyDown(object sender, KeyEventArgs e) {
+		if (e.Key == Key.Escape) {
+			if (Keyboard.FocusedElement is MenuItem menuItem) {
+				CloseMenuAndFocusParent(menuItem);
+				e.Handled = true;
+				Debug.Print($"Window_PreviewKeyDown: {e}");
+				return;
+			}
+			if (!EditorView.IsKeyboardFocusWithin) {
+				EditorView.Focus();
+				e.Handled = true;
+				return;
+			}
+		} else if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
+			AppMenu.Focus();
+			AppMenu.IsSubmenuOpen = !AppMenu.IsSubmenuOpen;
+			e.Handled = true;
+			Debug.Print($"Window_PreviewKeyDown: {e}");
+		} else if (e.Key == Key.M && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
+			RenameModeMenu.Focus();
+			RenameModeMenu.IsSubmenuOpen = !RenameModeMenu.IsSubmenuOpen;
+			e.Handled = true;
+			Debug.Print($"Window_PreviewKeyDown: {e}");
+		}
+	}
+
+	void Window_PreviewLostKeyboardFocus(
+		object sender,
+		KeyboardFocusChangedEventArgs e) {
+		if (e.NewFocus is DependencyObject newFocus) {
+			Debug.Print($"Window_PreviewLostKeyboardFocus: {newFocus}");
+		}
+	}
+
+	void Window_PreviewGotKeyboardFocus(
+		object sender,
+		KeyboardFocusChangedEventArgs e) {
+		if (e.NewFocus is DependencyObject newFocus) {
+			Debug.Print($"Window_PreviewGotKeyboardFocus: {newFocus}");
+		}
 	}
 
 	void OnOpenMenuClick(
@@ -351,7 +409,7 @@ public partial class MainWindow : Window {
 		UpdateTheme();
 	}
 
-	void OnRenameModeChanged(RenameMode mode) { 
+	void OnRenameModeChanged(RenameMode mode) {
 		foreach (var item in RenameModeMenu.Items) {
 			if (item is not MenuItem menuItem2) continue;
 			if (menuItem2.Tag is not RenameMode mode2) continue;
@@ -385,7 +443,7 @@ public partial class MainWindow : Window {
 		}
 
 		await SyncTextFromEditorAsync();
-		
+
 		_lineContainer.Sort(sortType);
 		EditorView_SetLines();
 	}
@@ -545,44 +603,5 @@ public partial class MainWindow : Window {
 	protected override void OnLostFocus(RoutedEventArgs e) {
 		base.OnLostFocus(e);
 		Debug.Print($"OnLostFocus: {e}");
-	}
-
-	// ------------------------------------------------------------ MARK: ----
-
-	static class Util {
-		// 後ろから n 番目のセパレーターの位置でパスを分割する
-		public static (string prefix, string suffix) SplitPathAtNthLastSeparator(string path, int n) {
-			var index = GetNthLastSeparatorIndex(path, n);
-
-			if (index == -1) {
-				return (
-					"",
-					path);
-			} else {
-				return (
-					path[..index],
-					path[index..]);
-			}
-
-			static int GetNthLastSeparatorIndex(string text, int n) {
-				int separatorCount = 0;
-				int firstSeparatorIndex = -1;
-
-				for (int i = text.Length - 1; i >= 0; i--) {
-					if (text[i] != '\\') {
-						continue;
-					}
-
-					firstSeparatorIndex = i;
-					separatorCount++;
-
-					if (separatorCount == n) {
-						return i;
-					}
-				}
-
-				return firstSeparatorIndex;
-			}
-		}
 	}
 }
