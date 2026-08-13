@@ -478,7 +478,7 @@ public partial class MainWindow : Window {
 					(
 						StatusBarTextBlockLeft.Text,
 						StatusBarTextBlockRight.Text
-					) = Util.SplitPathAtNthLastSeparator(line.origPath, 3);
+					) = PathUtil.SplitPathAtNthLastSeparator(line.origPath, 3);
 				} else {
 					StatusBarTextBlockLeft.Text = $"";
 					StatusBarTextBlockRight.Text = $"";
