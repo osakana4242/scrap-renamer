@@ -288,18 +288,6 @@ public partial class MainWindow : Window {
 		EditorView_SetLines();
 	}
 
-	void OnResetClicked(object sender, RoutedEventArgs e) {
-		_lineContainer.Reset();
-		EditorView_SetLines();
-		UpdateVisibility(false);
-	}
-
-	void OnClearClicked(object sender, RoutedEventArgs e) {
-		_lineContainer = new LineContainer(Settings.Instance.renameMode.Value);
-		EditorView_Clear();
-		UpdateVisibility(false);
-	}
-
 	async Task<string> GetTextAsync() {
 		(string text, System.Exception? ex)? ret = null;
 		_onTextGet = s => {
@@ -447,19 +435,38 @@ public partial class MainWindow : Window {
 
 	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
 		await Apply();
+		EditorView.Focus();
+	}
+
+	void OnResetClicked(object sender, RoutedEventArgs e) {
+		_lineContainer.Reset();
+		EditorView_SetLines();
+		UpdateVisibility(false);
+		EditorView.Focus();
+	}
+
+	void OnClearClicked(object sender, RoutedEventArgs e) {
+		_lineContainer = new LineContainer(Settings.Instance.renameMode.Value);
+		EditorView_Clear();
+		UpdateVisibility(false);
+		EditorView.Focus();
 	}
 
 	async void OnSortClicked(object sender, RoutedEventArgs e) {
-		if (sender is not FrameworkElement menuItem) return;
-		if (menuItem.Tag is not SortType sortType) {
-			// 指定が無い場合はフルパスでソートする
-			sortType = Settings.Instance.sortType.Value;
+		try {
+			if (sender is not FrameworkElement menuItem) return;
+			if (menuItem.Tag is not SortType sortType) {
+				// 指定が無い場合はフルパスでソートする
+				sortType = Settings.Instance.sortType.Value;
+			}
+
+			await SyncTextFromEditorAsync();
+
+			_lineContainer.Sort(sortType);
+			EditorView_SetLines();
+		} finally {
+			EditorView.Focus();
 		}
-
-		await SyncTextFromEditorAsync();
-
-		_lineContainer.Sort(sortType);
-		EditorView_SetLines();
 	}
 
 	// ------------------------------------------------------ MARK: EditorView
