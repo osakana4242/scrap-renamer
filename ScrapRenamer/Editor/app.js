@@ -147,6 +147,23 @@ require([
 
 	});
 
+
+	// テキストエリアにフォーカスした時
+	editor.onDidFocusEditorText(() => {
+		debugLog('エディタにフォーカスされました');
+		window.chrome.webview.postMessage({
+			type: "editorFocusText",
+		});
+	});	
+
+	// テキストエリアからフォーカスが外れた時
+	editor.onDidBlurEditorText(() => {
+		debugLog('エディタのフォーカスが外れました');
+		window.chrome.webview.postMessage({
+			type: "editorBlurText",
+		});
+	});	
+
 	window.addEventListener("dragover", e => {
 		window.chrome.webview.postMessage({
 			type: "dragover",

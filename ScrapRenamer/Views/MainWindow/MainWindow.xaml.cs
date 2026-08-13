@@ -25,6 +25,8 @@ public partial class MainWindow : Window {
 
 	LineContainer _lineContainer;
 	System.Action<(string text, System.Exception? ex)>? _onTextGet;
+	bool _editor_loaded;
+	bool _editor_hasFocus;
 
 
 	public MainWindow() {
@@ -132,6 +134,16 @@ public partial class MainWindow : Window {
 		DropOverlay.Visibility = Visibility.Visible;
 		StatusBar.Visibility = Visibility.Hidden;
 		UpdateVisibility(false);
+
+		// エディターのロード待機
+		while (!_editor_loaded) {
+			await Dispatcher.Yield();
+		}
+
+		UpdateTheme();
+		EditorView_SetLines();
+		Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+		Debug.Print($"MainWindow_Loaded: {e}");
 	}
 
 	void Window_PreviewKeyDown(object sender, KeyEventArgs e) {
@@ -142,7 +154,7 @@ public partial class MainWindow : Window {
 				Debug.Print($"Window_PreviewKeyDown: {e}");
 				return;
 			}
-			if (!EditorView.IsKeyboardFocusWithin) {
+			if (!_editor_hasFocus) {
 				EditorView.Focus();
 				e.Handled = true;
 				return;
@@ -251,7 +263,7 @@ public partial class MainWindow : Window {
 		OpenFiles(files);
 	}
 
-	void OpenFiles(string[] files) {
+	public void OpenFiles(string[] files) {
 		var lines = new List<Line>();
 
 		foreach (var file in files) {
@@ -264,6 +276,8 @@ public partial class MainWindow : Window {
 		if (Settings.Instance.sortOnAdd.Value) {
 			_lineContainer.Sort(Settings.Instance.sortType.Value);
 		}
+
+		if (null == EditorView.CoreWebView2) return;
 
 		UpdateVisibility(false);
 
@@ -487,8 +501,13 @@ public partial class MainWindow : Window {
 			break;
 		case "editorLoaded":
 			Debug.WriteLine("Editor loaded.");
-			UpdateTheme();
-			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+			_editor_loaded = true;
+			break;
+		case "editorFocusText":
+			_editor_hasFocus = true;
+			break;
+		case "editorBlurText":
+			_editor_hasFocus = false;
 			break;
 		case "dragover":
 			Debug.WriteLine("dragover");
@@ -540,6 +559,8 @@ public partial class MainWindow : Window {
 
 	// エディターに現テキストを設定する
 	void EditorView_SetLines() {
+		if (null == EditorView.CoreWebView2) return;
+
 		var message = new {
 			type = "setLines",
 			lines = _lineContainer.Lines.Select(i => new {

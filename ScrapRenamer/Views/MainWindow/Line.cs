@@ -61,8 +61,11 @@ class Line {
 	}
 
 	public Line(string origPath, RenameMode mode) {
-		this.origPath = origPath;
-		isDirectory = System.IO.Directory.Exists(origPath);
+		this.origPath = System.IO.Path.GetFullPath(origPath);
+		isDirectory = System.IO.Directory.Exists(this.origPath);
+		if (!System.IO.Path.Exists(this.origPath)) {
+			_error = Localization.Strings.Strings.Error_FileNotFound;
+		}
 		_mode = mode;
 		Reset();
 	}
