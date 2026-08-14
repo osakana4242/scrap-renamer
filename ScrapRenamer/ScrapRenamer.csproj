@@ -8,18 +8,39 @@
 		<UseWPF>true</UseWPF>
 		<AssemblyName>ScrapRenamer</AssemblyName>
 		<RootNamespace>ScrapRenamer</RootNamespace>
-		<Version>1.0.1</Version>
+		<Version>1.0.0</Version>
 		<NoWarn>$(NoWarn);WPF0001</NoWarn>
 		<ApplicationIcon>AppIcon/AppIcon.ico</ApplicationIcon>
+		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Resource Include="AppIcon\AppIcon.ico" />
 		<Resource Include="AppIcon\AppIcon_x32.png" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
-		<Content Include="Editor\**">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+		<Content Include="Editor\**"
+			CopyToOutputDirectory="PreserveNewest"
+			CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="..\LICENSE.txt"
+			CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="..\THIRD-PARTY-NOTICES.txt"
+			CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
+	<Target Name="RemoveDocumentationFilesFromPublish"
+			AfterTargets="ComputeFilesToPublish">
+		<ItemGroup>
+			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+				Condition="'%(ResolvedFileToPublish.Extension)' == '.xml' Or
+				           '%(ResolvedFileToPublish.Extension)' == '.pdb'" />
+		</ItemGroup>
+	</Target>
+
+	<Target Name="CreateZip"
+			AfterTargets="Publish">
+		<ZipDirectory
+			SourceDirectory="$(PublishDir)"
+			DestinationFile="$(OutputPath)ScrapRenamer-$(Version).zip"
+			Overwrite="true" />
+	</Target>
 </Project>
