@@ -258,7 +258,7 @@ function refreshDecorations2() {
 			),
 			options: {
 				isWholeLine: true,
-				beforeContentClassName: line.isFolder ? "folder-icon" : "file-icon",
+				beforeContentClassName: line.isDirectory ? "directory-icon" : "file-icon",
 				afterContentClassName: "path-decoration path-decoration-l" + (i + 1),
 				inlineClassName: changed ? "changed-line"
 					: isError ? "error-line" : "",

@@ -9,8 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
+using ScrapRenamer.Views.SettingsWindow;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.MainWindow;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml
@@ -24,10 +25,9 @@ public partial class MainWindow : Window {
 #endif
 
 	LineContainer _lineContainer;
-	System.Action<(string text, System.Exception? ex)>? _onTextGet;
-	bool _editor_loaded;
-	bool _editor_hasFocus;
+	Editor _editor;
 
+	internal LineContainer LineContainer => _lineContainer;
 
 	public MainWindow() {
 		InitializeComponent();
@@ -38,6 +38,7 @@ public partial class MainWindow : Window {
 		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
 		Settings.Instance.renameMode.OnChanged += OnRenameModeChanged;
 		Settings.Instance.Load();
+		_editor = new Editor(this);
 
 		_lineContainer = new(Settings.Instance.renameMode.Value);
 
@@ -76,7 +77,7 @@ public partial class MainWindow : Window {
 
 		if (null == EditorView?.CoreWebView2) return;
 		string theme = isDark ? "vs-dark" : "vs";
-		Editor_SetTheme(theme);
+		_editor.SetTheme(theme);
 	}
 	void CloseMenuAndFocusParent(MenuItem menuItem) {
 		var parentMenuItem = WpfUtil.FindParent<MenuItem>(menuItem);
@@ -127,7 +128,7 @@ public partial class MainWindow : Window {
 			System.Drawing.Color.White;
 
 		EditorView.Source = new Uri(path);
-		EditorView.WebMessageReceived += EditorView_WebMessageReceived;
+		EditorView.WebMessageReceived += _editor.WebMessageReceived;
 		// // 外部からのファイルドロップを禁止する
 		EditorView.AllowExternalDrop = true;
 		EditorView.Visibility = Visibility.Visible;
@@ -136,12 +137,12 @@ public partial class MainWindow : Window {
 		UpdateVisibility(false);
 
 		// エディターのロード待機
-		while (!_editor_loaded) {
+		while (!_editor.Loaded) {
 			await Dispatcher.Yield();
 		}
 
 		UpdateTheme();
-		EditorView_SetLines();
+		_editor.SetLines();
 		Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 		Debug.Print($"MainWindow_Loaded: {e}");
 	}
@@ -154,8 +155,8 @@ public partial class MainWindow : Window {
 				Debug.Print($"Window_PreviewKeyDown: {e}");
 				return;
 			}
-			if (!_editor_hasFocus) {
-				EditorView.Focus();
+			if (!_editor.HasFocus) {
+				_editor.EditorView.Focus();
 				e.Handled = true;
 				return;
 			}
@@ -230,7 +231,7 @@ public partial class MainWindow : Window {
 	void OnOpenSettingsClick(
 		object sender,
 		RoutedEventArgs e) {
-		var window = new SettingsWindow() {
+		var window = new SettingsWindow.SettingsWindow() {
 			Owner = this
 		};
 		window.ShowDialog();
@@ -285,30 +286,11 @@ public partial class MainWindow : Window {
 			Debug.WriteLine("No new lines to add.");
 			return;
 		}
-		EditorView_SetLines();
-	}
-
-	async Task<string> GetTextAsync() {
-		(string text, System.Exception? ex)? ret = null;
-		_onTextGet = s => {
-			ret = s;
-		};
-
-		EditorView_GetText();
-
-		while (null == ret) {
-			await Dispatcher.Yield();
-		}
-
-		if (null != ret.Value.ex) {
-			throw ret.Value.ex;
-		}
-
-		return ret.Value.text;
+		_editor.SetLines();
 	}
 
 	async Task SyncTextFromEditorAsync() {
-		var text = await GetTextAsync();
+		var text = await _editor.GetTextAsync();
 		string[] editedLines = null == text ?
 			new string[] {} :
 			text.Split('\n').ToArray();
@@ -321,7 +303,7 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	async Task Apply() {
+	internal async Task Apply() {
 		await SyncTextFromEditorAsync();
 		_lineContainer.Apply();
 		var lines = _lineContainer.Lines.
@@ -364,12 +346,12 @@ public partial class MainWindow : Window {
 
 			AddParagraph(doc, "");
 
-			var window = new ResultWindow(doc) {
+			var window = new ResultWindow.ResultWindow(doc) {
 				Owner = this
 			};
 			window.ShowDialog();
 		}
-		EditorView_SetLines();
+		_editor.SetLines();
 
 	}
 
@@ -395,14 +377,14 @@ public partial class MainWindow : Window {
 
 	void OnFontFamilyChanged(string fontFamily) {
 		if (null == EditorView.CoreWebView2) return;
-		EditorView_UpdateOptions(new {
+		_editor.UpdateOptions(new {
 			fontFamily = fontFamily,
 		});
 	}
 
 	void OnFontSizeChanged(int fontSize) {
 		if (null == EditorView.CoreWebView2) return;
-		EditorView_UpdateOptions(new {
+		_editor.UpdateOptions(new {
 			fontSize = fontSize,
 		});
 	}
@@ -429,7 +411,7 @@ public partial class MainWindow : Window {
 		} else {
 			await SyncTextFromEditorAsync();
 			_lineContainer.SetMode(mode);
-			EditorView_SetLines();
+			_editor.SetLines();
 		}
 	}
 
@@ -440,14 +422,14 @@ public partial class MainWindow : Window {
 
 	void OnResetClicked(object sender, RoutedEventArgs e) {
 		_lineContainer.Reset();
-		EditorView_SetLines();
+		_editor.SetLines();
 		UpdateVisibility(false);
 		EditorView.Focus();
 	}
 
 	void OnClearClicked(object sender, RoutedEventArgs e) {
 		_lineContainer = new LineContainer(Settings.Instance.renameMode.Value);
-		EditorView_Clear();
+		_editor.Clear();
 		UpdateVisibility(false);
 		EditorView.Focus();
 	}
@@ -463,7 +445,7 @@ public partial class MainWindow : Window {
 			await SyncTextFromEditorAsync();
 
 			_lineContainer.Sort(sortType);
-			EditorView_SetLines();
+			_editor.SetLines();
 		} finally {
 			EditorView.Focus();
 		}
@@ -471,130 +453,11 @@ public partial class MainWindow : Window {
 
 	// ------------------------------------------------------ MARK: EditorView
 
-	async void EditorView_WebMessageReceived(
-		object? sender,
-		CoreWebView2WebMessageReceivedEventArgs e) {
-		var json = e.WebMessageAsJson;
 
-		// MessageBox.Show(json);
-
-		var msg = JsonSerializer.Deserialize<EditorMessage>(json);
-		if (msg == null) {
-			Debug.WriteLine("Failed to deserialize message.");
-			return;
-		}
-
-		switch (msg.Type) {
-		case "debugLog":
-			Debug.WriteLine("from js: " + msg.Text);
-			break;
-		case "apply":
-			Debug.WriteLine("Apply.");
-			await Apply();
-			break;
-		case "cursorSelectionLineChanged":
-			if (int.TryParse(msg.Text, out var lineIndex)) {
-				if ((uint)lineIndex < (uint)_lineContainer.Lines.Count) {
-					var line = _lineContainer.Lines[lineIndex];
-					(
-						StatusBarTextBlockLeft.Text,
-						StatusBarTextBlockRight.Text
-					) = PathUtil.SplitPathAtNthLastSeparator(line.origPath, 3);
-				} else {
-					StatusBarTextBlockLeft.Text = $"";
-					StatusBarTextBlockRight.Text = $"";
-				}
-			}
-			break;
-		case "editorLoaded":
-			Debug.WriteLine("Editor loaded.");
-			_editor_loaded = true;
-			break;
-		case "editorFocusText":
-			_editor_hasFocus = true;
-			break;
-		case "editorBlurText":
-			_editor_hasFocus = false;
-			break;
-		case "dragover":
-			Debug.WriteLine("dragover");
-			UpdateVisibility(true);
-			break;
-		case "text":
-			var act = _onTextGet;
-			_onTextGet = null;
-			act?.Invoke((msg.Text ?? "", null));
-			break;
-		}
-	}
-
-	void EditorView_Clear() {
-		var message = new { type = "clear", };
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-	}
-
-	void EditorView_GetText() {
-		var message = new { type = "getText", };
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-	}
-
-	// エディターオプションを設定する
-	void EditorView_UpdateOptions(object options) {
-		var message = new {
-			type = "updateOptions",
-			options = options,
-		};
-
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-	}
-
-	// エディター設定を設定する
-	void EditorView_SetSettings() {
-		var message = new {
-			type = "setSettings",
-			settings = new {
-				isAfterContentFullpathVisible = false,
-			},
-		};
-
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-	}
-
-	// エディターに現テキストを設定する
-	void EditorView_SetLines() {
-		if (null == EditorView.CoreWebView2) return;
-
-		var message = new {
-			type = "setLines",
-			lines = _lineContainer.Lines.Select(i => new {
-				origPath = i.origPath,
-				origLine = i.OrigLine,
-				editedLine = i.editedLine,
-				error = i.Error,
-				isFolder = i.isDirectory,
-			}).ToArray(),
-		};
-
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-	}
-
-	void Editor_SetTheme(string theme) {
-		var message = new {
-			type = "setTheme",
-			theme = theme
-		};
-		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(message));
-	}
 
 	// ------------------------------------------------------------ MARK: ----
 
-	void UpdateVisibility(bool isDragging) {
+	internal void UpdateVisibility(bool isDragging) {
 		if (0 < _lineContainer.Lines.Count && !isDragging) {
 			Debug.Print($"A, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
 			EditorView.Visibility = Visibility.Visible;
@@ -632,4 +495,5 @@ public partial class MainWindow : Window {
 		base.OnLostFocus(e);
 		Debug.Print($"OnLostFocus: {e}");
 	}
+
 }

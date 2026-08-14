@@ -1,4 +1,4 @@
-﻿namespace ScrapRenamer;
+﻿namespace ScrapRenamer.Views.MainWindow;
 
 public enum RenameMode {
 	FileName,

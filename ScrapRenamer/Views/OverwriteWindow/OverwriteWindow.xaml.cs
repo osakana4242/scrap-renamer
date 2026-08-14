@@ -1,4 +1,4 @@
-﻿namespace ScrapRenamer.View;
+﻿namespace ScrapRenamer.Views.OverwriteWindow;
 
 using System.Windows;
 

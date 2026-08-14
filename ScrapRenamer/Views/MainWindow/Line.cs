@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.MainWindow;
 
 class Line {
 	public string origPath = "";

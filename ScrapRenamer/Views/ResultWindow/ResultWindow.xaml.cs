@@ -1,10 +1,10 @@
-using System.Diagnostics;
-using System.Windows.Media;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Navigation;
+using ScrapRenamer.Views.SettingsWindow;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.ResultWindow;
 
 public partial class ResultWindow : Window {
 	public ResultWindow(string text) :

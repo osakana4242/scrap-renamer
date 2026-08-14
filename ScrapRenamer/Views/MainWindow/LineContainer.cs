@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using ScrapRenamer.View;
+using ScrapRenamer.Views.OverwriteWindow;
 
-namespace ScrapRenamer;
-
+namespace ScrapRenamer.Views.MainWindow;
 class LineContainer {
 	RenameMode _mode;
 	public List<Line> Lines { get; set; } = new();
@@ -324,7 +323,7 @@ class LineContainer {
 								break;
 							default:
 								// ユーザーに対応方法を確認する
-								var window = new OverwriteWindow();
+								var window = new OverwriteWindow.OverwriteWindow();
 								window.ShowDialog();
 								_lastOverwriteWindowResult = window.Result;
 								break;

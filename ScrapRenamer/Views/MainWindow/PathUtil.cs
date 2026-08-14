@@ -1,4 +1,4 @@
-namespace ScrapRenamer;
+﻿namespace ScrapRenamer.Views.MainWindow;
 
 public static class PathUtil {
 	// 後ろから n 番目のセパレーターの位置でパスを分割する

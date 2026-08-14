@@ -1,8 +1,8 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.MainWindow;
 
 public static class WpfUtil {
 	public static T? FindParent<T>(DependencyObject element)

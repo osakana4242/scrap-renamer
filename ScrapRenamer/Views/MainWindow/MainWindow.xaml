@@ -1,11 +1,12 @@
 ﻿<Window
-	x:Class="ScrapRenamer.MainWindow"
+	x:Class="ScrapRenamer.Views.MainWindow.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-	xmlns:local="clr-namespace:ScrapRenamer"
+	xmlns:SettingsWindow="clr-namespace:ScrapRenamer.Views.SettingsWindow"
+	xmlns:MainWindow="clr-namespace:ScrapRenamer.Views.MainWindow"
 	xmlns:res="clr-namespace:ScrapRenamer.Localization.Strings"
 	mc:Ignorable="d"
 	Icon="pack://application:,,,/AppIcon/AppIcon.ico"
@@ -50,19 +51,19 @@
 				x:Name="RenameModeMenu">
 				<MenuItem
 					Header="{x:Static res:Strings.RenameModeItems_FileName}"
-					Tag="{x:Static local:RenameMode.FileName}"
+					Tag="{x:Static MainWindow:RenameMode.FileName}"
 					IsCheckable="True"
 					Click="OnRenameModeMenuClick"/>
 
 				<MenuItem
 					Header="{x:Static res:Strings.RenameModeItems_FileNameWithoutExtension}"
-					Tag="{x:Static local:RenameMode.FileNameWithoutExtension}"
+					Tag="{x:Static MainWindow:RenameMode.FileNameWithoutExtension}"
 					IsCheckable="True"
 					Click="OnRenameModeMenuClick"/>
 
 				<MenuItem
 					Header="{x:Static res:Strings.RenameModeItems_FullPath}"
-					Tag="{x:Static local:RenameMode.FullPath}"
+					Tag="{x:Static MainWindow:RenameMode.FullPath}"
 					IsCheckable="True"
 					Click="OnRenameModeMenuClick"/>
 			</MenuItem>

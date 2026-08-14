@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.MainWindow;
 
 public class EditorMessage {
 	[JsonPropertyName("type")]

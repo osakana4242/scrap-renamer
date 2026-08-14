@@ -3,8 +3,9 @@ using System.IO;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Media;
+using ScrapRenamer.Views.MainWindow;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.SettingsWindow;
 
 public class Settings {
 	public static readonly Settings Instance = new Settings();

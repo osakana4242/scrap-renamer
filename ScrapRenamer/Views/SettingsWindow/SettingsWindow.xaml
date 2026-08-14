@@ -1,5 +1,5 @@
 ﻿<Window
-	x:Class="ScrapRenamer.SettingsWindow"
+	x:Class="ScrapRenamer.Views.SettingsWindow.SettingsWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:res="clr-namespace:ScrapRenamer.Localization.Strings"

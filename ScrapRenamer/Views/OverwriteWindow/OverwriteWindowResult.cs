@@ -1,4 +1,4 @@
-﻿namespace ScrapRenamer.View;
+﻿namespace ScrapRenamer.Views.OverwriteWindow;
 
 public enum OverwriteWindowResult {
 	Overwrite,

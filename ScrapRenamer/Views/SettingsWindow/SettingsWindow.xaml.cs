@@ -1,11 +1,11 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Navigation;
 
-namespace ScrapRenamer;
+namespace ScrapRenamer.Views.SettingsWindow;
 
 public partial class SettingsWindow : Window {
 	public SettingsWindow() {
