@@ -94,58 +94,63 @@ public partial class MainWindow : Window {
 	}
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
-		var env = await CoreWebView2Environment.CreateAsync(
-			userDataFolder: Path.Combine(
-				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-				"ScrapRenamer",
-				"WebView2"));
+		try {
+			var env = await CoreWebView2Environment.CreateAsync(
+				userDataFolder: Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					"ScrapRenamer",
+					"WebView2"));
 
-		await EditorView.EnsureCoreWebView2Async(env);
-		EditorView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+			await EditorView.EnsureCoreWebView2Async(env);
+			EditorView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
 
 
-		if (s_isDebug) {
-			EditorView.CoreWebView2.OpenDevToolsWindow();
+			if (s_isDebug) {
+				EditorView.CoreWebView2.OpenDevToolsWindow();
+			}
+
+			var hoge = new {
+				isDebug = s_isDebug,
+				// フルパスを行末に表示するか
+				showFullPathInAfter = false,
+			};
+
+			await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
+				$$"""
+				window.scrapRenamer = {{JsonSerializer.Serialize(hoge)}};
+				""");
+			UpdateTheme();
+
+			var path = Path.Combine(
+				AppContext.BaseDirectory,
+				"Editor",
+				"index.html");
+			EditorView.DefaultBackgroundColor = Platform.Windows.Theme.IsDarkMode() ?
+				System.Drawing.Color.Black :
+				System.Drawing.Color.White;
+
+			EditorView.Source = new Uri(path);
+			EditorView.WebMessageReceived += _editor.WebMessageReceived;
+			// // 外部からのファイルドロップを禁止する
+			EditorView.AllowExternalDrop = true;
+			EditorView.Visibility = Visibility.Visible;
+			DropOverlay.Visibility = Visibility.Visible;
+			StatusBar.Visibility = Visibility.Hidden;
+			UpdateVisibility(false);
+
+			// エディターのロード待機
+			while (!_editor.Loaded) {
+				await Dispatcher.Yield();
+			}
+
+			UpdateTheme();
+			_editor.SetLines();
+			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+			Debug.Print($"MainWindow_Loaded: {e}");
+		} catch (Exception ex) {
+			var w = new ResultWindow.ResultWindow(ex.ToString());
+			w.ShowDialog();
 		}
-
-		var hoge = new {
-			isDebug = s_isDebug,
-			// フルパスを行末に表示するか
-			showFullPathInAfter = false,
-		};
-
-		await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
-			$$"""
-			window.scrapRenamer = {{JsonSerializer.Serialize(hoge)}};
-			""");
-		UpdateTheme();
-
-		var path = Path.Combine(
-			AppContext.BaseDirectory,
-			"Editor",
-			"index.html");
-		EditorView.DefaultBackgroundColor = Platform.Windows.Theme.IsDarkMode() ?
-			System.Drawing.Color.Black :
-			System.Drawing.Color.White;
-
-		EditorView.Source = new Uri(path);
-		EditorView.WebMessageReceived += _editor.WebMessageReceived;
-		// // 外部からのファイルドロップを禁止する
-		EditorView.AllowExternalDrop = true;
-		EditorView.Visibility = Visibility.Visible;
-		DropOverlay.Visibility = Visibility.Visible;
-		StatusBar.Visibility = Visibility.Hidden;
-		UpdateVisibility(false);
-
-		// エディターのロード待機
-		while (!_editor.Loaded) {
-			await Dispatcher.Yield();
-		}
-
-		UpdateTheme();
-		_editor.SetLines();
-		Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
-		Debug.Print($"MainWindow_Loaded: {e}");
 	}
 
 	void Window_PreviewKeyDown(object sender, KeyEventArgs e) {
