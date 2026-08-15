@@ -176,14 +176,10 @@
 				<RowDefinition Height="24"/>
 			</Grid.RowDefinitions>
 
-			<wv2:WebView2
-				Grid.Row="0"
-				x:Name="EditorView"/>
-
 			<Border
 				Grid.Row="0"
 				x:Name="DropOverlay"
-				Visibility="Collapsed"
+				Visibility="Visible"
 				Background="Transparent"
 				AllowDrop="True"
 				DragOver="OnDragOver"
@@ -204,6 +200,11 @@
 						VerticalAlignment="Center"/>
 				</Border>
 			</Border>
+
+			<wv2:WebView2
+				Grid.Row="0"
+				x:Name="EditorView"/>
+
 
 			<Border
 				Grid.Row="1"
