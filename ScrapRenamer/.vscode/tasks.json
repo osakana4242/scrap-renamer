@@ -2,35 +2,27 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "build-debug",
+			"label": "build-debug-x64",
 			"type": "process",
 			"command": "dotnet",
 			"args": [
 				"build",
+				"-c", "Debug",
+				"-r", "win-x64",
 				"${workspaceFolder}/ScrapRenamer.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary;ForceNoAlign",
-			]
+			],
+			"problemMatcher": "$msCompile"
 		},
 		{
-			"label": "build-release",
+			"label": "build-release-x64",
 			"type": "process",
 			"command": "dotnet",
 			"args": [
 				"build",
-				"-c",
-				"Release",
-				"${workspaceFolder}/ScrapRenamer.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary;ForceNoAlign"
-			]
-		},
-		{
-			"label": "build",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
+				"-c", "Release",
+				"-r", "win-x64",
 				"${workspaceFolder}/ScrapRenamer.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary;ForceNoAlign"
@@ -38,28 +30,18 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"label": "publish",
+			"label": "publish-x64",
 			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"publish",
+				"-c", "Release",
+				"-r", "win-x64",
 				"${workspaceFolder}/ScrapRenamer.csproj",
 				"/property:GenerateFullPaths=true",
 				"/consoleloggerparameters:NoSummary;ForceNoAlign"
 			],
 			"problemMatcher": "$msCompile"
 		},
-		{
-			"label": "watch",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"watch",
-				"run",
-				"--project",
-				"${workspaceFolder}/ScrapRenamer.csproj"
-			],
-			"problemMatcher": "$msCompile"
-		}
 	]
 }

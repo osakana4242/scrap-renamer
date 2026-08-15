@@ -13,6 +13,7 @@
 		<NoWarn>$(NoWarn);WPF0001</NoWarn>
 		<ApplicationIcon>AppIcon/AppIcon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -31,6 +32,41 @@
 			CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
+	<!--
+		Build時の依存DLLを bin\ 以下に配置する。
+	-->
+	<Target Name="SetDependencyOutputPath"
+			BeforeTargets="CopyFilesToOutputDirectory">
+
+		<ItemGroup>
+			<ReferenceCopyLocalPaths Update="@(ReferenceCopyLocalPaths)">
+				<DestinationSubPath>bin\%(Filename)%(Extension)</DestinationSubPath>
+			</ReferenceCopyLocalPaths>
+		</ItemGroup>
+
+	</Target>
+
+	<!--
+		Publish時の依存DLLを bin\ 以下に配置する。
+	-->
+	<Target Name="SetDependencyPublishPath"
+			AfterTargets="ComputeFilesToPublish">
+
+		<ItemGroup>
+			<ResolvedFileToPublish
+				Update="@(ResolvedFileToPublish)"
+				Condition="'%(ResolvedFileToPublish.Extension)' == '.dll'">
+
+				<RelativePath>bin\%(Filename)%(Extension)</RelativePath>
+
+			</ResolvedFileToPublish>
+		</ItemGroup>
+
+	</Target>
+
+	<!--
+		XMLドキュメントとPDBをPublish対象から除外する。
+	-->
 	<Target Name="RemoveDocumentationFilesFromPublish"
 			AfterTargets="ComputeFilesToPublish">
 		<ItemGroup>

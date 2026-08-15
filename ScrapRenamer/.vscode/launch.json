@@ -2,18 +2,18 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Debug",
+			"name": "Debug x64",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "build-debug",
-			"program": "${workspaceFolder}/bin/Debug/net10.0-windows/ScrapRenamer.exe"
+			"preLaunchTask": "build-debug-x64",
+			"program": "${workspaceFolder}/bin/Debug/net481/win-x64/ScrapRenamer.exe"
 		},
 		{
-			"name": "Release",
+			"name": "Release x64",
 			"type": "coreclr",
 			"request": "launch",
-			"preLaunchTask": "build-release",
-			"program": "${workspaceFolder}/bin/Release/net10.0-windows/ScrapRenamer.exe"
+			"preLaunchTask": "build-release-x64",
+			"program": "${workspaceFolder}/bin/Release/net481/win-x64/ScrapRenamer.exe"
 		},
 		{
 			"name": ".NET Core Attach",
