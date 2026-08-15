@@ -123,6 +123,7 @@ public partial class MainWindow : Window {
 
 			var path = Path.Combine(
 				AppContext.BaseDirectory,
+				"bin",
 				"Editor",
 				"index.html");
 			EditorView.DefaultBackgroundColor = Platform.Windows.Theme.IsDarkMode() ?

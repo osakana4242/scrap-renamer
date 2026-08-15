@@ -25,7 +25,8 @@
  		<PackageReference Include="IndexRange" Version="1.0.3" />
  		<Content Include="Editor\**"
 			CopyToOutputDirectory="PreserveNewest"
-			CopyToPublishDirectory="PreserveNewest" />
+			CopyToPublishDirectory="PreserveNewest"
+			TargetPath="bin\%(RecursiveDir)%(Filename)%(Extension)" />
 		<Content Include="..\LICENSE.txt"
 			CopyToPublishDirectory="PreserveNewest" />
 		<Content Include="..\THIRD-PARTY-NOTICES.txt"
