@@ -8,8 +8,7 @@
 	SizeToContent="WidthAndHeight"
 	ResizeMode="NoResize"
 	ShowInTaskbar="False"
-	WindowStartupLocation="CenterOwner"
-	ThemeMode="System">
+	WindowStartupLocation="CenterOwner">
 
 	<Grid Margin="20">
 

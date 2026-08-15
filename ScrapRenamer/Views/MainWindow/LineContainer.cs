@@ -332,11 +332,7 @@ class LineContainer {
 							switch (_lastOverwriteWindowResult) {
 							case OverwriteWindowResult.Skip:
 							case OverwriteWindowResult.SkipAll:
-								if (line.isDirectory) {
-									line.Error = Localization.Strings.Strings.Error_DestinationDirectoryExists;
-								} else {
-									line.Error = Localization.Strings.Strings.Error_DestinationFileExists;
-								}
+								line.Error = Localization.Strings.Strings.Error_DestinationFileExists;
 								return;
 							case OverwriteWindowResult.Overwrite:
 							case OverwriteWindowResult.OverwriteAll:
@@ -346,8 +342,10 @@ class LineContainer {
 								throw new System.OperationCanceledException();
 							}
 						}
-
-						System.IO.File.Move(item.before, item.after, overwrite);
+						if (overwrite) {
+							System.IO.File.Delete(item.after);
+						}
+						System.IO.File.Move(item.before, item.after);
 						DeleteEmptyDirectories(
 							Path.GetDirectoryName(item.before),
 							protectedDirectory);
@@ -364,7 +362,7 @@ class LineContainer {
 					line.Error = Localization.Strings.Strings.Error_SrcFileNotFound;
 					break;
 				case System.IO.DirectoryNotFoundException:
-					if (!System.IO.Path.Exists(line.origPath)) {
+					if (!System.IO.Directory.Exists(line.origPath)) {
 						// 移動元のディレクトリが存在しません
 						line.Error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
 					} else {
@@ -452,8 +450,7 @@ class LineContainer {
 			if (sameCount == 0) {
 				return "";
 			}
-
-			return string.Join('\\', beforeParts[..sameCount]);
+			return string.Join("\\", beforeParts.AsSpan()[..sameCount].ToArray());
 		}
 
 

@@ -9,7 +9,6 @@
 	Height="320"
 	ResizeMode="CanResize"
 	WindowStartupLocation="CenterOwner"
-	ThemeMode="System"
 	>
 
 	<Grid Margin="16">

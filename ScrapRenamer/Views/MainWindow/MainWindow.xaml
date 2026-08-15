@@ -15,9 +15,7 @@
 	Drop="OnDrop"
 	Title="{x:Static res:Strings.AppName}"
 	Width="480"
-	Height="560"
-	ThemeMode="System"
-	>
+	Height="560">
 	<DockPanel>
 
 		<!-- メニューバー -->

@@ -8,6 +8,8 @@ using System.Windows.Navigation;
 namespace ScrapRenamer.Views.SettingsWindow;
 
 public partial class SettingsWindow : Window {
+	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
+	
 	public SettingsWindow() {
 		InitializeComponent();
 		ThemeMode = Settings.Instance.themeProp.Value;

@@ -2,7 +2,8 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net10.0-windows</TargetFramework>
+		<TargetFramework>net481</TargetFramework>
+		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UseWPF>true</UseWPF>
@@ -18,7 +19,10 @@
 		<Resource Include="AppIcon\AppIcon.ico" />
 		<Resource Include="AppIcon\AppIcon_x32.png" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
-		<Content Include="Editor\**"
+		<PackageReference Include="System.Text.Json" Version="10.0.11" />
+		<PackageReference Include="System.Memory" Version="4.6.3" />
+ 		<PackageReference Include="IndexRange" Version="1.0.3" />
+ 		<Content Include="Editor\**"
 			CopyToOutputDirectory="PreserveNewest"
 			CopyToPublishDirectory="PreserveNewest" />
 		<Content Include="..\LICENSE.txt"

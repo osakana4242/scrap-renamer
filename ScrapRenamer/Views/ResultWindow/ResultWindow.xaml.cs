@@ -7,6 +7,8 @@ using ScrapRenamer.Views.SettingsWindow;
 namespace ScrapRenamer.Views.ResultWindow;
 
 public partial class ResultWindow : Window {
+	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
+
 	public ResultWindow(string text) :
 		this(Util.TextToDoc(text)) {
 	}
@@ -53,7 +55,7 @@ public partial class ResultWindow : Window {
 			var doc = new FlowDocument();
 			var fontFamily = Settings.Instance.FontFamily;
 			var thickness = new Thickness(0); ;
-			foreach (var line in text.Split("\n")) {
+			foreach (var line in text.Split('\n')) {
 				var p = new Paragraph() {
 					FontFamily = fontFamily,
 					FontSize = Settings.Instance.fontSizeProp.Value,

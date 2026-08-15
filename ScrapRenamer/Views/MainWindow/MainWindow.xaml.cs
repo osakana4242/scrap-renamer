@@ -27,6 +27,7 @@ public partial class MainWindow : Window {
 	LineContainer _lineContainer;
 	Editor _editor;
 
+	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
 	internal LineContainer LineContainer => _lineContainer;
 
 	public MainWindow() {
