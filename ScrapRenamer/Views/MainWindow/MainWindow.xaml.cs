@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
+using ModernWpf;
 using ScrapRenamer.Views.SettingsWindow;
 
 namespace ScrapRenamer.Views.MainWindow;
@@ -71,9 +72,9 @@ public partial class MainWindow : Window {
 			Settings.Instance.themeProp.Value == ThemeMode.Dark ||
 			Settings.Instance.themeProp.Value == ThemeMode.System &&
 			Platform.Windows.Theme.IsDarkMode();
+		Debug.Print($"AccentColor: {ThemeManager.Current.AccentColor}");
 
-
-		Platform.Windows.Dwm.SetWindowDarkMode(this, isDark);
+		// Platform.Windows.Dwm.SetWindowDarkMode(this, isDark);
 		ThemeMode = Settings.Instance.themeProp.Value;
 
 		if (null == EditorView?.CoreWebView2) return;

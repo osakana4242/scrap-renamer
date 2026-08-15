@@ -1,7 +1,19 @@
-<ResourceDictionary
+﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+	<Style TargetType="DockPanel">
+		<Setter Property="Background"
+				Value="{DynamicResource WindowBackgroundBrush}"/>
+	</Style>
+	<Style TargetType="Grid">
+		<Setter Property="Background"
+				Value="{DynamicResource WindowBackgroundBrush}"/>
+	</Style>
+	<Style TargetType="TextBlock">
+		<Setter Property="Foreground"
+				Value="{DynamicResource ControlForegroundBrush}"/>
+	</Style>
 	<Style TargetType="Button">
 		<Setter Property="Background"
 				Value="{DynamicResource ControlBackgroundBrush}"/>

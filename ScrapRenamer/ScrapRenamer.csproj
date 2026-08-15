@@ -17,27 +17,22 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="ModernWpfUI" Version="1.0.0-preview.1" />
 		<Resource Include="AppIcon\AppIcon.ico" />
 		<Resource Include="AppIcon\AppIcon_x32.png" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
 		<PackageReference Include="System.Text.Json" Version="10.0.11" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
  		<PackageReference Include="IndexRange" Version="1.0.3" />
- 		<Content Include="Editor\**"
-			CopyToOutputDirectory="PreserveNewest"
-			CopyToPublishDirectory="PreserveNewest"
-			TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
-		<Content Include="..\LICENSE.txt"
-			CopyToPublishDirectory="PreserveNewest" />
-		<Content Include="..\THIRD-PARTY-NOTICES.txt"
-			CopyToPublishDirectory="PreserveNewest" />
+ 		<Content Include="Editor\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
+		<Content Include="..\LICENSE.txt" CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="..\THIRD-PARTY-NOTICES.txt" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 
 	<!--
 		Build時の依存DLLを bin\ 以下に配置する。
 	-->
-	<Target Name="SetDependencyOutputPath"
-			BeforeTargets="CopyFilesToOutputDirectory">
+	<Target Name="SetDependencyOutputPath" BeforeTargets="CopyFilesToOutputDirectory">
 
 		<ItemGroup>
 			<ReferenceCopyLocalPaths Update="@(ReferenceCopyLocalPaths)">
@@ -50,13 +45,10 @@
 	<!--
 		Publish時の依存DLLを bin\ 以下に配置する。
 	-->
-	<Target Name="SetDependencyPublishPath"
-			AfterTargets="ComputeFilesToPublish">
+	<Target Name="SetDependencyPublishPath" AfterTargets="ComputeFilesToPublish">
 
 		<ItemGroup>
-			<ResolvedFileToPublish
-				Update="@(ResolvedFileToPublish)"
-				Condition="'%(ResolvedFileToPublish.Extension)' == '.dll'">
+			<ResolvedFileToPublish Update="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Extension)' == '.dll'">
 
 				<RelativePath>bin\%(Filename)%(Extension)</RelativePath>
 
@@ -68,20 +60,13 @@
 	<!--
 		XMLドキュメントとPDBをPublish対象から除外する。
 	-->
-	<Target Name="RemoveDocumentationFilesFromPublish"
-			AfterTargets="ComputeFilesToPublish">
+	<Target Name="RemoveDocumentationFilesFromPublish" AfterTargets="ComputeFilesToPublish">
 		<ItemGroup>
-			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
-				Condition="'%(ResolvedFileToPublish.Extension)' == '.xml' Or
-				           '%(ResolvedFileToPublish.Extension)' == '.pdb'" />
+			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Extension)' == '.xml' Or&#xA;				           '%(ResolvedFileToPublish.Extension)' == '.pdb'" />
 		</ItemGroup>
 	</Target>
 
-	<Target Name="CreateZip"
-			AfterTargets="Publish">
-		<ZipDirectory
-			SourceDirectory="$(PublishDir)"
-			DestinationFile="$(OutputPath)ScrapRenamer-$(Version).zip"
-			Overwrite="true" />
+	<Target Name="CreateZip" AfterTargets="Publish">
+		<ZipDirectory SourceDirectory="$(PublishDir)" DestinationFile="$(OutputPath)ScrapRenamer-$(Version).zip" Overwrite="true" />
 	</Target>
 </Project>
