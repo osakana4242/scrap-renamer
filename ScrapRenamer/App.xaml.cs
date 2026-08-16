@@ -14,9 +14,9 @@ public partial class App : Application {
 
 
 		// en 確認用
-		var cultureInfo = new System.Globalization.CultureInfo("en");
-		Thread.CurrentThread.CurrentUICulture = cultureInfo;
-		Thread.CurrentThread.CurrentCulture = cultureInfo;
+		// var cultureInfo = new System.Globalization.CultureInfo("en");
+		// Thread.CurrentThread.CurrentUICulture = cultureInfo;
+		// Thread.CurrentThread.CurrentCulture = cultureInfo;
 
 		MainWindow window = new MainWindow();
 		if (e.Args.Length > 0) {
