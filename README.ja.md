@@ -13,14 +13,14 @@
 
 エディター部分は [VS Code](https://github.com/microsoft/vscode) と同じ [Monaco Editor](https://github.com/microsoft/monaco-editor) を採用しています。
 
-## Features
+## 機能
 
 - 複数カーソル編集
 - 矩形選択
 - 検索・置換
 - ファイル名の入れ替え
 
-## License
+## ライセンス
 
 このソフトウェア本体は 0BSD ライセンスです。
 
