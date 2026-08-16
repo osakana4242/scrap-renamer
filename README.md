@@ -4,8 +4,10 @@
 
 テキストエディター型のファイルリネームツールです。
 
-ファイルをドラッグアンドドロップ後、ファイル名一覧をテキストエディター感覚で編集。  
-編集後は一括でリネームを実行できます。
+![](./Docs/SS_02.jpg)
+
+ファイルをドラッグアンドドロップ後、ファイル名一覧をテキストエディター感覚で編集できます。  
+実行ボタン(or Ctrl+Enter)で一括リネームを実行します。
 
 エディター部分は [VS Code](https://github.com/microsoft/vscode) と同じ [Monaco Editor](https://github.com/microsoft/monaco-editor) を採用しています。
 
