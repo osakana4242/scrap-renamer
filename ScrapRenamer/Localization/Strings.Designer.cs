@@ -208,6 +208,30 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Menu_Edit_Apply {
+            get {
+                return ResourceManager.GetString("Menu_Edit_Apply", resourceCulture);
+            }
+        }
+
+        public static string Menu_Edit_Clear {
+            get {
+                return ResourceManager.GetString("Menu_Edit_Clear", resourceCulture);
+            }
+        }
+
+        public static string Menu_Edit_Reset {
+            get {
+                return ResourceManager.GetString("Menu_Edit_Reset", resourceCulture);
+            }
+        }
+
+        public static string Menu_Edit_Sort {
+            get {
+                return ResourceManager.GetString("Menu_Edit_Sort", resourceCulture);
+            }
+        }
+
         public static string Menu_File {
             get {
                 return ResourceManager.GetString("Menu_File", resourceCulture);

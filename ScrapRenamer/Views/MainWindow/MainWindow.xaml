@@ -35,6 +35,30 @@
 					Click="OnExitMenuClick"/>
 			</MenuItem>
 			<!--
+			<MenuItem Header="{x:Static res:Strings.Menu_Edit}">
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Edit_Apply}"
+					Click="OnExecuteClicked"/>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Edit_Reset}"
+					Click="OnResetClicked"/>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Edit_Reset}"
+					Click="OnResetClicked"/>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Edit_Clear}"
+					Click="OnClearClicked"/>
+
+				<MenuItem
+					Header="{x:Static res:Strings.Menu_Edit_Sort}"
+					Click="OnSortClicked"/>
+			</MenuItem>
+			-->
+
+			<!--
 			<MenuItem Header="{x:Static res:Strings.Menu_File}">
 				<MenuItem
 					Header="{x:Static res:Strings.Menu_File_Open}"
@@ -104,6 +128,8 @@
 			<DockPanel LastChildFill="False">
 				<Button Content="{x:Static res:Strings.Button_Apply}"
 						Margin="2"
+						ToolTip="(Ctrl+Enter)"
+						ToolTipService.InitialShowDelay="200"
 						Click="OnExecuteClicked"/>
 
 				<Button Content="{x:Static res:Strings.Button_Reset}"
