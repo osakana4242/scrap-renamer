@@ -69,7 +69,7 @@
   </data>
 
   <data name="Menu_Edit_Apply" xml:space="preserve">
-    <value>実行(_Ctrl+Enter)</value>
+    <value>実行(_R)</value>
   </data>
 
   <data name="Menu_Edit_Reset" xml:space="preserve">
@@ -89,11 +89,11 @@
   </data>
 
   <data name="Menu_File_Quit" xml:space="preserve">
-    <value>終了</value>
+    <value>終了(_Q)</value>
   </data>
 
   <data name="Menu_Help_About" xml:space="preserve">
-    <value>このアプリについて…</value>
+    <value>このアプリについて…(_A)</value>
   </data>
 
   <data name="Menu_Sort" xml:space="preserve">

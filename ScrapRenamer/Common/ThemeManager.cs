@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using ModernWpf;
 using ModernWpf.Controls;
@@ -12,6 +13,9 @@ namespace ScrapRenamer.Common;
 // ウィンドウのテーマ変更の自動追従
 public static class ThemeManager {
 	static HashSet<Window> _s_windows = new();
+	static readonly ImageSource _s_appIcon =
+		new BitmapImage(new Uri(
+			"pack://application:,,,/AppIcon/AppIcon_x32.png"));
 
 	static ThemeManager() {
 		SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
@@ -40,12 +44,15 @@ public static class ThemeManager {
 
 	// 設定に応じたスタイルを適用する
 	static void ApplyStyle(Window window) {
+		window.Icon = _s_appIcon;
+		WindowHelper.SetUseModernWindowStyle(window, true);
+		WindowTitleBar.SetIsIconVisible(window, true);
+
 		var theme = Settings.Instance.themeProp.Value;
 		ModernWpf.ThemeManager.Current.ApplicationTheme =
 			theme == ThemeMode.Light ? ApplicationTheme.Light :
 			theme == ThemeMode.Dark ? ApplicationTheme.Dark :
 			null;
-		WindowHelper.SetUseModernWindowStyle(window, true);
 
 		Dwm.SetWindowDarkMode(window, theme.IsDarkMode());
 
