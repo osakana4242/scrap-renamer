@@ -1,27 +1,29 @@
+English | [日本語](README.ja.md)
+
 # ScrapRenamer
 
 ![](./Docs/AppIcon_x64.png)
 
-テキストエディター型のファイルリネームツールです。
+A text editor-style file renaming tool.
 
-![](./Docs/SS_02.jpg)
+![](./Docs/SS_02.en.jpg)
 
-ファイルをドラッグアンドドロップ後、ファイル名一覧をテキストエディター感覚で編集できます。  
-実行ボタン(or Ctrl+Enter)で一括リネームを実行します。
+After dragging and dropping files, you can edit the list of filenames just like in a text editor.  
+Click the Execute button (or press Ctrl+Enter) to rename all files at once.
 
-エディター部分は [VS Code](https://github.com/microsoft/vscode) と同じ [Monaco Editor](https://github.com/microsoft/monaco-editor) を採用しています。
+The editor is powered by the same [Monaco Editor](https://github.com/microsoft/monaco-editor) used by [VS Code](https://github.com/microsoft/vscode).
 
 ## Features
 
-- 複数カーソル編集
-- 矩形選択
-- 検索・置換
-- ファイル名の入れ替え
+- Multi-cursor editing
+- Column (rectangular) selection
+- Search and replace
+- File name swapping
 
 ## License
 
-このソフトウェア本体は 0BSD ライセンスです。
+This software is licensed under the 0BSD License.
 
-作者へのクレジット表記なしで、自由に使用・改変・再配布できます。
+You are free to use, modify, and redistribute it without crediting the author.
 
-詳細は [LICENSE.txt](./LICENSE.txt) を参照してください。
+See [LICENSE.txt](./LICENSE.txt) for details.

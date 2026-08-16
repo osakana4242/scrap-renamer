@@ -40,204 +40,196 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
 
-  <data name="AppName" xml:space="preserve">
-    <value>ScrapRenamer</value>
-  </data>
-
   <data name="Menu_App" xml:space="preserve">
-    <value>App(_A)</value>
+    <value>アプリ(_A)</value>
   </data>
 
   <data name="Menu_File" xml:space="preserve">
-    <value>File(_F)</value>
+    <value>ファイル(_F)</value>
   </data>
 
   <data name="Menu_RenameMode" xml:space="preserve">
-    <value>Mode(_M)</value>
+    <value>モード(_M)</value>
   </data>
 
   <data name="Menu_Settings" xml:space="preserve">
-    <value>Settings…(_S)</value>
+    <value>設定…(_S)</value>
   </data>
 
   <data name="Menu_Help" xml:space="preserve">
-    <value>Help(_H)</value>
+    <value>ヘルプ(_H)</value>
   </data>
 
   <data name="Menu_Edit" xml:space="preserve">
-    <value>Edit(_E)</value>
+    <value>編集(_E)</value>
   </data>
 
   <data name="Menu_Edit_Apply" xml:space="preserve">
-    <value>Apply(_R)</value>
+    <value>実行(_R)</value>
   </data>
 
   <data name="Menu_Edit_Reset" xml:space="preserve">
-    <value>Reset</value>
+    <value>リセット</value>
   </data>
 
   <data name="Menu_Edit_Clear" xml:space="preserve">
-    <value>Clear</value>
+    <value>空にする</value>
   </data>
 
   <data name="Menu_Edit_Sort" xml:space="preserve">
-    <value>Sort</value>
+    <value>並び替え</value>
   </data>
 
   <data name="Menu_File_Open" xml:space="preserve">
-    <value>Open…(_O)</value>
+    <value>開く…(_O)</value>
   </data>
 
   <data name="Menu_File_Quit" xml:space="preserve">
-    <value>Quit(_Q)</value>
+    <value>終了(_Q)</value>
   </data>
 
   <data name="Menu_Help_About" xml:space="preserve">
-    <value>About…(_A)</value>
+    <value>このアプリについて…(_A)</value>
   </data>
 
   <data name="Menu_Sort" xml:space="preserve">
-    <value>Sort</value>
+    <value>並び替え</value>
   </data>
 
   <data name="Menu_Sort_FileName" xml:space="preserve">
-    <value>File Name</value>
+    <value>ファイル名</value>
   </data>
 
   <data name="Menu_Sort_Extension" xml:space="preserve">
-    <value>Type</value>
+    <value>種類</value>
   </data>
 
   <data name="Button_Apply" xml:space="preserve">
-    <value>▶ Apply</value>
+    <value>▶ 実行</value>
   </data>
 
   <data name="Button_Reset" xml:space="preserve">
-    <value>↩ Reset</value>
+    <value>↩ リセット</value>
   </data>
 
   <data name="Button_Clear" xml:space="preserve">
-    <value>🗑 Clear</value>
+    <value>🗑 空にする</value>
   </data>
 
   <data name="Button_Sort" xml:space="preserve">
-    <value>⇅ Sort</value>
+    <value>⇅ 並び替え</value>
   </data>
 
   <data name="SortLabel" xml:space="preserve">
-    <value>Sort</value>
+    <value>並び替え</value>
   </data>
 
   <data name="Button_Sort_FileName" xml:space="preserve">
-    <value>File Name</value>
+    <value>ファイル名</value>
   </data>
 
   <data name="Dialog_Settings_Title" xml:space="preserve">
-    <value>Settings</value>
+    <value>設定</value>
   </data>
 
   <data name="Message_RenameCompleted" xml:space="preserve">
-    <value>Renamed {0} file(s).</value>
+    <value>{0} 件のファイルをリネームしました。</value>
   </data>
 
   <data name="Error_FileNotFound" xml:space="preserve">
-    <value>File not found.</value>
+    <value>ファイルが見つかりません。</value>
   </data>
 
   <data name="Error_SrcFileNotFound" xml:space="preserve">
-    <value>The source file does not exist.</value>
+    <value>移動元のファイルが存在しません</value>
   </data>
 
   <data name="Error_SrcDirectoryNotFound" xml:space="preserve">
-    <value>The source directory does not exist.</value>
+    <value>移動元のディレクトリが存在しません</value>
   </data>
 
   <data name="Error_DestinationDirectoryNotFound" xml:space="preserve">
-    <value>The destination directory does not exist.</value>
+    <value>移動先のディレクトリが存在しません</value>
   </data>
 
   <data name="Error_DestinationDirectoryExists" xml:space="preserve">
-    <value>A directory with the same name already exists at the destination.</value>
+    <value>移動先に同名のディレクトリが存在します</value>
   </data>
 
   <data name="Error_DestinationFileExists" xml:space="preserve">
-    <value>A file with the same name already exists at the destination.</value>
+    <value>移動先に同名のファイルが存在します</value>
   </data>
 
   <data name="Error_SrcFileLocked" xml:space="preserve">
-    <value>The source file may be in use.</value>
+    <value>移動元のファイルが使用中の可能性があります</value>
   </data>
 
   <data name="Error_SrcDirectoryLocked" xml:space="preserve">
-    <value>A file or directory under the source directory may be in use.</value>
+    <value>移動元のディレクトリ以下が使用中の可能性があります</value>
   </data>
 
   <data name="Error_FileUnautorizedAccess" xml:space="preserve">
-    <value>You do not have permission to move the file.</value>
+    <value>ファイルを移動する権限がありません</value>
   </data>
 
   <data name="Error_DirectoryUnautorizedAccess" xml:space="preserve">
-    <value>You do not have permission to move the directory.</value>
+    <value>ディレクトリを移動する権限がありません</value>
   </data>
 
   <data name="Error_AnotherPathMoveErrorChained" xml:space="preserve">
-    <value>Failed because the move of {0} failed.</value>
+    <value>{0} の移動失敗に引きずられて失敗しました</value>
   </data>
 
   <data name="Error_ParentChildPathOperationNotSupported_Parent" xml:space="preserve">
-    <value>Simultaneous operations on parent and child paths are not supported. Parent: {0}</value>
+    <value>親子関係にあるパスの同時操作は対応していません。親: {0}</value>
   </data>
 
   <data name="Error_ParentChildPathOperationNotSupported_Child" xml:space="preserve">
-    <value>Simultaneous operations on parent and child paths are not supported. Child: {0}</value>
+    <value>親子関係にあるパスの同時操作は対応していません。子: {0}</value>
   </data>
 
   <data name="DropFilesHere" xml:space="preserve">
-    <value>Drop files here</value>
+    <value>ここにファイルをドロップ</value>
   </data>
 
   <data name="RenameModeComboBox_Label" xml:space="preserve">
-    <value>Mode</value>
+    <value>モード</value>
   </data>
 
   <data name="RenameModeItems_FileName" xml:space="preserve">
-    <value>File Name</value>
+    <value>ファイル名</value>
   </data>
 
   <data name="RenameModeItems_FileNameWithoutExtension" xml:space="preserve">
-    <value>File Name (without extension)</value>
+    <value>ファイル名(拡張子なし)</value>
   </data>
 
   <data name="RenameModeItems_FullPath" xml:space="preserve">
-    <value>Full Path</value>
+    <value>フルパス</value>
   </data>
 
   <data name="SortTypeItems_FileName" xml:space="preserve">
-    <value>File Name</value>
+    <value>ファイル名</value>
   </data>
 
   <data name="SortTypeItems_ExtensionFileName" xml:space="preserve">
-    <value>Extension and File Name</value>
+    <value>拡張子とファイル名</value>
   </data>
 
   <data name="SortTypeItems_FullPath" xml:space="preserve">
-    <value>Full Path</value>
+    <value>フルパス</value>
   </data>
 
   <data name="SortTypeItems_FullPathExtension" xml:space="preserve">
-    <value>Full Path and Extension</value>
+    <value>フルパスと拡張子</value>
   </data>
 
   <data name="AboutWindow_Title" xml:space="preserve">
-    <value>About</value>
+    <value>このアプリについて</value>
   </data>
 
   <data name="AboutWindow_Copyright" xml:space="preserve">
     <value>Copyright © 2026 三川おさかな</value>
-  </data>
-
-  <data name="AboutWindow_RepositoryURL" xml:space="preserve">
-    <value>https://github.com/osakana4242/scrap-renamer</value>
   </data>
 
   <data name="AboutWindow_OKButton" xml:space="preserve">
@@ -245,27 +237,27 @@
   </data>
 
   <data name="AboutWindow_CopyInfoButton" xml:space="preserve">
-    <value>Copy Information</value>
+    <value>情報をコピー</value>
   </data>
 
   <data name="AboutWindow_VersionFormat" xml:space="preserve">
-    <value>Version {0}</value>
+    <value>バージョン {0}</value>
   </data>
 
   <data name="SettingsWindow_Title" xml:space="preserve">
-    <value>Settings</value>
+    <value>設定</value>
   </data>
 
   <data name="SettingsWindow_ThemeLabel" xml:space="preserve">
-    <value>Theme</value>
+    <value>テーマ</value>
   </data>
 
   <data name="SettingsWindow_FontFamilyLabel" xml:space="preserve">
-    <value>Font</value>
+    <value>フォント</value>
   </data>
 
   <data name="SettingsWindow_FontSizeLabel" xml:space="preserve">
-    <value>Size</value>
+    <value>サイズ</value>
   </data>
 
 </root>

@@ -12,8 +12,11 @@ public partial class App : Application {
 	protected override void OnStartup(StartupEventArgs e) {
 		base.OnStartup(e);
 
-		// ThemeManager.Current.AccentColor = Color.FromRgb(0x00, 0x80, 0x00);
-		// ThemeManager.Current.ActualAccentColor
+
+		// en 確認用
+		var cultureInfo = new System.Globalization.CultureInfo("en");
+		Thread.CurrentThread.CurrentUICulture = cultureInfo;
+		Thread.CurrentThread.CurrentCulture = cultureInfo;
 
 		MainWindow window = new MainWindow();
 		if (e.Args.Length > 0) {
