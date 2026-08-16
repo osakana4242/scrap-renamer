@@ -35,6 +35,7 @@
 		},
 		{
 			"label": "publish-x64",
+			"dependsOn": ["clean"],
 			"command": "dotnet",
 			"type": "process",
 			"args": [
