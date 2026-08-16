@@ -4,12 +4,11 @@ using System.Windows;
 using ScrapRenamer.Common;
 
 public partial class OverwriteWindow : Window {
-	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
 	public OverwriteWindowResult Result { get; private set; }
 
 	public OverwriteWindow() {
 		InitializeComponent();
-		WindowUtil.Add(this);
+		ThemeManager.Add(this);
 	}
 
 	void OnOverwriteClicked(object sender, RoutedEventArgs e) {

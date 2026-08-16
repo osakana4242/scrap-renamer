@@ -12,7 +12,7 @@ public partial class ResultWindow : Window {
 	public ResultWindow(FlowDocument doc) {
 		InitializeComponent();
 		ResultTextBox.Document = doc;
-		WindowUtil.Add(this);
+		ThemeManager.Add(this);
 	}
 
 	public ResultWindow(string text) :

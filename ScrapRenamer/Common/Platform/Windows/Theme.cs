@@ -1,6 +1,6 @@
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 
-namespace ScrapRenamer.Platform.Windows;
+namespace ScrapRenamer.Common.Platform.Windows;
 
 public static class Theme {
 

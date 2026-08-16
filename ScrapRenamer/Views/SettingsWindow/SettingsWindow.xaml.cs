@@ -9,11 +9,9 @@ using ScrapRenamer.Common;
 namespace ScrapRenamer.Views.SettingsWindow;
 
 public partial class SettingsWindow : Window {
-	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
 
 	public SettingsWindow() {
 		InitializeComponent();
-		ThemeMode = Settings.Instance.themeProp.Value;
 
 		ThemeComboBox.ItemsSource = new[] {
 			ThemeMode.System,
@@ -39,13 +37,12 @@ public partial class SettingsWindow : Window {
 		};
 		FontSizeComboBox.SelectionChanged += OnFontSizeSelectionChanged;
 		FontSizeComboBox.Text = Settings.Instance.fontSizeProp.Value.ToString();
-		WindowUtil.Add(this);
+		ThemeManager.Add(this);
 	}
 
 	public void OnThemeSelectionChanged(object sender, SelectionChangedEventArgs e) {
 		if (ThemeComboBox.SelectedItem is not ThemeMode themeMode) return;
 		Settings.Instance.themeProp.Value = themeMode;
-		ThemeMode = themeMode;
 	}
 
 	public void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {

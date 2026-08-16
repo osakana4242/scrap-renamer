@@ -10,16 +10,14 @@ namespace ScrapRenamer;
 
 
 public partial class AboutWindow : Window {
-	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
 
 	public AboutWindow() {
 		InitializeComponent();
-		ThemeMode = Settings.Instance.themeProp.Value;
 
 		VersionText.Text = string.Format(
 			Localization.Strings.Strings.AboutWindow_VersionFormat,
 			Version);
-		WindowUtil.Add(this);
+		ThemeManager.Add(this);
 	}
 
 	string Version =>

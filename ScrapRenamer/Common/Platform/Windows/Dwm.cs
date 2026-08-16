@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Win32;
 
-namespace ScrapRenamer.Platform.Windows;
+namespace ScrapRenamer.Common.Platform.Windows;
 
 // ウィンドウのタイトルバーの配色を設定する
 // Dwm: Desktop Window Manager

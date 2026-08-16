@@ -1,17 +1,16 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
-using System.Windows;
 using System.Windows.Media;
 using ScrapRenamer.Views.MainWindow;
 
-namespace ScrapRenamer.Views.SettingsWindow;
+namespace ScrapRenamer.Common;
 
 public class Settings {
 	public static readonly Settings Instance = new Settings();
 
 	public ObservableProperty<ThemeMode> themeProp = new(ThemeMode.System);
-	public ObservableProperty<string> fontFamilyProp = new("MS ゴシック");
+	public ObservableProperty<string> fontFamilyProp = new("Lucida Console");
 	public ObservableProperty<int> fontSizeProp = new(14);
 	public ObservableProperty<RenameMode> renameMode = new(RenameMode.FileName);
 	public ObservableProperty<bool> sortOnAdd = new(true);
