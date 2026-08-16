@@ -1,6 +1,7 @@
 ﻿namespace ScrapRenamer.Views.OverwriteWindow;
 
 using System.Windows;
+using ScrapRenamer.Common;
 
 public partial class OverwriteWindow : Window {
 	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
@@ -8,6 +9,7 @@ public partial class OverwriteWindow : Window {
 
 	public OverwriteWindow() {
 		InitializeComponent();
+		WindowUtil.Add(this);
 	}
 
 	void OnOverwriteClicked(object sender, RoutedEventArgs e) {

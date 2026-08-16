@@ -4,7 +4,6 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:ui="http://schemas.modernwpf.com/2019"
 	xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
 	xmlns:SettingsWindow="clr-namespace:ScrapRenamer.Views.SettingsWindow"
 	xmlns:MainWindow="clr-namespace:ScrapRenamer.Views.MainWindow"
@@ -16,8 +15,7 @@
 	Drop="OnDrop"
 	Title="{x:Static res:Strings.AppName}"
 	Width="480"
-	Height="560"
-	ui:WindowHelper.UseModernWindowStyle="True">
+	Height="560">
 	<DockPanel>
 
 		<!-- メニューバー -->

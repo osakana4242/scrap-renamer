@@ -3,9 +3,11 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Navigation;
+using ScrapRenamer.Common;
 using ScrapRenamer.Views.SettingsWindow;
 
 namespace ScrapRenamer;
+
 
 public partial class AboutWindow : Window {
 	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
@@ -17,6 +19,7 @@ public partial class AboutWindow : Window {
 		VersionText.Text = string.Format(
 			Localization.Strings.Strings.AboutWindow_VersionFormat,
 			Version);
+		WindowUtil.Add(this);
 	}
 
 	string Version =>

@@ -2,21 +2,21 @@
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Navigation;
+using ScrapRenamer.Common;
 using ScrapRenamer.Views.SettingsWindow;
 
 namespace ScrapRenamer.Views.ResultWindow;
 
 public partial class ResultWindow : Window {
-	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
-
-	public ResultWindow(string text) :
-		this(Util.TextToDoc(text)) {
-	}
 
 	public ResultWindow(FlowDocument doc) {
 		InitializeComponent();
-		ThemeMode = Settings.Instance.themeProp.Value;
 		ResultTextBox.Document = doc;
+		WindowUtil.Add(this);
+	}
+
+	public ResultWindow(string text) :
+		this(Util.TextToDoc(text)) {
 	}
 
 	// public ResultWindow() {

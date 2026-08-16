@@ -4,12 +4,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using ScrapRenamer.Common;
 
 namespace ScrapRenamer.Views.SettingsWindow;
 
 public partial class SettingsWindow : Window {
 	public ThemeMode ThemeMode { get; set; } = ThemeMode.System;
-	
+
 	public SettingsWindow() {
 		InitializeComponent();
 		ThemeMode = Settings.Instance.themeProp.Value;
@@ -38,6 +39,7 @@ public partial class SettingsWindow : Window {
 		};
 		FontSizeComboBox.SelectionChanged += OnFontSizeSelectionChanged;
 		FontSizeComboBox.Text = Settings.Instance.fontSizeProp.Value.ToString();
+		WindowUtil.Add(this);
 	}
 
 	public void OnThemeSelectionChanged(object sender, SelectionChangedEventArgs e) {
