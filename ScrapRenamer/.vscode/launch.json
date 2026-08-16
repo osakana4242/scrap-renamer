@@ -6,14 +6,14 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-debug-x64",
-			"program": "${workspaceFolder}/bin/Debug/net481/win-x64/ScrapRenamer.exe"
+			"program": "${workspaceFolder}/bin/Debug/net48/win-x64/ScrapRenamer.exe"
 		},
 		{
 			"name": "Release x64",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build-release-x64",
-			"program": "${workspaceFolder}/bin/Release/net481/win-x64/ScrapRenamer.exe"
+			"program": "${workspaceFolder}/bin/Release/net48/win-x64/ScrapRenamer.exe"
 		},
 		{
 			"name": ".NET Core Attach",

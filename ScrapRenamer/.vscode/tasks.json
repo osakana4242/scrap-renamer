@@ -61,5 +61,15 @@
 			],
 			"problemMatcher": "$msCompile",
 		},
+		{
+			"label": "clean",
+			"type": "process",
+			"command": "dotnet",
+			"args": [
+				"clean",
+				"${workspaceFolder}/ScrapRenamer.csproj"
+			],
+			"problemMatcher": []
+		},
 	]
 }

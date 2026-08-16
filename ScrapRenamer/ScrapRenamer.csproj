@@ -2,7 +2,8 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net481</TargetFramework>
+		<!-- Windows11 にデフォで入っている net48 を使っておく。 -->
+		<TargetFramework>net48</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -14,16 +15,21 @@
 		<ApplicationIcon>AppIcon/AppIcon.ico</ApplicationIcon>
 		<GenerateDocumentationFile>false</GenerateDocumentationFile>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+		<!-- ModernWpfUI 向けの設定。言語表示に関わるものは使ってないのでぜんぶ除外する。 -->
+		<SatelliteResourceLanguages>_</SatelliteResourceLanguages>
+		<!-- <SatelliteResourceLanguages>ja-JP;en-GB</SatelliteResourceLanguages> -->
+
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="ModernWpfUI" Version="1.0.0-preview.1" />
-		<Resource Include="AppIcon\AppIcon.ico" />
-		<Resource Include="AppIcon\AppIcon_x32.png" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
 		<PackageReference Include="System.Text.Json" Version="10.0.11" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
  		<PackageReference Include="IndexRange" Version="1.0.3" />
+		<Resource Include="AppIcon\AppIcon.ico" />
+		<Resource Include="AppIcon\AppIcon_x32.png" />
  		<Content Include="Editor\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
 		<Content Include="..\LICENSE.txt" CopyToPublishDirectory="PreserveNewest" />
 		<Content Include="..\THIRD-PARTY-NOTICES.txt" CopyToPublishDirectory="PreserveNewest" />
