@@ -28,6 +28,7 @@
 		<Resource Include="AppIcon\AppIcon.ico" />
 		<Resource Include="AppIcon\AppIcon_x32.png" />
 		<Content Include="Editor\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
+		<Content Include="Docs\*" CopyToPublishDirectory="PreserveNewest" TargetPath="%(Filename)%(Extension)" />
 		<Content Include="..\LICENSE.txt" CopyToPublishDirectory="PreserveNewest" />
 		<Content Include="..\THIRD-PARTY-NOTICES.txt" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>

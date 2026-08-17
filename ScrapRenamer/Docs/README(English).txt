@@ -1,12 +1,18 @@
-English | [日本語](README.ja.md)
-
 # ScrapRenamer
 
-![](./Docs/AppIcon_x64.png)
+## Basic Information
+
+* Software: ScrapRenamer
+* Version: 1.0.0
+* Type: Freeware
+* Supported OS: Windows 11 (64-bit)
+* Author: Osakana Sankawa
+* Website: https://github.com/osakana4242/scrap-renamer
+* Contact: osakana4242@gmail.com
+
+## Overview
 
 A text editor-style file renaming tool.
-
-![](./Docs/SS_02.en.jpg)
 
 After dragging and dropping files, you can edit the list of file names just like in a text editor.
 Click the Execute button (or press Ctrl+Enter) to rename the files in bulk.
@@ -22,18 +28,26 @@ The editor uses the [Monaco Editor](https://github.com/microsoft/monaco-editor),
   - Add a cursor above (Ctrl+Alt+Up)
   - Add a cursor below (Ctrl+Alt+Down)
 
-## How to Run
+## Usage
 
-* Download the latest zip from https://github.com/osakana4242/scrap-renamer/releases/latest
-* Extract the zip to a location of your choice
 * Run `ScrapRenamer.exe`.
 * If "Windows protected your PC" is displayed, select
 "More info" → "Run anyway".
 
+## Adding to the "Send to" Menu
+
+* Press `Win+R` to open `Run`, enter `shell:sendto` in the name field, and select `OK`.
+* When the `SendTo` folder opens, drag and drop `ScrapRenamer.exe` into it while holding `Ctrl+Shift` to create a shortcut.
+* Rename `ScrapRenamer.exe - Shortcut` to `ScrapRenamer`.
+
 ## License
 
-This software itself is licensed under the 0BSD License.
-
+This software is licensed under the 0BSD License.
 You may use, modify, and redistribute it freely without crediting the author.
+See `LICENSE.txt` for details.
 
-See [LICENSE.txt](./LICENSE.txt) for details.
+## Changelog
+
+### v1.0.0
+
+* Initial release

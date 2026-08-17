@@ -13,12 +13,22 @@
 
 エディター部分は [VS Code](https://github.com/microsoft/vscode) と同じ [Monaco Editor](https://github.com/microsoft/monaco-editor) を採用しています。
 
-## 機能
+## 主な機能
 
+- 編集したリネーム内容の適用 (Ctrl+Enter)
+- コマンドパレットの表示 (Ctrl+Shift+P)
+- 検索・置換 (Ctrl+H)
 - 複数カーソル編集
-- 矩形選択
-- 検索・置換
-- ファイル名の入れ替え
+  - カーソルを上に追加 (Ctrl+Alt+Up)
+  - カーソルを下に追加 (Ctrl+Alt+Down)
+
+## 実行までの手順
+
+* https://github.com/osakana4242/scrap-renamer/releases/latest から最新版の zip をダウンロードする
+* zip を好みの場所に展開する
+* `ScrapRenamer.exe` を実行します。
+* 「Windows によって PC が保護されました」と表示された場合は、
+「詳細情報」→「実行」を選択します。
 
 ## ライセンス
 
