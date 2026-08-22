@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Microsoft.Win32;
@@ -21,6 +22,9 @@ public static class Dwm {
 	}
 
 	public static void SetWindowDarkMode(Window window, bool b) {
+		// 厳密には SourceInitialized が済んでれば良い
+		Debug.Assert(window.IsLoaded, "window は IsLoaded のあとじゃないと、非アクティブ時の背景色が適用されない。");
+
 		var hwnd = new WindowInteropHelper(window).Handle;
 
 		int enabled = b ? 1 : 0;

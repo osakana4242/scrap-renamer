@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using ModernWpf;
-using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
 using ScrapRenamer.Common.Platform.Windows;
 
@@ -44,57 +44,90 @@ public static class ThemeManager {
 
 	// 設定に応じたスタイルを適用する
 	static void ApplyStyle(Window window) {
-		window.Icon = _s_appIcon;
-		WindowHelper.SetUseModernWindowStyle(window, true);
-		WindowTitleBar.SetIsIconVisible(window, true);
+		if (!window.IsLoaded) {
+			window.Loaded -= OnLoaded;
+			window.Loaded += OnLoaded;
+		} else {
+			ApplyStyleAfterWindowSourceInitialized(window);
+		}
 
+		static void OnLoaded(object sender, EventArgs e) {
+			if (sender is not Window window) return;
+			// Debug.Print($"sender: {sender.ToString()}, type: {sender.GetType().Name}");
+			ApplyStyleAfterWindowSourceInitialized(window);
+		}
+	}
+
+	// 設定に応じたスタイルを適用する
+	static void ApplyStyleAfterWindowSourceInitialized(Window window) {
 		var theme = Settings.Instance.themeProp.Value;
+
+		Dwm.SetWindowDarkMode(window, theme.IsDarkMode());
+
+		// ウィンドウ右端、下端にマウスオーバーしてもポインターがリサイズ様に切り替わらない問題があるので true にできない
+		var useModernWindowStyle = false;
+
 		ModernWpf.ThemeManager.Current.ApplicationTheme =
 			theme == ThemeMode.Light ? ApplicationTheme.Light :
 			theme == ThemeMode.Dark ? ApplicationTheme.Dark :
 			null;
 
-		Dwm.SetWindowDarkMode(window, theme.IsDarkMode());
 
-		var isTitleBarAccentEnabled = Dwm.IsTitleBarAccentEnabled();
+		SetThemeToMergedDictionaries(theme);
 
-		if (isTitleBarAccentEnabled) {
-			// アクセントカラーがタイトルバーに反映されてる場合。
+		WindowHelper.SetUseModernWindowStyle(window, useModernWindowStyle);
 
-			// 背景色
-			WindowTitleBar.SetBackground(
-				window,
-				new SolidColorBrush(ModernWpf.ThemeManager.Current.ActualAccentColor));
 
-			// 文字色を白にする
+		window.Background = (SolidColorBrush)Application.Current.Resources[
+			"WindowBackgroundBrush"];
 
-			// タイトル文字
-			WindowTitleBar.SetForeground(
-				window,
-				new SolidColorBrush(Color.FromRgb(255, 255, 255)));
+		if (useModernWindowStyle) {
+			// userModerWindowStyle だと、
+			// タイトルバーにアクセントカラーが反映されなくなってしまうため、
+			// 手動で設定する。
 
-			// WindowTitleBar.SetInactiveForeground(
-			// 	window,
-			// 	white);
+			ModernWpf.Controls.WindowTitleBar.SetIsIconVisible(window, true);
 
-			// ボタン文字
-			WindowTitleBar.SetButtonStyle(
-				window,
-				CreateTitleBarButtonStyle());
-		} else {
-			// アクセントカラーがタイトルバーに反映されていない場合。
+			var isTitleBarAccentEnabled = Dwm.IsTitleBarAccentEnabled();
 
-			// 背景色
-			WindowTitleBar.SetBackground(
-				window,
-				new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)));
+			if (isTitleBarAccentEnabled) {
+				// アクセントカラーがタイトルバーに反映されてる場合。
 
-			// タイトル文字とボタン文字をデフォにする。
-			// タイトル文字色
-			WindowTitleBar.SetForeground(window, window.Foreground);
-			// WindowTitleBar.SetInactiveForeground(window, window.Foreground);
-			// ボタン文字色
-			WindowTitleBar.SetButtonStyle(window, null);
+				// 背景色
+				ModernWpf.Controls.WindowTitleBar.SetBackground(
+					window,
+					new SolidColorBrush(ModernWpf.ThemeManager.Current.ActualAccentColor));
+
+				// 文字色を白にする
+
+				// タイトル文字
+				ModernWpf.Controls.WindowTitleBar.SetForeground(
+					window,
+					new SolidColorBrush(Color.FromRgb(255, 255, 255)));
+
+				// WindowTitleBar.SetInactiveForeground(
+				// 	window,
+				// 	white);
+
+				// ボタン文字
+				ModernWpf.Controls.WindowTitleBar.SetButtonStyle(
+					window,
+					CreateTitleBarButtonStyle());
+			} else {
+				// アクセントカラーがタイトルバーに反映されていない場合。
+
+				// 背景色
+				ModernWpf.Controls.WindowTitleBar.SetBackground(
+					window,
+					new SolidColorBrush(Color.FromArgb(0, 0, 0, 0)));
+
+				// タイトル文字とボタン文字をデフォにする。
+				// タイトル文字色
+				ModernWpf.Controls.WindowTitleBar.SetForeground(window, window.Foreground);
+				// WindowTitleBar.SetInactiveForeground(window, window.Foreground);
+				// ボタン文字色
+				ModernWpf.Controls.WindowTitleBar.SetButtonStyle(window, null);
+			}
 		}
 	}
 
@@ -102,6 +135,29 @@ public static class ThemeManager {
 		foreach (var window in _s_windows) {
 			ApplyStyle(window);
 		}
+	}
+
+	// MergedDictionaries を指定のテーマの要素に入れ替える
+	static void SetThemeToMergedDictionaries(ThemeMode theme) {
+		var themeName = theme.Resolve().ToString();
+		var dicts = Application.Current.Resources.MergedDictionaries;
+
+		// 既存テーマ削除
+		var oldTheme = dicts.FirstOrDefault(d =>
+			d.Source != null &&
+			(d.Source.OriginalString.Contains("Themes/Light.xaml") ||
+			d.Source.OriginalString.Contains("Themes/Dark.xaml")));
+
+		if (oldTheme != null) {
+			Debug.WriteLine($"Remove {oldTheme}");
+			dicts.Remove(oldTheme);
+		}
+
+		// 新しいテーマ追加
+		var newTheme = new ResourceDictionary();
+		newTheme.Source = new Uri($"Themes/{themeName}.xaml", UriKind.Relative);
+
+		dicts.Add(newTheme);
 	}
 
 	static void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e) {

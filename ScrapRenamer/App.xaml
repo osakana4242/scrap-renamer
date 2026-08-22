@@ -8,6 +8,8 @@
 			<ResourceDictionary.MergedDictionaries>
 				<ui:ThemeResources />
 				<ui:FluentControlsResources />
+				<ResourceDictionary Source="Themes/Common.xaml"/>
+				<ResourceDictionary Source="Themes/Dark.xaml"/>
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>

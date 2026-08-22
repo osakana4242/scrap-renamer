@@ -1,17 +1,22 @@
 ﻿namespace ScrapRenamer.Common;
 
 public record class ThemeMode(string Value) {
+	
 	public static ThemeMode System = new("System");
 	public static ThemeMode Dark = new("Dark");
 	public static ThemeMode Light = new("Light");
 
-	public bool IsDarkMode() {
-		if (this == Dark) return true;
+	// System なら Dark or Light に具体化する。それ以外はそのまま。
+	public ThemeMode Resolve() {
 		if (this == System) {
-			return Platform.Windows.Theme.IsDarkMode();
+			return Platform.Windows.Theme.IsDarkMode() ?
+				Dark :
+				Light;
 		}
-		return false;
+		return this;
 	}
+
+	public bool IsDarkMode() => Resolve() == Dark;
 
 	public override string ToString() {
 		return Value;
