@@ -144,9 +144,9 @@ public static class ThemeManager {
 
 		// 既存テーマ削除
 		var oldTheme = dicts.FirstOrDefault(d =>
-			d.Source != null &&
-			(d.Source.OriginalString.Contains("Themes/Light.xaml") ||
-			d.Source.OriginalString.Contains("Themes/Dark.xaml")));
+			d.Source != null && (
+				d.Source.OriginalString.Contains($"Themes/{ThemeMode.Light}.xaml") ||
+				d.Source.OriginalString.Contains($"Themes/{ThemeMode.Dark}.xaml")));
 
 		if (oldTheme != null) {
 			Debug.WriteLine($"Remove {oldTheme}");
