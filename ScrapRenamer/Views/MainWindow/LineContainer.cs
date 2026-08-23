@@ -3,6 +3,7 @@ using System.IO;
 using ScrapRenamer.Views.OverwriteWindow;
 
 namespace ScrapRenamer.Views.MainWindow;
+
 class LineContainer {
 	RenameMode _mode;
 	public List<Line> Lines { get; set; } = new();
@@ -306,13 +307,17 @@ class LineContainer {
 					var protectedDirectory = GetProtectedDirectory(item.before, item.after);
 
 					if (line.isDirectory) {
-						System.IO.Directory.Move(item.before, item.after);
-						DeleteEmptyDirectories(
-							item.before,
-							protectedDirectory);
+						if (System.IO.Directory.Exists(item.after)) {
+							// ディレクトリのマージはたいへんなのでサポートしない
+							line.Error = Localization.Strings.Strings.Error_DestinationDirectoryExists;
+							throw new System.Exception(line.Error);
+						} else {
+							System.IO.Directory.Move(item.before, item.after);
+							DeleteEmptyDirectories(
+								item.before,
+								protectedDirectory);
+						}
 					} else {
-
-
 						bool overwrite = false;
 
 						if (System.IO.File.Exists(item.after)) {
@@ -356,42 +361,45 @@ class LineContainer {
 			} catch (System.OperationCanceledException) {
 				throw;
 			} catch (System.Exception ex) {
-				switch (ex) {
-				case System.IO.FileNotFoundException:
-					// 移動元のファイルが存在しません
-					line.Error = Localization.Strings.Strings.Error_SrcFileNotFound;
-					break;
-				case System.IO.DirectoryNotFoundException:
-					if (!System.IO.Directory.Exists(line.origPath)) {
-						// 移動元のディレクトリが存在しません
-						line.Error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
-					} else {
-						// 移動先のディレクトリが存在しません
-						line.Error = Localization.Strings.Strings.Error_DestinationDirectoryNotFound;
+				if (string.IsNullOrEmpty(line.Error)) {
+					switch (ex) {
+					case System.IO.FileNotFoundException:
+						// 移動元のファイルが存在しません
+						line.Error = Localization.Strings.Strings.Error_SrcFileNotFound;
+						break;
+					case System.IO.DirectoryNotFoundException:
+						if (!System.IO.Directory.Exists(line.origPath)) {
+							// 移動元のディレクトリが存在しません
+							line.Error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
+						} else {
+							// 移動先のディレクトリが存在しません
+							line.Error = Localization.Strings.Strings.Error_DestinationDirectoryNotFound;
+						}
+						break;
+					case System.IO.IOException ex2:
+						if (line.isDirectory) {
+							// 移動元のディレクトリ以下が使用中の可能性があります
+							line.Error = Localization.Strings.Strings.Error_SrcDirectoryLocked;
+						} else {
+							// 移動元のファイルが使用中の可能性があります
+							line.Error = Localization.Strings.Strings.Error_SrcFileLocked;
+						}
+						break;
+					case System.UnauthorizedAccessException:
+						if (line.isDirectory) {
+							// Error_DirectoryUnautorizedAccess: ディレクトリを移動する権限がありません
+							line.Error = Localization.Strings.Strings.Error_DirectoryUnautorizedAccess;
+						} else {
+							// Error_FileUnautorizedAccess: ファイルを移動する権限がありません
+							line.Error = Localization.Strings.Strings.Error_FileUnautorizedAccess;
+						}
+						break;
+					default:
+						line.Error = $"{ex.Message}";
+						break;
 					}
-					break;
-				case System.IO.IOException ex2:
-					if (line.isDirectory) {
-						// 移動元のディレクトリ以下が使用中の可能性があります
-						line.Error = Localization.Strings.Strings.Error_SrcDirectoryLocked;
-					} else {
-						// 移動元のファイルが使用中の可能性があります
-						line.Error = Localization.Strings.Strings.Error_SrcFileLocked;
-					}
-					break;
-				case System.UnauthorizedAccessException:
-					if (line.isDirectory) {
-						// Error_DirectoryUnautorizedAccess: ディレクトリを移動する権限がありません
-						line.Error = Localization.Strings.Strings.Error_DirectoryUnautorizedAccess;
-					} else {
-						// Error_FileUnautorizedAccess: ファイルを移動する権限がありません
-						line.Error = Localization.Strings.Strings.Error_FileUnautorizedAccess;
-					}
-					break;
-				default:
-					line.Error = $"{ex.Message}";
-					break;
 				}
+
 				// preError = $"{line.origPath} の移動失敗に引きずられて失敗しました";
 				preError = string.Format(Localization.Strings.Strings.Error_AnotherPathMoveErrorChained, line.origPath);
 				Debug.WriteLine($"ex: {ex}, before: {item.before}, after: {item.after}");
@@ -405,26 +413,27 @@ class LineContainer {
 		static void DeleteEmptyDirectories(
 			string? directory,
 			string protectedDirectory) {
-			while (!string.IsNullOrEmpty(directory)) {
-				try {
+			try {
+				while (!string.IsNullOrEmpty(directory)) {
 					if (string.Equals(
 							directory,
 							protectedDirectory,
 							StringComparison.OrdinalIgnoreCase)) {
-
+						// protectedDirectory なら処理を抜ける
 						break;
 					}
 
 					if (Directory.EnumerateFileSystemEntries(directory).Any()) {
+						// ディレクトリ内になにか入ってるので、処理を抜ける
 						break;
 					}
 
 					Directory.Delete(directory);
 
 					directory = Path.GetDirectoryName(directory);
-				} catch (System.Exception ex) {
-					Debug.Print($"ex: {ex}, directory: {directory}");
 				}
+			} catch (System.Exception ex) {
+				Debug.Print($"ex: {ex}, directory: {directory}");
 			}
 		}
 
