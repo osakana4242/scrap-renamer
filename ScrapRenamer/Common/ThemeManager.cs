@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
-using ModernWpf;
-using ModernWpf.Controls.Primitives;
 using ScrapRenamer.Common.Platform.Windows;
 
 namespace ScrapRenamer.Common;
@@ -68,14 +65,14 @@ public static class ThemeManager {
 		var useModernWindowStyle = false;
 
 		ModernWpf.ThemeManager.Current.ApplicationTheme =
-			theme == ThemeMode.Light ? ApplicationTheme.Light :
-			theme == ThemeMode.Dark ? ApplicationTheme.Dark :
+			theme == ThemeMode.Light ? ModernWpf.ApplicationTheme.Light :
+			theme == ThemeMode.Dark ? ModernWpf.ApplicationTheme.Dark :
 			null;
 
 
 		SetThemeToMergedDictionaries(theme);
 
-		WindowHelper.SetUseModernWindowStyle(window, useModernWindowStyle);
+		ModernWpf.Controls.Primitives.WindowHelper.SetUseModernWindowStyle(window, useModernWindowStyle);
 
 
 		window.Background = (SolidColorBrush)Application.Current.Resources[
@@ -167,17 +164,17 @@ public static class ThemeManager {
 
 	static Style CreateTitleBarButtonStyle() {
 		var baseStyle = (Style)Application.Current.FindResource(
-		typeof(TitleBarButton));
+		typeof(ModernWpf.Controls.Primitives.TitleBarButton));
 
 		var style = new Style(
-		typeof(TitleBarButton),
+		typeof(ModernWpf.Controls.Primitives.TitleBarButton),
 		baseStyle);
 
 		var white = new SolidColorBrush(
 		Color.FromRgb(255, 255, 255));
 
 		style.Setters.Add(new Setter(
-			TitleBarButton.ForegroundProperty,
+			ModernWpf.Controls.Primitives.TitleBarButton.ForegroundProperty,
 			white));
 
 		// style.Setters.Add(new Setter(

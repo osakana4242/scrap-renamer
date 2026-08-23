@@ -70,11 +70,26 @@
 	</Target>
 
 	<!--
+		Publish時に重複する WebView2Loader.dll を除外する。
+	-->
+	<Target Name="RemoveDuplicateWebView2LoaderFromPublish"
+			AfterTargets="SetDependencyPublishPath">
+
+		<ItemGroup>
+			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+				Condition="'%(ResolvedFileToPublish.RelativePath)' == 'bin\runtimes\win-x64\native\WebView2Loader.dll'" />
+		</ItemGroup>
+
+	</Target>
+
+	<!--
 		XMLドキュメントとPDBをPublish対象から除外する。
 	-->
 	<Target Name="RemoveDocumentationFilesFromPublish" AfterTargets="ComputeFilesToPublish">
 		<ItemGroup>
-			<ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(ResolvedFileToPublish.Extension)' == '.xml' Or&#xA;				           '%(ResolvedFileToPublish.Extension)' == '.pdb'" />
+			<ResolvedFileToPublish
+				Remove="@(ResolvedFileToPublish)"
+				Condition="'%(ResolvedFileToPublish.Extension)' == '.xml' Or '%(ResolvedFileToPublish.Extension)' == '.pdb'" />
 		</ItemGroup>
 	</Target>
 
