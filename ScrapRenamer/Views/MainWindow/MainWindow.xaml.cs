@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -101,15 +100,15 @@ public partial class MainWindow : Window {
 				EditorView.CoreWebView2.OpenDevToolsWindow();
 			}
 
-			var hoge = new {
-				isDebug = s_isDebug,
+			var hoge = new Dictionary<string, object>() {
+				{ "isDebug", s_isDebug },
 				// フルパスを行末に表示するか
-				showFullPathInAfter = false,
+				{ "showFullPathInAfter", false }
 			};
 
 			await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
 				$$"""
-				window.scrapRenamer = {{JsonSerializer.Serialize(hoge)}};
+				window.scrapRenamer = {{MiniJSON.Json.Serialize(hoge)}};
 				""");
 			UpdateTheme();
 

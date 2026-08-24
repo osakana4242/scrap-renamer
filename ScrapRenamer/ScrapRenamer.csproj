@@ -22,7 +22,6 @@
 	<ItemGroup>
 		<PackageReference Include="ModernWpfUI" Version="1.0.0-preview.1" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
-		<PackageReference Include="System.Text.Json" Version="10.0.11" />
 		<PackageReference Include="System.Memory" Version="4.6.3" />
 		<PackageReference Include="IndexRange" Version="1.0.3" />
 		<Resource Include="AppIcon\AppIcon.ico" />

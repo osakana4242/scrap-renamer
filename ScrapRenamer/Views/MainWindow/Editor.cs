@@ -1,6 +1,5 @@
 ﻿
 using System.Diagnostics;
-using System.Text.Json;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
@@ -31,22 +30,22 @@ class Editor {
 
 		// MessageBox.Show(json);
 
-		var msg = JsonSerializer.Deserialize<EditorMessage>(json);
+		var msg = EditorMessage.FromJson(json);
 		if (msg == null) {
 			Debug.WriteLine("Failed to deserialize message.");
 			return;
 		}
 
-		switch (msg.Type) {
+		switch (msg.type) {
 		case "debugLog":
-			Debug.WriteLine("from js: " + msg.Text);
+			Debug.WriteLine("from js: " + msg.text);
 			break;
 		case "apply":
 			Debug.WriteLine("Apply.");
 			await _owner.Apply();
 			break;
 		case "cursorSelectionLineChanged":
-			if (int.TryParse(msg.Text, out var lineIndex)) {
+			if (int.TryParse(msg.text, out var lineIndex)) {
 				if ((uint)lineIndex < (uint)_owner.LineContainer.Lines.Count) {
 					var line = _owner.LineContainer.Lines[lineIndex];
 					(
@@ -76,18 +75,18 @@ class Editor {
 		case "text":
 			var act = _onTextGet;
 			_onTextGet = null;
-			act?.Invoke((msg.Text ?? "", null));
+			act?.Invoke((msg.text ?? "", null));
 			break;
 		}
 	}
 
 	public void Clear() {
-		var message = new { type = "clear", };
+		var message = new Dictionary<string, object> { { "type", "clear" } };
 		PostWebMessageAsJson(message);
 	}
 
 	public void GetText() {
-		var message = new { type = "getText", };
+		var message = new Dictionary<string, object> { { "type", "getText" } };
 		PostWebMessageAsJson(message);
 	}
 
@@ -112,20 +111,20 @@ class Editor {
 
 	// エディターオプションを設定する
 	public void UpdateOptions(object options) {
-		var message = new {
-			type = "updateOptions",
-			options = options,
+		var message = new Dictionary<string, object> {
+			{ "type", "updateOptions" },
+			{ "options", options },
 		};
 		PostWebMessageAsJson(message);
 	}
 
 	// エディター設定を設定する
 	public void SetSettings() {
-		var message = new {
-			type = "setSettings",
-			settings = new {
-				isAfterContentFullpathVisible = false,
-			},
+		var message = new Dictionary<string, object>() {
+			{ "type", "setSettings" },
+			{ "settings", new Dictionary<string, object> {
+				{ "isAfterContentFullpathVisible", false },
+				} },
 		};
 		PostWebMessageAsJson(message);
 	}
@@ -134,29 +133,29 @@ class Editor {
 	public void SetLines() {
 		if (null == EditorView.CoreWebView2) return;
 
-		var message = new {
-			type = "setLines",
-			lines = _owner.LineContainer.Lines.Select(i => new {
-				origPath = i.origPath,
-				origLine = i.OrigLine,
-				editedLine = i.editedLine,
-				error = i.Error,
-				isDirectory = i.isDirectory,
-			}).ToArray(),
+		var message = new Dictionary<string, object>() {
+			{ "type", "setLines" },
+			{ "lines", _owner.LineContainer.Lines.Select(i => new Dictionary<string, object> {
+				{ "origPath", i.origPath },
+				{ "origLine", i.OrigLine },
+				{ "editedLine", i.editedLine },
+				{ "error", i.Error },
+				{ "isDirectory", i.isDirectory },
+			}).ToArray() },
 		};
 		PostWebMessageAsJson(message);
 	}
 
 	public void SetTheme(string theme) {
-		var message = new {
-			type = "setTheme",
-			theme = theme
+		var message = new Dictionary<string, object> {
+			{"type", "setTheme"},
+			{"theme", theme},
 		};
 		PostWebMessageAsJson(message);
 	}
 
-	void PostWebMessageAsJson(object obj) {
+	void PostWebMessageAsJson(Dictionary<string, object> obj) {
 		EditorView.CoreWebView2.PostWebMessageAsJson(
-			JsonSerializer.Serialize(obj));
+			MiniJSON.Json.Serialize(obj));
 	}
 }
