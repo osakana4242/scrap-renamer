@@ -398,19 +398,22 @@ namespace MiniJSON {
 		/// </summary>
 		/// <param name="json">A Dictionary&lt;string, object&gt; / List&lt;object&gt;</param>
 		/// <returns>A JSON encoded string, or null if object 'json' is not serializable</returns>
-		public static string Serialize(object obj) {
-			return Serializer.Serialize(obj);
+		public static string Serialize(object obj, bool pretty = false) {
+			return Serializer.Serialize(obj, pretty);
 		}
 
 		sealed class Serializer {
 			StringBuilder builder;
+			bool pretty;
+			int indent;
 
-			Serializer() {
+			Serializer(bool pretty) {
 				builder = new StringBuilder();
+				this.pretty = pretty;
 			}
 
-			public static string Serialize(object obj) {
-				var instance = new Serializer();
+			public static string Serialize(object obj, bool pretty) {
+				var instance = new Serializer(pretty);
 
 				instance.SerializeValue(obj);
 
@@ -444,38 +447,71 @@ namespace MiniJSON {
 
 				builder.Append('{');
 
-				foreach (object e in obj.Keys) {
-					if (!first) {
-						builder.Append(',');
+				if (obj.Count > 0) {
+					indent++;
+
+					foreach (object e in obj.Keys) {
+						if (!first) {
+							builder.Append(',');
+						}
+
+						AppendNewLineAndIndent();
+
+						SerializeString(e.ToString());
+
+						builder.Append(pretty ? ": " : ":");
+
+						SerializeValue(obj[e]);
+
+						first = false;
 					}
 
-					SerializeString(e.ToString());
-					builder.Append(':');
+					indent--;
 
-					SerializeValue(obj[e]);
-
-					first = false;
+					AppendNewLineAndIndent();
 				}
 
 				builder.Append('}');
 			}
 
 			void SerializeArray(IList anArray) {
-				builder.Append('[');
-
 				bool first = true;
 
-				foreach (object obj in anArray) {
-					if (!first) {
-						builder.Append(',');
+				builder.Append('[');
+
+				if (anArray.Count > 0) {
+					indent++;
+
+					foreach (object obj in anArray) {
+						if (!first) {
+							builder.Append(',');
+						}
+
+						AppendNewLineAndIndent();
+
+						SerializeValue(obj);
+
+						first = false;
 					}
 
-					SerializeValue(obj);
+					indent--;
 
-					first = false;
+					AppendNewLineAndIndent();
 				}
 
 				builder.Append(']');
+			}
+
+			void AppendNewLineAndIndent() {
+				if (!pretty) {
+					return;
+				}
+
+				builder.AppendLine();
+
+				for (int i = 0; i < indent; i++) {
+					builder.Append('\t');
+				}
 			}
 
 			void SerializeString(string str) {
