@@ -99,10 +99,10 @@ public class Settings {
 		public static Data FromJson(string json) {
 			var inst = new Data();
 			if (MiniJSON.Json.Deserialize(json) is not Dictionary<string, object> dict) return inst;
-			if (dict.TryGetValue(nameof(inst.theme), out var theme)) inst.theme = (string)theme;
-			if (dict.TryGetValue(nameof(inst.fontFamily), out var fontFamily)) inst.fontFamily = (string)fontFamily;
-			if (dict.TryGetValue(nameof(inst.fontSize), out var fontSize)) inst.fontSize = (int)fontSize;
-			if (dict.TryGetValue(nameof(inst.renameMode), out var renameMode)) inst.renameMode = (int)renameMode;
+			dict.TryGetValue_Ext(nameof(inst.theme), ref inst.theme);
+			dict.TryGetValue_Ext(nameof(inst.fontFamily), ref inst.fontFamily);
+			dict.TryGetValue_Ext(nameof(inst.fontSize), ref inst.fontSize);
+			dict.TryGetValue_Ext(nameof(inst.renameMode), ref inst.renameMode);
 			return inst;
 		}
 
@@ -116,26 +116,27 @@ public class Settings {
 			return MiniJSON.Json.Serialize(
 				data);
 		}
+
 	}
 
 	public class ObservableProperty<T> {
-		T _value;
+			T _value;
 
-		public ObservableProperty(T value) {
-			_value = value;
-		}
-
-		public event System.Action<T>? OnChanged;
-
-		public virtual T Value {
-			get => _value;
-			set {
-				if (EqualityComparer<T>.Default.Equals(_value, value)) return;
-				Debug.Print($"SetValue {value}");
+			public ObservableProperty(T value) {
 				_value = value;
-				OnChanged?.Invoke(_value);
+			}
+
+			public event System.Action<T>? OnChanged;
+
+			public virtual T Value {
+				get => _value;
+				set {
+					if (EqualityComparer<T>.Default.Equals(_value, value)) return;
+					Debug.Print($"SetValue {value}");
+					_value = value;
+					OnChanged?.Invoke(_value);
+				}
 			}
 		}
-	}
 }
 
