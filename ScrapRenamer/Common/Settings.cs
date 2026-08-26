@@ -113,8 +113,7 @@ public class Settings {
 				{ nameof(fontSize), fontSize },
 				{ nameof(renameMode), renameMode },
 			};
-			return MiniJSON.Json.Serialize(
-				data);
+			return MiniJSON.Json.Serialize(data, true);
 		}
 
 	}
