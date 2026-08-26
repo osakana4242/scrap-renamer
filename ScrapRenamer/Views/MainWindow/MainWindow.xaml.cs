@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using ScrapRenamer.Common;
+using ScrapRenamer.Common.MiniJSON;
 
 namespace ScrapRenamer.Views.MainWindow;
 
@@ -108,7 +109,7 @@ public partial class MainWindow : Window {
 
 			await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
 				$$"""
-				window.scrapRenamer = {{MiniJSON.Json.Serialize(hoge)}};
+				window.scrapRenamer = {{Json.Serialize(hoge)}};
 				""");
 			UpdateTheme();
 

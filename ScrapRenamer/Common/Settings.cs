@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Media;
 using ScrapRenamer.Views.MainWindow;
+using ScrapRenamer.Common.MiniJSON;
 
 namespace ScrapRenamer.Common;
 
@@ -98,7 +99,7 @@ public class Settings {
 
 		public static Data FromJson(string json) {
 			var inst = new Data();
-			if (MiniJSON.Json.Deserialize(json) is not Dictionary<string, object> dict) return inst;
+			if (Json.Deserialize(json) is not Dictionary<string, object> dict) return inst;
 			dict.TryGetValue_Ext(nameof(inst.theme), ref inst.theme);
 			dict.TryGetValue_Ext(nameof(inst.fontFamily), ref inst.fontFamily);
 			dict.TryGetValue_Ext(nameof(inst.fontSize), ref inst.fontSize);
@@ -113,7 +114,7 @@ public class Settings {
 				{ nameof(fontSize), fontSize },
 				{ nameof(renameMode), renameMode },
 			};
-			return MiniJSON.Json.Serialize(data, true);
+			return Json.Serialize(data, true);
 		}
 
 	}
