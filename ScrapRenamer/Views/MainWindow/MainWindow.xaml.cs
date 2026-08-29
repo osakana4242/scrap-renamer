@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using ScrapRenamer.Common;
-using ScrapRenamer.Common.MiniJSON;
+using ScrapRenamer.Lib.MiniJSON;
 
 namespace ScrapRenamer.Views.MainWindow;
 

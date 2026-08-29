@@ -1,4 +1,4 @@
-﻿using ScrapRenamer.Common.MiniJSON;
+﻿using ScrapRenamer.Lib.MiniJSON;
 
 namespace ScrapRenamer.Views.MainWindow;
 

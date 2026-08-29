@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.Wpf;
-using ScrapRenamer.Common.MiniJSON;
+using ScrapRenamer.Lib.MiniJSON;
 
 namespace ScrapRenamer.Views.MainWindow;
 

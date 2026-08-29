@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
 
-namespace ScrapRenamer.Common.Platform.Windows;
+namespace ScrapRenamer.Lib.Platform.Windows;
 
 public static class Theme {
 

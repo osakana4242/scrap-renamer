@@ -9,7 +9,7 @@ public record class ThemeMode(string Value) {
 	// System なら Dark or Light に具体化する。それ以外はそのまま。
 	public ThemeMode Resolve() {
 		if (this == System) {
-			return Platform.Windows.Theme.IsDarkMode() ?
+			return Lib.Platform.Windows.Theme.IsDarkMode() ?
 				Dark :
 				Light;
 		}

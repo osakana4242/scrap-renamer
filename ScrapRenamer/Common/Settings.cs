@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Windows.Media;
+using ScrapRenamer.Lib.MiniJSON;
 using ScrapRenamer.Views.MainWindow;
-using ScrapRenamer.Common.MiniJSON;
 
 namespace ScrapRenamer.Common;
 

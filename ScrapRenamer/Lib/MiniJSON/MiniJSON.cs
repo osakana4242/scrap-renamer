@@ -26,13 +26,15 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#nullable disable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ScrapRenamer.Common.MiniJSON {
+namespace ScrapRenamer.Lib.MiniJSON {
 	/// <summary>
 	/// This class encodes and decodes JSON strings.
 	/// Spec. details, see http://www.json.org/
