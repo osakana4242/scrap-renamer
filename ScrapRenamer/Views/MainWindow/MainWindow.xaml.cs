@@ -148,17 +148,21 @@ public partial class MainWindow : Window {
 
 	void Window_PreviewKeyDown(object sender, KeyEventArgs e) {
 		if (e.Key == Key.Escape) {
-			if (Keyboard.FocusedElement is MenuItem menuItem) {
+			var focusedElement = Keyboard.FocusedElement;
+			if (null == focusedElement) {
+				// Editor 内で置換ウィンドウを開いてるときに Esc を押したタイミング
+				// _editor.EditorView.Focus();
+				// e.Handled = true;
+				Debug.Print($"A Window_PreviewKeyDown: {e}");
+				return;
+			}
+			if (focusedElement is MenuItem menuItem) {
 				CloseMenuAndFocusParent(menuItem);
 				e.Handled = true;
-				Debug.Print($"Window_PreviewKeyDown: {e}");
+				Debug.Print($"A Window_PreviewKeyDown: {e}, focused: {focusedElement}, type: {focusedElement.GetType().Name}, _editor.HasFocus: {_editor.HasFocus}");
 				return;
 			}
-			if (!_editor.HasFocus) {
-				_editor.EditorView.Focus();
-				e.Handled = true;
-				return;
-			}
+			Debug.Print($"C Window_PreviewKeyDown: {e}, focused: {focusedElement}, type: {focusedElement.GetType().Name}, _editor.HasFocus: {_editor.HasFocus}");
 		} else if (e.Key == Key.A && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt)) {
 			AppMenu.Focus();
 			AppMenu.IsSubmenuOpen = !AppMenu.IsSubmenuOpen;
