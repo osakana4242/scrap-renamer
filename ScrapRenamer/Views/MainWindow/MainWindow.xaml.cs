@@ -101,15 +101,21 @@ public partial class MainWindow : Window {
 				EditorView.CoreWebView2.OpenDevToolsWindow();
 			}
 
-			var hoge = new Dictionary<string, object>() {
+			// var cultureInfo = new System.Globalization.CultureInfo("en");
+			// Thread.CurrentThread.CurrentUICulture = cultureInfo;
+			// Thread.CurrentThread.CurrentCulture = cultureInfo;
+
+			var editorParams = new Dictionary<string, object>() {
 				{ "isDebug", s_isDebug },
+				// ja, en...
+				{ "language", Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName },
 				// フルパスを行末に表示するか
-				{ "showFullPathInAfter", false }
+				{ "showFullPathInAfter", false },
 			};
 
 			await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
 				$$"""
-				window.scrapRenamer = {{Json.Serialize(hoge)}};
+				window.scrapRenamer = {{Json.Serialize(editorParams)}};
 				""");
 			UpdateTheme();
 
