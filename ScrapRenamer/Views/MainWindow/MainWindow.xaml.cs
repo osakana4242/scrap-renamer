@@ -276,51 +276,141 @@ public partial class MainWindow : Window {
 		OpenFilesOrSerachDirectory(files);
 	}
 
-	public void OpenFilesOrSerachDirectory(string[] files) {
-		if (files.Length == 1) {
+	class ProgressReport {
+		public string format = "";
+		public int progressCount;
+		public string text => string.Format(format, progressCount);
+	}
+
+
+	List<string> SearchDirectory(
+		string directory,
+		ProgressReport report,
+		CancellationToken token) {
+
+		List<string> entries = new List<string>();
+		SearchDirectory(directory, entries, report, token);
+		return entries;
+	}
+
+	void SearchDirectory(
+		string directory,
+		List<string> entries,
+		ProgressReport report,
+		CancellationToken token)
+	{
+		token.ThrowIfCancellationRequested();
+
+		foreach (var entry in Directory.GetFileSystemEntries(directory)) {
+			token.ThrowIfCancellationRequested();
+
+			entries.Add(entry);
+			report.format = Localization.Strings.Strings.FileOpenProgress_DirectorySearching;
+			report.progressCount = entries.Count;
+
+			if (Directory.Exists(entry)) {
+				SearchDirectory(entry, entries, report, token);
+			}
+		}
+		
+	}
+
+	public async void OpenFilesOrSerachDirectory(string[] files) {
+		ProgressReport report = new ProgressReport();
+		CancellationTokenSource cts = new CancellationTokenSource();
+		var token = cts.Token;
+
+		Task<List<Line>> task;
+		if (files.Length == 1 && Directory.Exists(files[0])) {
 			// ディレクトリひとつのときは中を掘る
-			var file = files[0];
-			if (Directory.Exists(file)) {
+			task = Task.Run<List<Line>>(() => {
+				List<string> files2 = SearchDirectory(files[0], report, token);
+				return GetLines(files2, report, token);
+			});
+		} else {
+			task = Task.Run(() => {
+				return GetLines(files, report, token);
+			});
+		}
+
+		try {
+			// task の実行に 200ms 以上かかっていたら Show する
+			var delayTask = Task.Delay(200, token);
+
+			if (await Task.WhenAny(task, delayTask) == delayTask) {
+				var progressWnd = new ProgressWindow(cts) {
+					Owner = this
+				};
 				try {
-					var files2 = Directory.GetFileSystemEntries(file, "*", SearchOption.AllDirectories);
-					OpenFiles(files2);
-				} catch (Exception ex) {
-					// エラーダイアログ
-					Debug.Print($"ex: {ex}");
-					var w = new ResultWindow.ResultWindow(string.Format(Localization.Strings.Strings.Error_DirectorySearchFailed, ex.Message)) {
-						Owner = this
-					};
-					w.ShowDialog();
+					progressWnd.Title = report.text;
+					progressWnd.Show();
+
+					// 1000ms置きにステータスを更新
+					while (!task.IsCompleted) {
+						progressWnd.Title = report.text;
+						await Task.WhenAny(task, Task.Delay(100, token));
+					}
+					progressWnd.Title = report.text;
+					await Task.Delay(200, token);
+				} finally {
+					progressWnd.Close();
 				}
 			}
-		} else {
-			OpenFiles(files);
+			var lines = await task;
+			OpenFiles(lines);
+		} catch (OperationCanceledException) {
+			// キャンセルはスルー
+		} catch (Exception ex) {
+			// エラーダイアログ
+			Debug.Print($"ex: {ex}");
+			var resultWnd = new ResultWindow.ResultWindow(string.Format(Localization.Strings.Strings.Error_DirectorySearchFailed, ex.Message)) {
+				Owner = this
+			};
+			resultWnd.ShowDialog();
 		}
 	}
 
-	public void OpenFiles(string[] files) {
-		var lines = new List<Line>();
-
+	List<Line> GetLines(IReadOnlyList<string> files, ProgressReport report, CancellationToken cancellationToken) {
+		List<Line> lines = new List<Line>();
 		foreach (var file in files) {
-			Debug.WriteLine(file);
+			cancellationToken.ThrowIfCancellationRequested();
+			//Debug.WriteLine(file);
 			var line = new Line(file, Settings.Instance.renameMode.Value);
 			if (!_lineContainer.Add(line))
 				continue;
 			lines.Add(line);
+			report.format = Localization.Strings.Strings.FileOpenProgress_FileChecking;
+			report.progressCount = lines.Count;
 		}
+		return lines;
+	}
+
+	void OpenFiles(List<Line> lines) {
+		var sw = Stopwatch.StartNew();
+
 		if (Settings.Instance.sortOnAdd.Value) {
 			_lineContainer.Sort(Settings.Instance.sortType.Value);
 		}
 
+		Debug.Print($"StopWatch2, {sw.Elapsed.TotalSeconds:F1}");
+		sw.Restart();
+
 		if (null == EditorView.CoreWebView2) return;
 
 		UpdateVisibility(false);
+
+		Debug.Print($"StopWatch3, {sw.Elapsed.TotalSeconds:F1}");
+		sw.Restart();
 
 		if (lines.Count == 0) {
 			Debug.WriteLine("No new lines to add.");
 			return;
 		}
 		_editor.SetLines();
+
+		Debug.Print($"StopWatch4, {sw.Elapsed.TotalSeconds:F1}");
+		sw.Restart();
+
 	}
 
 	async Task SyncTextFromEditorAsync() {

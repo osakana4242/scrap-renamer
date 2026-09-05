@@ -1,4 +1,4 @@
-﻿namespace ScrapRenamer.Localization.Strings {
+namespace ScrapRenamer.Localization.Strings {
     using System;
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("hetima.resx-designer", "0.3.2")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -199,6 +199,18 @@
         public static string Error_SrcFileNotFound {
             get {
                 return ResourceManager.GetString("Error_SrcFileNotFound", resourceCulture);
+            }
+        }
+
+        public static string FileOpenProgress_DirectorySearching {
+            get {
+                return ResourceManager.GetString("FileOpenProgress_DirectorySearching", resourceCulture);
+            }
+        }
+
+        public static string FileOpenProgress_FileChecking {
+            get {
+                return ResourceManager.GetString("FileOpenProgress_FileChecking", resourceCulture);
             }
         }
 

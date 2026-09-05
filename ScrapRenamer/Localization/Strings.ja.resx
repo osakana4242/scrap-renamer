@@ -267,4 +267,12 @@
     <value>サイズ</value>
   </data>
 
+  <data name="FileOpenProgress_DirectorySearching" xml:space="preserve">
+    <value>探索したディレクトリー: {0}</value>
+  </data>
+
+  <data name="FileOpenProgress_FileChecking" xml:space="preserve">
+    <value>確認したファイル: {0}</value>
+  </data>
+
 </root>

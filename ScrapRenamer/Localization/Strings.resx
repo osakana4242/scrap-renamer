@@ -275,4 +275,12 @@ Details:
     <value>Size</value>
   </data>
 
+  <data name="FileOpenProgress_DirectorySearching" xml:space="preserve">
+    <value>Directories searched: {0}</value>
+  </data>
+
+  <data name="FileOpenProgress_FileChecking" xml:space="preserve">
+    <value>Files checked: {0}</value>
+  </data>
+
 </root>
