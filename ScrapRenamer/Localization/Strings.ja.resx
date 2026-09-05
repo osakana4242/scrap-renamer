@@ -168,12 +168,19 @@
     <value>移動元のディレクトリ以下が使用中の可能性があります</value>
   </data>
 
-  <data name="Error_FileUnautorizedAccess" xml:space="preserve">
+  <data name="Error_FileMoveUnautorizedAccess" xml:space="preserve">
     <value>ファイルを移動する権限がありません</value>
   </data>
 
-  <data name="Error_DirectoryUnautorizedAccess" xml:space="preserve">
+  <data name="Error_DirectoryMoveUnautorizedAccess" xml:space="preserve">
     <value>ディレクトリを移動する権限がありません</value>
+  </data>
+
+  <data name="Error_DirectorySearchFailed" xml:space="preserve">
+    <value>ディレクトリの探索に失敗しました。
+
+詳細:
+{0}</value>
   </data>
 
   <data name="Error_AnotherPathMoveErrorChained" xml:space="preserve">

@@ -388,10 +388,10 @@ class LineContainer {
 					case System.UnauthorizedAccessException:
 						if (line.isDirectory) {
 							// Error_DirectoryUnautorizedAccess: ディレクトリを移動する権限がありません
-							line.Error = Localization.Strings.Strings.Error_DirectoryUnautorizedAccess;
+							line.Error = Localization.Strings.Strings.Error_DirectoryMoveUnautorizedAccess;
 						} else {
 							// Error_FileUnautorizedAccess: ファイルを移動する権限がありません
-							line.Error = Localization.Strings.Strings.Error_FileUnautorizedAccess;
+							line.Error = Localization.Strings.Strings.Error_FileMoveUnautorizedAccess;
 						}
 						break;
 					default:

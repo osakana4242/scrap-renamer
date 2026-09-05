@@ -147,7 +147,9 @@ public partial class MainWindow : Window {
 			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 			Debug.Print($"MainWindow_Loaded: {e}");
 		} catch (Exception ex) {
-			var w = new ResultWindow.ResultWindow(ex.ToString());
+			var w = new ResultWindow.ResultWindow(ex.ToString()) {
+				Owner = this
+			};
 			w.ShowDialog();
 		}
 	}
@@ -211,7 +213,7 @@ public partial class MainWindow : Window {
 			return;
 		}
 
-		OpenFiles(dialog.FileNames);
+		OpenFilesOrSerachDirectory(dialog.FileNames);
 	}
 
 	void OnExitMenuClick(
@@ -256,7 +258,7 @@ public partial class MainWindow : Window {
 	}
 
 	void OnDragOver(object sender, DragEventArgs e) {
-		Debug.Print($"OnDragOver: {e}");
+		// Debug.Print($"OnDragOver: {e}");
 		if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
 			e.Effects = DragDropEffects.Copy;
 		} else {
@@ -269,8 +271,31 @@ public partial class MainWindow : Window {
 	void OnDrop(object sender, DragEventArgs e) {
 		if (!e.Data.GetDataPresent(DataFormats.FileDrop))
 			return;
+		Debug.Print($"OnDrop, sender: {sender}, e: {e}");
 		var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-		OpenFiles(files);
+		OpenFilesOrSerachDirectory(files);
+	}
+
+	public void OpenFilesOrSerachDirectory(string[] files) {
+		if (files.Length == 1) {
+			// ディレクトリひとつのときは中を掘る
+			var file = files[0];
+			if (Directory.Exists(file)) {
+				try {
+					var files2 = Directory.GetFileSystemEntries(file, "*", SearchOption.AllDirectories);
+					OpenFiles(files2);
+				} catch (Exception ex) {
+					// エラーダイアログ
+					Debug.Print($"ex: {ex}");
+					var w = new ResultWindow.ResultWindow(string.Format(Localization.Strings.Strings.Error_DirectorySearchFailed, ex.Message)) {
+						Owner = this
+					};
+					w.ShowDialog();
+				}
+			}
+		} else {
+			OpenFiles(files);
+		}
 	}
 
 	public void OpenFiles(string[] files) {

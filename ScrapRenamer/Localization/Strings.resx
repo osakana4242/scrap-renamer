@@ -172,12 +172,19 @@
     <value>A file or directory under the source directory may be in use.</value>
   </data>
 
-  <data name="Error_FileUnautorizedAccess" xml:space="preserve">
+  <data name="Error_FileMoveUnautorizedAccess" xml:space="preserve">
     <value>You do not have permission to move the file.</value>
   </data>
 
-  <data name="Error_DirectoryUnautorizedAccess" xml:space="preserve">
+  <data name="Error_DirectoryMoveUnautorizedAccess" xml:space="preserve">
     <value>You do not have permission to move the directory.</value>
+  </data>
+
+  <data name="Error_DirectorySearchFailed" xml:space="preserve">
+    <value>Failed to search the directory.
+
+Details:
+{0}</value>
   </data>
 
   <data name="Error_AnotherPathMoveErrorChained" xml:space="preserve">

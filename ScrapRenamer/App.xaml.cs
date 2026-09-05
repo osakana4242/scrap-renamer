@@ -20,7 +20,7 @@ public partial class App : Application {
 
 		MainWindow window = new MainWindow();
 		if (e.Args.Length > 0) {
-			window.OpenFiles(e.Args);
+			window.OpenFilesOrSerachDirectory(e.Args);
 		}
 
 		window.Show();

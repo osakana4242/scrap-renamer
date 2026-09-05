@@ -207,9 +207,7 @@
 				x:Name="DropOverlay"
 				Visibility="Visible"
 				Background="Transparent"
-				AllowDrop="True"
-				DragOver="OnDragOver"
-				Drop="OnDrop">
+				AllowDrop="True">
 
 				<Border
 					CornerRadius="8"

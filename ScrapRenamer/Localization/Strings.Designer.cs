@@ -1,4 +1,4 @@
-namespace ScrapRenamer.Localization.Strings {
+﻿namespace ScrapRenamer.Localization.Strings {
     using System;
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("hetima.resx-designer", "0.3.2")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -142,21 +142,27 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
-        public static string Error_DirectoryUnautorizedAccess {
+        public static string Error_DirectoryMoveUnautorizedAccess {
             get {
-                return ResourceManager.GetString("Error_DirectoryUnautorizedAccess", resourceCulture);
+                return ResourceManager.GetString("Error_DirectoryMoveUnautorizedAccess", resourceCulture);
+            }
+        }
+
+        public static string Error_DirectorySearchFailed {
+            get {
+                return ResourceManager.GetString("Error_DirectorySearchFailed", resourceCulture);
+            }
+        }
+
+        public static string Error_FileMoveUnautorizedAccess {
+            get {
+                return ResourceManager.GetString("Error_FileMoveUnautorizedAccess", resourceCulture);
             }
         }
 
         public static string Error_FileNotFound {
             get {
                 return ResourceManager.GetString("Error_FileNotFound", resourceCulture);
-            }
-        }
-
-        public static string Error_FileUnautorizedAccess {
-            get {
-                return ResourceManager.GetString("Error_FileUnautorizedAccess", resourceCulture);
             }
         }
 
