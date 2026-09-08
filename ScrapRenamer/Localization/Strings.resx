@@ -283,4 +283,18 @@ Details:
     <value>Files checked: {0}</value>
   </data>
 
+  <data name="DirectorySearchConfirmWindow_Message" xml:space="preserve">
+    <value>Select the scope to add.
+
+Directory: {0}</value>
+  </data>
+
+  <data name="DirectorySearchConfirmWindow_CurrentDirectory" xml:space="preserve">
+    <value>This directory only</value>
+  </data>
+
+  <data name="DirectorySearchConfirmWindow_IncludeSubdirectories" xml:space="preserve">
+    <value>Include subdirectories</value>
+  </data>
+
 </root>

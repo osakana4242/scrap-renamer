@@ -323,10 +323,38 @@ public partial class MainWindow : Window {
 		Task<List<Line>> task;
 		if (files.Length == 1 && Directory.Exists(files[0])) {
 			// ディレクトリひとつのときは中を掘る
-			task = Task.Run<List<Line>>(() => {
-				List<string> files2 = SearchDirectory(files[0], report, token);
-				return GetLines(files2, report, token);
-			});
+			var rootDirectory = files[0];
+
+			// サブディレクトリが含まれるときはそれ以下を掘るか確認する
+			var firstSubDirectory = Directory.EnumerateDirectories(rootDirectory).FirstOrDefault();
+			var result = DirectorySearchConfirmWindow.Result.CurrentDirectory;
+			if (null != firstSubDirectory) {
+				var message = string.Format(Localization.Strings.Strings.DirectorySearchConfirmWindow_Message, rootDirectory);
+				var confirmWnd = new DirectorySearchConfirmWindow(message) {
+					Owner = this,
+				};
+				confirmWnd.ShowDialog();
+				result = confirmWnd.GetResult();
+			}
+			if (result == DirectorySearchConfirmWindow.Result.Cancel) {
+				return;
+			}
+			switch (result) {
+			case DirectorySearchConfirmWindow.Result.CurrentDirectory:
+				task = Task.Run<List<Line>>(() => {
+					List<string> files3 = Directory.GetFileSystemEntries(rootDirectory).ToList();
+					return GetLines(files3, report, token);
+				});
+				break;
+			case DirectorySearchConfirmWindow.Result.IncludeSubdirectories:
+				task = Task.Run<List<Line>>(() => {
+					List<string> files2 = SearchDirectory(rootDirectory, report, token);
+					return GetLines(files2, report, token);
+				});
+				break;
+			default:
+				throw new NotSupportedException($"result: {result}");
+			}
 		} else {
 			task = Task.Run(() => {
 				return GetLines(files, report, token);

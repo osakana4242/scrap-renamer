@@ -112,6 +112,24 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string DirectorySearchConfirmWindow_CurrentDirectory {
+            get {
+                return ResourceManager.GetString("DirectorySearchConfirmWindow_CurrentDirectory", resourceCulture);
+            }
+        }
+
+        public static string DirectorySearchConfirmWindow_IncludeSubdirectories {
+            get {
+                return ResourceManager.GetString("DirectorySearchConfirmWindow_IncludeSubdirectories", resourceCulture);
+            }
+        }
+
+        public static string DirectorySearchConfirmWindow_Message {
+            get {
+                return ResourceManager.GetString("DirectorySearchConfirmWindow_Message", resourceCulture);
+            }
+        }
+
         public static string DropFilesHere {
             get {
                 return ResourceManager.GetString("DropFilesHere", resourceCulture);

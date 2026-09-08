@@ -275,4 +275,18 @@
     <value>確認したファイル: {0}</value>
   </data>
 
+  <data name="DirectorySearchConfirmWindow_Message" xml:space="preserve">
+    <value>追加する範囲を選択してください。
+
+ディレクトリー: {0}</value>
+  </data>
+
+  <data name="DirectorySearchConfirmWindow_CurrentDirectory" xml:space="preserve">
+    <value>このディレクトリー内のみ</value>
+  </data>
+
+  <data name="DirectorySearchConfirmWindow_IncludeSubdirectories" xml:space="preserve">
+    <value>サブディレクトリーも含める</value>
+  </data>
+
 </root>
