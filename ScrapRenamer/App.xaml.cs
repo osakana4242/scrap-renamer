@@ -18,11 +18,7 @@ public partial class App : Application {
 		// Thread.CurrentThread.CurrentUICulture = cultureInfo;
 		// Thread.CurrentThread.CurrentCulture = cultureInfo;
 
-		MainWindow window = new MainWindow();
-		if (e.Args.Length > 0) {
-			window.OpenFilesOrSerachDirectory(e.Args);
-		}
-
+		MainWindow window = new MainWindow(e.Args);
 		window.Show();
 	}
 }

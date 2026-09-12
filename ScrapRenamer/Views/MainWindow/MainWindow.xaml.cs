@@ -25,12 +25,14 @@ public partial class MainWindow : Window {
 
 	LineContainer _lineContainer;
 	Editor _editor;
+	string[] _args = System.Array.Empty<string>();
 
 	internal LineContainer LineContainer => _lineContainer;
 
-	public MainWindow() {
+	public MainWindow(string[] args) {
 		InitializeComponent();
 		UpdateTheme();
+		_args = args;
 		Loaded += MainWindow_Loaded;
 		Settings.Instance.themeProp.OnChanged += OnThemeChanged;
 		Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
@@ -130,7 +132,6 @@ public partial class MainWindow : Window {
 
 			EditorView.Source = new Uri(path);
 			EditorView.WebMessageReceived += _editor.WebMessageReceived;
-			// // 外部からのファイルドロップを禁止する
 			EditorView.AllowExternalDrop = true;
 			EditorView.Visibility = Visibility.Visible;
 			DropOverlay.Visibility = Visibility.Visible;
@@ -145,6 +146,11 @@ public partial class MainWindow : Window {
 			UpdateTheme();
 			_editor.SetLines();
 			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+
+			// 引数があればパスを追加する
+			if (0 < _args.Length) {
+				OpenFilesOrSerachDirectory(_args);
+			}
 			Debug.Print($"MainWindow_Loaded: {e}");
 		} catch (Exception ex) {
 			var w = new ResultWindow.ResultWindow(ex.ToString()) {
