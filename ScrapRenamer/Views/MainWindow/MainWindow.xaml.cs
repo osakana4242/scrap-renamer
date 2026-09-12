@@ -282,13 +282,6 @@ public partial class MainWindow : Window {
 		OpenFilesOrSerachDirectory(files);
 	}
 
-	class ProgressReport {
-		public string format = "";
-		public int progressCount;
-		public string text => string.Format(format, progressCount);
-	}
-
-
 	List<string> SearchDirectory(
 		string directory,
 		ProgressReport report,
@@ -610,12 +603,6 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	// ------------------------------------------------------ MARK: EditorView
-
-
-
-	// ------------------------------------------------------------ MARK: ----
-
 	internal void UpdateVisibility(bool isDragging) {
 		if (0 < _lineContainer.Lines.Count && !isDragging) {
 			Debug.Print($"A, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
@@ -655,4 +642,11 @@ public partial class MainWindow : Window {
 		Debug.Print($"OnLostFocus: {e}");
 	}
 
+	// ------------------------------------------------------------------------
+	
+	class ProgressReport {
+		public string format = "";
+		public int progressCount;
+		public string text => string.Format(format, progressCount);
+	}
 }
