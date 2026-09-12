@@ -322,6 +322,7 @@ public partial class MainWindow : Window {
 	}
 
 	public async void OpenFilesOrSerachDirectory(string[] files) {
+		Activate();
 		ProgressReport report = new ProgressReport();
 		CancellationTokenSource cts = new CancellationTokenSource();
 		var token = cts.Token;
