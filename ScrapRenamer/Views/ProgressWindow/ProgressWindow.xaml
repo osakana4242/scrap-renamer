@@ -1,9 +1,9 @@
 ﻿<Window
-	x:Class="ScrapRenamer.ProgressWindow"
+	x:Class="ScrapRenamer.Views.ProgressWindow.ProgressWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:res="clr-namespace:ScrapRenamer.Localization.Strings"
-	Title="Hoge"
+	Title="{x:Static res:Strings.AppName}"
 	SizeToContent="WidthAndHeight"
 	ResizeMode="NoResize"
 	ShowInTaskbar="False"

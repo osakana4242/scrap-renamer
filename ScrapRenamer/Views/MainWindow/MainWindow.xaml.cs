@@ -9,6 +9,9 @@ using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 using ScrapRenamer.Common;
 using ScrapRenamer.Lib.MiniJSON;
+using ScrapRenamer.Views.ProgressWindow;
+
+using ProgressWindowRoot = ScrapRenamer.Views.ProgressWindow.ProgressWindow;
 
 namespace ScrapRenamer.Views.MainWindow;
 
@@ -22,7 +25,6 @@ public partial class MainWindow : Window {
 #else
 		false;
 #endif
-
 	LineContainer _lineContainer;
 	Editor _editor;
 	string[] _args = System.Array.Empty<string>();
@@ -73,7 +75,7 @@ public partial class MainWindow : Window {
 		string theme = isDark ? "vs-dark" : "vs";
 		_editor.SetTheme(theme);
 	}
-	
+
 	void CloseMenuAndFocusParent(MenuItem menuItem) {
 		var parentMenuItem = WpfUtil.FindParent<MenuItem>(menuItem);
 
@@ -296,28 +298,31 @@ public partial class MainWindow : Window {
 		string directory,
 		List<string> entries,
 		ProgressReport report,
-		CancellationToken token)
-	{
+		CancellationToken token) {
 		token.ThrowIfCancellationRequested();
 
 		foreach (var entry in Directory.GetFileSystemEntries(directory)) {
 			token.ThrowIfCancellationRequested();
 
 			entries.Add(entry);
-			report.format = Localization.Strings.Strings.FileOpenProgress_DirectorySearching;
-			report.progressCount = entries.Count;
+			report.SetFormat(Localization.Strings.Strings.FileOpenProgress_DirectorySearching, entries.Count);
 
 			if (Directory.Exists(entry)) {
 				SearchDirectory(entry, entries, report, token);
 			}
 		}
-		
+
 	}
 
-	public async void OpenFilesOrSerachDirectory(string[] files) {
+
+	// 主にファイルやディレクトリがドロップされたときに呼ばれる
+	// 実行時の引数から読み取ることもある
+	async void OpenFilesOrSerachDirectory(string[] files) {
+		// フォーカスを他のアプリ(エクスプローラーなど)からこのアプリに移す
 		Activate();
+
 		ProgressReport report = new ProgressReport();
-		CancellationTokenSource cts = new CancellationTokenSource();
+		using var cts = new CancellationTokenSource();
 		var token = cts.Token;
 
 		Task<List<Line>> task;
@@ -362,29 +367,7 @@ public partial class MainWindow : Window {
 		}
 
 		try {
-			// task の実行に 200ms 以上かかっていたら Show する
-			var delayTask = Task.Delay(200, token);
-
-			if (await Task.WhenAny(task, delayTask) == delayTask) {
-				var progressWnd = new ProgressWindow(cts) {
-					Owner = this
-				};
-				try {
-					progressWnd.Title = report.text;
-					progressWnd.Show();
-
-					// 1000ms置きにステータスを更新
-					while (!task.IsCompleted) {
-						progressWnd.Title = report.text;
-						await Task.WhenAny(task, Task.Delay(100, token));
-					}
-					progressWnd.Title = report.text;
-					await Task.Delay(200, token);
-				} finally {
-					progressWnd.Close();
-				}
-			}
-			var lines = await task;
+			var lines = await ProgressWindowRoot.Show(this, task, report, cts);
 			OpenFiles(lines);
 		} catch (OperationCanceledException) {
 			// キャンセルはスルー
@@ -407,8 +390,7 @@ public partial class MainWindow : Window {
 			if (!_lineContainer.Add(line))
 				continue;
 			lines.Add(line);
-			report.format = Localization.Strings.Strings.FileOpenProgress_FileChecking;
-			report.progressCount = lines.Count;
+			report.SetFormat(Localization.Strings.Strings.FileOpenProgress_FileChecking, lines.Count);
 		}
 		return lines;
 	}
@@ -643,10 +625,5 @@ public partial class MainWindow : Window {
 	}
 
 	// ------------------------------------------------------------------------
-	
-	class ProgressReport {
-		public string format = "";
-		public int progressCount;
-		public string text => string.Format(format, progressCount);
-	}
+
 }
