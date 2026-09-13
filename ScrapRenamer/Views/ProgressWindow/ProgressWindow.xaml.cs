@@ -26,6 +26,14 @@ public sealed partial class ProgressWindow : Window {
 		Loaded += OnLoaded;
 	}
 
+	protected override void OnClosed(EventArgs e) {
+		if (!_task.IsCompleted) {
+			// 閉じる、キャンセルボタンによるキャンセル
+			_cts.Cancel();
+		}
+		base.OnClosed(e);
+	}
+
 	// タスクの終了を待つ
 	// 一定時間経過してもタスクが終わらない場合は進行状況の表示をする
 	public static async Task<T> Show<T>(Window owner, Task<T> task, ProgressReport report, CancellationTokenSource cts) {
