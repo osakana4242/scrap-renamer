@@ -524,7 +524,11 @@ window.chrome.webview.addEventListener("message", e => {
 			const text = e.data.lines.map(l => l.editedLine).
 				join("\n");
 			scrapRenamer.lineCount = e.data.lines.length;
-			scrapRenamer.editor.setValue(text);
+			if (scrapRenamer.editor.getValue() !== text) {
+				// 行に変化ある場合はテキスト総入れ替え。
+				// 履歴が消失する。
+				scrapRenamer.editor.setValue(text);
+			}
 			scrapRenamer.lines = e.data.lines;
 			refreshDecorations();
 			break;
