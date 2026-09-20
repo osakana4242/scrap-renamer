@@ -486,7 +486,7 @@ public partial class MainWindow : Window {
 			window.ShowDialog();
 		}
 		_editor.SetLines();
-
+		EditorView.Focus();
 	}
 
 	static void AddParagraph(FlowDocument doc, string text) {
