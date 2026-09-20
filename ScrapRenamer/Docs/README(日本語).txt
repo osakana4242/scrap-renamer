@@ -1,4 +1,4 @@
-# ScrapRenamer
+﻿# ScrapRenamer
 
 ## 基本情報
 
@@ -14,19 +14,25 @@
 
 テキストエディター型のファイルリネームツールです。
 
-ファイルをドラッグ＆ドロップ後、ファイル名一覧をテキストエディター感覚で編集できます。  
-実行ボタン(or Ctrl+Enter)で一括リネームを実行します。
+ファイルをドラッグ＆ドロップ後、ファイル名一覧をテキストエディター感覚で編集できます。
+実行ボタン(or Ctrl+S)で一括リネームを実行します。
 
 エディター部分は [VS Code](https://github.com/microsoft/vscode) と同じ [Monaco Editor](https://github.com/microsoft/monaco-editor) を採用しています。
 
 ## 主な機能
 
-- 編集したリネーム内容の適用 (Ctrl+Enter)
-- コマンドパレットの表示 (Ctrl+Shift+P)
+- 編集したリネーム内容の適用 (Ctrl+S)
 - 検索・置換 (Ctrl+H)
 - 複数カーソル編集
   - カーソルを上に追加 (Ctrl+Alt+Up)
   - カーソルを下に追加 (Ctrl+Alt+Down)
+- 文字種の変換 (Ctrl+Shift+P)
+  - 大文字 (UPPERCASE)
+  - 小文字 (lowercase)
+  - キャメルケース (camelCase)
+  - スネークケース (snake_case)
+  - パスカルケース (PascalCase)
+
 
 ## 使用方法
 
