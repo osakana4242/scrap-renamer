@@ -70,13 +70,13 @@ require([
 			editor.trigger("keyboard", "editor.action.quickCommand", {});
 		});
 
-	editor.addCommand(
-		monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter,
-		() => {
-			window.chrome.webview.postMessage({
-				type: "apply",
-			});
-		});
+	// editor.addCommand(
+	// 	monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
+	// 	() => {
+	// 		window.chrome.webview.postMessage({
+	// 			type: "apply",
+	// 		});
+	// 	});
 
 	// debugLog(
 	// 	"P: " + monaco.KeyCode.P + ", " +

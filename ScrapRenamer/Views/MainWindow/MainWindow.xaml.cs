@@ -25,41 +25,71 @@ public partial class MainWindow : Window {
 #else
 		false;
 #endif
+
+	Commands _commands;
+
+	readonly Editor _editor;
 	LineContainer _lineContainer;
-	Editor _editor;
-	string[] _args = System.Array.Empty<string>();
+	string[] _args = Array.Empty<string>();
+
+
 
 	internal LineContainer LineContainer => _lineContainer;
 
+
+
 	public MainWindow(string[] args) {
+
 		InitializeComponent();
 		UpdateTheme();
 		_args = args;
+		_editor = new Editor(this);
+		_lineContainer = new(Settings.Instance.renameMode.Value);
+
 		Loaded += MainWindow_Loaded;
+
+		// 設定の読み込み
 		Settings.Instance.themeProp.OnChanged += OnThemeChanged;
 		Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
 		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
 		Settings.Instance.renameMode.OnChanged += OnRenameModeChanged;
 		Settings.Instance.Load();
-		_editor = new Editor(this);
 
-		_lineContainer = new(Settings.Instance.renameMode.Value);
+		// コマンドの作成
+		_commands.quit = new MyCommand(_ => Quit());
+		_commands.openAbout = new MyCommand(_ => OpenAbout());
+		_commands.openSettings = new MyCommand(_ => OpenSettings());
+		_commands.openFile = new MyCommand(_ => OpenFileDialog());
+		_commands.apply = new MyCommand(_ => Apply());
+		_commands.clear = new MyCommand(_ => Clear());
+		_commands.sort = new MyCommand(_ => Sort());
+		_commands.reset = new MyCommand(_ => Reset());
 
+		// コマンド、キーの割り当て
+		Menu_OpenAbout.Command = _commands.openAbout;
+		Menu_OpenSettings.Command = _commands.openSettings;
+		Menu_Quit.Command = _commands.quit;
+		{
+			var gesture = new KeyGesture(Key.S, ModifierKeys.Control);
+			var keyBinding = new KeyBinding(_commands.apply, gesture);
+			InputBindings.Add(keyBinding);
 
-		RenameModeComboBox.ItemsSource = new[] {
-				RenameMode.FileName,
-				RenameMode.FileNameWithoutExtension,
-				RenameMode.FullPath,
-			}.
-			Select(item => new {
-				Value = item,
-				Text = item.GetDisplayName(),
-			}).
-			ToArray();
-		RenameModeComboBox.SelectedValue = Settings.Instance.renameMode.Value;
-		RenameModeComboBox.DisplayMemberPath = "Text";
-		RenameModeComboBox.SelectedValuePath = "Value";
-		RenameModeComboBox.SelectionChanged += OnRenameModeChanged;
+			ApplyButton.Command = _commands.apply;
+			ApplyButton.ToolTip = gesture.GetDisplayStringForCulture(System.Globalization.CultureInfo.CurrentCulture);
+		}
+		ResetButton.Command = _commands.reset;
+		ClearButton.Command = _commands.clear;
+		SortButton.Command = _commands.sort;
+
+		foreach (var mode in RenameModeUtil.Values) {
+			var item = new MenuItem {
+				Header = mode.GetDisplayName(),
+				Tag = mode,
+				IsCheckable = true,
+			};
+			item.Click += OnRenameModeMenuClick;
+			RenameModeMenu.Items.Add(item);
+		}
 
 		OnRenameModeChanged(Settings.Instance.renameMode.Value);
 
@@ -208,9 +238,7 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	void OnOpenMenuClick(
-		object sender,
-		RoutedEventArgs e) {
+	void OpenFileDialog() {
 		var dialog = new Microsoft.Win32.OpenFileDialog {
 			Title = "ファイルを選択",
 			Multiselect = true,
@@ -224,9 +252,7 @@ public partial class MainWindow : Window {
 		OpenFilesOrSerachDirectory(dialog.FileNames);
 	}
 
-	void OnExitMenuClick(
-		object sender,
-		RoutedEventArgs e) {
+	void Quit() {
 		Application.Current.Shutdown();
 	}
 
@@ -235,21 +261,17 @@ public partial class MainWindow : Window {
 		RoutedEventArgs e) {
 		if (sender is not MenuItem menuItem) return;
 		if (menuItem.Tag is not RenameMode mode) return;
-		RenameModeComboBox.SelectedValue = mode;
+		Settings.Instance.renameMode.Value = mode;
 	}
 
-	void OnOpenAboutClick(
-		object sender,
-		RoutedEventArgs e) {
+	void OpenAbout() {
 		var window = new AboutWindow() {
 			Owner = this
 		};
 		window.ShowDialog();
 	}
 
-	void OnOpenSettingsClick(
-		object sender,
-		RoutedEventArgs e) {
+	void OpenSettings() {
 		var window = new SettingsWindow.SettingsWindow() {
 			Owner = this
 		};
@@ -369,6 +391,7 @@ public partial class MainWindow : Window {
 		try {
 			var lines = await ProgressWindowRoot.Show(this, task, report, cts);
 			OpenFiles(lines);
+			EditorView.Focus();
 		} catch (OperationCanceledException) {
 			// キャンセルはスルー
 		} catch (Exception ex) {
@@ -437,7 +460,7 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	internal async Task Apply() {
+	internal async void Apply() {
 		await SyncTextFromEditorAsync();
 		_lineContainer.Apply();
 		var lines = _lineContainer.Lines.
@@ -527,19 +550,12 @@ public partial class MainWindow : Window {
 		UpdateTheme();
 	}
 
-	void OnRenameModeChanged(RenameMode mode) {
+	async void OnRenameModeChanged(RenameMode mode) {
 		foreach (var item in RenameModeMenu.Items) {
 			if (item is not MenuItem menuItem2) continue;
 			if (menuItem2.Tag is not RenameMode mode2) continue;
 			menuItem2.IsChecked = mode2 == mode;
 		}
-	}
-
-	async void OnRenameModeChanged(object sender, SelectionChangedEventArgs e) {
-		if (RenameModeComboBox.SelectedValue is not RenameMode mode) return;
-
-		Settings.Instance.renameMode.Value = mode;
-
 		if (null == EditorView.CoreWebView2) {
 			_lineContainer.SetMode(mode);
 		} else {
@@ -549,36 +565,25 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	async void OnExecuteClicked(object sender, RoutedEventArgs e) {
-		await Apply();
-		EditorView.Focus();
-	}
-
-	void OnResetClicked(object sender, RoutedEventArgs e) {
+	void Reset() {
 		_lineContainer.Reset();
 		_editor.SetLines();
 		UpdateVisibility(false);
 		EditorView.Focus();
 	}
 
-	void OnClearClicked(object sender, RoutedEventArgs e) {
+	void Clear() {
 		_lineContainer = new LineContainer(Settings.Instance.renameMode.Value);
 		_editor.Clear();
 		UpdateVisibility(false);
 		EditorView.Focus();
 	}
 
-	async void OnSortClicked(object sender, RoutedEventArgs e) {
+	async void Sort() {
 		try {
-			if (sender is not FrameworkElement menuItem) return;
-			if (menuItem.Tag is not SortType sortType) {
-				// 指定が無い場合はフルパスでソートする
-				sortType = Settings.Instance.sortType.Value;
-			}
-
 			await SyncTextFromEditorAsync();
 
-			_lineContainer.Sort(sortType);
+			_lineContainer.Sort(Settings.Instance.sortType.Value);
 			_editor.SetLines();
 		} finally {
 			EditorView.Focus();
@@ -625,5 +630,42 @@ public partial class MainWindow : Window {
 	}
 
 	// ------------------------------------------------------------------------
+
+	public class MyCommand : ICommand {
+		public event EventHandler? CanExecuteChanged;
+
+
+		Func<object, bool> _canExecute;
+		Action<object> _execute;
+
+
+		public MyCommand(Action<object> execute) :
+			this(execute, _ => true) {
+		}
+
+		public MyCommand(Action<object> execute, Func<object, bool> canExecute) {
+			_canExecute = canExecute;
+			_execute = execute;
+		}
+
+		public bool CanExecute(object parameter) {
+			return _canExecute(parameter);
+		}
+
+		public void Execute(object parameter) {
+			_execute.Invoke(parameter);
+		}
+	}
+	
+	record struct Commands(
+		MyCommand openFile,
+		MyCommand openAbout,
+		MyCommand openSettings,
+		MyCommand quit,
+		MyCommand apply,
+		MyCommand reset,
+		MyCommand clear,
+		MyCommand sort
+	);
 
 }

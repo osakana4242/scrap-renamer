@@ -41,10 +41,6 @@ class Editor {
 		case "debugLog":
 			Debug.WriteLine("from js: " + msg.text);
 			break;
-		case "apply":
-			Debug.WriteLine("Apply.");
-			await _owner.Apply();
-			break;
 		case "cursorSelectionLineChanged":
 			if (int.TryParse(msg.text, out var lineIndex)) {
 				if ((uint)lineIndex < (uint)_owner.LineContainer.Lines.Count) {
