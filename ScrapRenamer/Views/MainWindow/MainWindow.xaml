@@ -11,8 +11,6 @@
 	mc:Ignorable="d"
 	Icon="pack://application:,,,/AppIcon/AppIcon.ico"
 	AllowDrop="True"
-	DragOver="OnDragOver"
-	Drop="OnDrop"
 	Title="{x:Static res:Strings.AppName}"
 	Width="480"
 	Height="560">
@@ -71,8 +69,6 @@
 			<Border
 				Grid.Row="0"
 				x:Name="DropOverlay"
-				Visibility="Visible"
-				Background="Transparent"
 				AllowDrop="True">
 
 				<Border
@@ -124,7 +120,6 @@
 			</Border>
 		</Grid>
 	</DockPanel>
-
 
 
 

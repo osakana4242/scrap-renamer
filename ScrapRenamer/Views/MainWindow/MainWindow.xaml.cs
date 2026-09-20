@@ -31,6 +31,8 @@ public partial class MainWindow : Window {
 	readonly Editor _editor;
 	LineContainer _lineContainer;
 	string[] _args = Array.Empty<string>();
+	// 起動一発目のファイルオープン
+	bool _needsStartupFileOpen;
 
 
 
@@ -41,69 +43,18 @@ public partial class MainWindow : Window {
 	public MainWindow(string[] args) {
 
 		InitializeComponent();
-		UpdateTheme();
+		ThemeManager.Add(this);
 		_args = args;
+		_needsStartupFileOpen = 0 < args.Length;
 		_editor = new Editor(this);
 		_lineContainer = new(Settings.Instance.renameMode.Value);
 
 		Loaded += MainWindow_Loaded;
-
-		// 設定の読み込み
-		Settings.Instance.themeProp.OnChanged += OnThemeChanged;
-		Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
-		Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
-		Settings.Instance.renameMode.OnChanged += OnRenameModeChanged;
-		Settings.Instance.Load();
-
-		// コマンドの作成
-		_commands.quit = new MyCommand(_ => Quit());
-		_commands.openAbout = new MyCommand(_ => OpenAbout());
-		_commands.openSettings = new MyCommand(_ => OpenSettings());
-		_commands.openFile = new MyCommand(_ => OpenFileDialog());
-		_commands.apply = new MyCommand(_ => Apply());
-		_commands.clear = new MyCommand(_ => Clear());
-		_commands.sort = new MyCommand(_ => Sort());
-		_commands.reset = new MyCommand(_ => Reset());
-
-		// コマンド、キーの割り当て
-		Menu_OpenAbout.Command = _commands.openAbout;
-		Menu_OpenSettings.Command = _commands.openSettings;
-		Menu_Quit.Command = _commands.quit;
-		{
-			var gesture = new KeyGesture(Key.S, ModifierKeys.Control);
-			var keyBinding = new KeyBinding(_commands.apply, gesture);
-			InputBindings.Add(keyBinding);
-
-			ApplyButton.Command = _commands.apply;
-			ApplyButton.ToolTip = gesture.GetDisplayStringForCulture(System.Globalization.CultureInfo.CurrentCulture);
-		}
-		ResetButton.Command = _commands.reset;
-		ClearButton.Command = _commands.clear;
-		SortButton.Command = _commands.sort;
-
-		foreach (var mode in RenameModeUtil.Values) {
-			var item = new MenuItem {
-				Header = mode.GetDisplayName(),
-				Tag = mode,
-				IsCheckable = true,
-			};
-			item.Click += OnRenameModeMenuClick;
-			RenameModeMenu.Items.Add(item);
-		}
-
-		OnRenameModeChanged(Settings.Instance.renameMode.Value);
-
-		PreviewLostKeyboardFocus += Window_PreviewLostKeyboardFocus;
-		PreviewGotKeyboardFocus += Window_PreviewGotKeyboardFocus;
-		PreviewKeyDown += Window_PreviewKeyDown;
-		ThemeManager.Add(this);
 	}
 
 	void UpdateTheme() {
 		if (null == EditorView?.CoreWebView2) return;
-		var isDark = Settings.Instance.themeProp.Value.IsDarkMode();
-		string theme = isDark ? "vs-dark" : "vs";
-		_editor.SetTheme(theme);
+		_editor.SetTheme(Settings.Instance.themeProp.Value.MonacoEditorTheme);
 	}
 
 	void CloseMenuAndFocusParent(MenuItem menuItem) {
@@ -121,63 +72,61 @@ public partial class MainWindow : Window {
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
 		try {
-			var env = await CoreWebView2Environment.CreateAsync(
-				userDataFolder: Path.Combine(
-					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-					"ScrapRenamer",
-					"WebView2"));
+			// 設定の読み込み
+			Settings.Instance.themeProp.OnChanged += OnThemeChanged;
+			Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
+			Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
+			Settings.Instance.renameMode.OnChanged += OnRenameModeChanged;
 
-			await EditorView.EnsureCoreWebView2Async(env);
-			EditorView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+			// コマンドの作成
+			_commands.quit = new MyCommand(_ => Quit());
+			_commands.openAbout = new MyCommand(_ => OpenAbout());
+			_commands.openSettings = new MyCommand(_ => OpenSettings());
+			_commands.openFile = new MyCommand(_ => OpenFileDialog());
+			_commands.apply = new MyCommand(_ => Apply());
+			_commands.clear = new MyCommand(_ => Clear());
+			_commands.sort = new MyCommand(_ => Sort());
+			_commands.reset = new MyCommand(_ => Reset());
 
+			// コマンド、キーの割り当て
+			Menu_OpenAbout.Command = _commands.openAbout;
+			Menu_OpenSettings.Command = _commands.openSettings;
+			Menu_Quit.Command = _commands.quit;
+			{
+				var gesture = new KeyGesture(Key.S, ModifierKeys.Control);
+				var keyBinding = new KeyBinding(_commands.apply, gesture);
+				InputBindings.Add(keyBinding);
 
-			if (s_isDebug) {
-				EditorView.CoreWebView2.OpenDevToolsWindow();
+				ApplyButton.Command = _commands.apply;
+				ApplyButton.ToolTip = gesture.GetDisplayStringForCulture(System.Globalization.CultureInfo.CurrentCulture);
+			}
+			ResetButton.Command = _commands.reset;
+			ClearButton.Command = _commands.clear;
+			SortButton.Command = _commands.sort;
+
+			foreach (var mode in RenameModeUtil.Values) {
+				var item = new MenuItem {
+					Header = mode.GetDisplayName(),
+					Tag = mode,
+					IsCheckable = true,
+				};
+				item.Click += OnRenameModeMenuClick;
+				RenameModeMenu.Items.Add(item);
 			}
 
-			// var cultureInfo = new System.Globalization.CultureInfo("en");
-			// Thread.CurrentThread.CurrentUICulture = cultureInfo;
-			// Thread.CurrentThread.CurrentCulture = cultureInfo;
+			OnRenameModeChanged(Settings.Instance.renameMode.Value);
 
-			var editorParams = new Dictionary<string, object>() {
-				{ "isDebug", s_isDebug },
-				// ja, en...
-				{ "language", Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName },
-				// フルパスを行末に表示するか
-				{ "showFullPathInAfter", false },
-			};
+			PreviewLostKeyboardFocus += Window_PreviewLostKeyboardFocus;
+			PreviewGotKeyboardFocus += Window_PreviewGotKeyboardFocus;
+			PreviewKeyDown += Window_PreviewKeyDown;
 
-			await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
-				$$"""
-				window.scrapRenamer = {{Json.Serialize(editorParams)}};
-				""");
-			UpdateTheme();
+			DragOver += OnDragOver;
+			Drop += OnDrop;
 
-			var path = Path.Combine(
-				AppContext.BaseDirectory,
-				"bin",
-				"Editor",
-				"index.html");
-			EditorView.DefaultBackgroundColor = Settings.Instance.themeProp.Value.IsDarkMode() ?
-				System.Drawing.Color.Black :
-				System.Drawing.Color.White;
-
-			EditorView.Source = new Uri(path);
-			EditorView.WebMessageReceived += _editor.WebMessageReceived;
-			EditorView.AllowExternalDrop = true;
-			EditorView.Visibility = Visibility.Visible;
-			DropOverlay.Visibility = Visibility.Visible;
-			StatusBar.Visibility = Visibility.Hidden;
-			UpdateVisibility(false);
-
-			// エディターのロード待機
-			while (!_editor.Loaded) {
-				await Dispatcher.Yield();
-			}
-
-			UpdateTheme();
-			_editor.SetLines();
 			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+
+			UpdateVisibility(false);
+			await CreateEditorView();
 
 			// 引数があればパスを追加する
 			if (0 < _args.Length) {
@@ -185,10 +134,65 @@ public partial class MainWindow : Window {
 			}
 			Debug.Print($"MainWindow_Loaded: {e}");
 		} catch (Exception ex) {
+			Debug.Print($"ex: {ex}");
 			var w = new ResultWindow.ResultWindow(ex.ToString()) {
 				Owner = this
 			};
 			w.ShowDialog();
+		}
+	}
+
+	async Task CreateEditorView() {
+		EditorView.DefaultBackgroundColor = Settings.Instance.themeProp.Value.IsDarkMode() ?
+			System.Drawing.Color.Black :
+			System.Drawing.Color.White;
+
+		var env = await CoreWebView2Environment.CreateAsync(
+				userDataFolder: Path.Combine(
+					Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+					"ScrapRenamer",
+					"WebView2"));
+
+		await EditorView.EnsureCoreWebView2Async(env);
+
+		EditorView.WebMessageReceived += _editor.WebMessageReceived;
+		EditorView.AllowExternalDrop = true;
+
+		// ブラウザに備わる下記の様なショーットカットキーを無効にする。エディターで拾えるようにするため。
+		// 例:
+		// - Ctrl+R によるリロード
+		// - Ctrl+Plus, Minus によるズームインアウト
+		EditorView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
+
+
+		if (s_isDebug) {
+			EditorView.CoreWebView2.OpenDevToolsWindow();
+		}
+
+		var editorParams = new Dictionary<string, object>() {
+				{ "isDebug", s_isDebug },
+				// ja, en...
+				{ "language", Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName },
+				// フルパスを行末に表示するか
+				{ "showFullPathInAfter", false },
+				{ "theme", Settings.Instance.themeProp.Value.MonacoEditorTheme },
+			};
+
+		await EditorView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
+			$$"""
+				window.scrapRenamer = {{Json.Serialize(editorParams)}};
+				""");
+
+		var path = Path.Combine(
+				AppContext.BaseDirectory,
+				"bin",
+				"Editor",
+				"index.html");
+		EditorView.Source = new Uri(path);
+		
+		// エディターのロード待機
+		while (!_editor.Loaded) {
+			await Dispatcher.Yield();
 		}
 	}
 
@@ -420,6 +424,7 @@ public partial class MainWindow : Window {
 
 	void OpenFiles(List<Line> lines) {
 		var sw = Stopwatch.StartNew();
+		_needsStartupFileOpen = false;
 
 		if (Settings.Instance.sortOnAdd.Value) {
 			_lineContainer.Sort(Settings.Instance.sortType.Value);
@@ -591,16 +596,18 @@ public partial class MainWindow : Window {
 	}
 
 	internal void UpdateVisibility(bool isDragging) {
-		if (0 < _lineContainer.Lines.Count && !isDragging) {
+		if (0 < _lineContainer.Lines.Count && !isDragging || _needsStartupFileOpen) {
+			// エディターを表示
 			Debug.Print($"A, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
 			EditorView.Visibility = Visibility.Visible;
-			DropOverlay.Visibility = Visibility.Hidden;
+			DropOverlay.Visibility = Visibility.Collapsed;
 			StatusBar.Visibility = Visibility.Visible;
 		} else {
+			// 「ここにドロップ」を表示
 			Debug.Print($"B, isDragging: {isDragging}, lineCount: {_lineContainer.Lines.Count}");
-			EditorView.Visibility = Visibility.Hidden;
+			EditorView.Visibility = Visibility.Collapsed;
 			DropOverlay.Visibility = Visibility.Visible;
-			StatusBar.Visibility = Visibility.Hidden;
+			StatusBar.Visibility = Visibility.Collapsed;
 		}
 	}
 

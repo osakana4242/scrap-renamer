@@ -6,6 +6,12 @@ public record class ThemeMode(string Value) {
 	public static ThemeMode Dark = new("Dark");
 	public static ThemeMode Light = new("Light");
 
+
+	public string MonacoEditorTheme => IsDarkMode() ?
+		"vs-dark" :
+		"vs";
+
+
 	// System なら Dark or Light に具体化する。それ以外はそのまま。
 	public ThemeMode Resolve() {
 		if (this == System) {

@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using ModernWpf;
+using ScrapRenamer.Common;
 using ScrapRenamer.Views.MainWindow;
 
 namespace ScrapRenamer;
@@ -17,6 +18,8 @@ public partial class App : Application {
 		// var cultureInfo = new System.Globalization.CultureInfo("en");
 		// Thread.CurrentThread.CurrentUICulture = cultureInfo;
 		// Thread.CurrentThread.CurrentCulture = cultureInfo;
+
+		Settings.Instance.Load();
 
 		MainWindow window = new MainWindow(e.Args);
 		window.Show();
