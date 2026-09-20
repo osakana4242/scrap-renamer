@@ -6,7 +6,7 @@ English | [日本語](README.ja.md)
 
 A text editor-style file renaming tool.
 
-![](./Docs/SS_02.en.jpg)
+![](./Docs/SS_01.gif)
 
 After dragging and dropping files, you can edit the list of file names just like in a text editor.
 Click the Execute button (or press Ctrl+Enter) to rename the files in bulk.
