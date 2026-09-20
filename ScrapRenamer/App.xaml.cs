@@ -13,11 +13,12 @@ public partial class App : Application {
 	protected override void OnStartup(StartupEventArgs e) {
 		base.OnStartup(e);
 
-
+#if DEBUG
 		// en 確認用
-		// var cultureInfo = new System.Globalization.CultureInfo("en");
-		// Thread.CurrentThread.CurrentUICulture = cultureInfo;
-		// Thread.CurrentThread.CurrentCulture = cultureInfo;
+		var cultureInfo = new System.Globalization.CultureInfo("en");
+		Thread.CurrentThread.CurrentUICulture = cultureInfo;
+		Thread.CurrentThread.CurrentCulture = cultureInfo;
+#endif
 
 		Settings.Instance.Load();
 
