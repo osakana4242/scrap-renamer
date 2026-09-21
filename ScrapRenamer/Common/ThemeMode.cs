@@ -6,6 +6,12 @@ public record class ThemeMode(string Value) {
 	public static ThemeMode Dark = new("Dark");
 	public static ThemeMode Light = new("Light");
 
+	public static ThemeMode[] Values { get; private set; } = {
+		System,
+		Dark,
+		Light
+	};
+
 
 	public string MonacoEditorTheme => IsDarkMode() ?
 		"vs-dark" :

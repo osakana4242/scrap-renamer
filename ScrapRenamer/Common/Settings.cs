@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Windows.Media;
 using ScrapRenamer.Lib.MiniJSON;
@@ -9,6 +10,7 @@ namespace ScrapRenamer.Common;
 public class Settings {
 	public static readonly Settings Instance = new Settings();
 
+	public ObservableProperty<CultureInfo> languageProp = new(CultureInfoUtil.Default);
 	public ObservableProperty<ThemeMode> themeProp = new(ThemeMode.System);
 	public ObservableProperty<string> fontFamilyProp = new("Lucida Console");
 	public ObservableProperty<int> fontSizeProp = new(14);
@@ -20,10 +22,11 @@ public class Settings {
 	bool _isInLoad = false;
 
 
-	public FontFamily FontFamily => new FontFamily(Settings.Instance.fontFamilyProp.Value);
+	public FontFamily FontFamily => new FontFamily(Instance.fontFamilyProp.Value);
 
 
 	Settings() {
+		languageProp.OnChanged += v => OnChanged();
 		themeProp.OnChanged += v => OnChanged();
 		fontFamilyProp.OnChanged += v => OnChanged();
 		fontSizeProp.OnChanged += v => OnChanged();
@@ -42,7 +45,7 @@ public class Settings {
 			var json = File.ReadAllText(path);
 
 			var data = Data.FromJson(json);
-
+			languageProp.Value = CultureInfoUtil.Parse(data.language);
 			themeProp.Value = data.theme == ThemeMode.Dark.Value ?
 				ThemeMode.Dark :
 				data.theme == ThemeMode.Light.Value ?
@@ -66,6 +69,7 @@ public class Settings {
 			}
 
 			var data = new Data() {
+				language = languageProp.Value.TwoLetterISOLanguageName,
 				theme = themeProp.Value.Value,
 				fontFamily = fontFamilyProp.Value,
 				fontSize = fontSizeProp.Value,
@@ -92,6 +96,7 @@ public class Settings {
 
 	// Json シリアライズ用
 	class Data {
+		public string language = CultureInfoUtil.Default.TwoLetterISOLanguageName;
 		public string theme = ThemeMode.System.Value;
 		public string fontFamily = "";
 		public int fontSize;
@@ -100,6 +105,7 @@ public class Settings {
 		public static Data FromJson(string json) {
 			var inst = new Data();
 			if (Json.Deserialize(json) is not Dictionary<string, object> dict) return inst;
+			dict.TryGetValue_Ext(nameof(inst.language), ref inst.language);
 			dict.TryGetValue_Ext(nameof(inst.theme), ref inst.theme);
 			dict.TryGetValue_Ext(nameof(inst.fontFamily), ref inst.fontFamily);
 			dict.TryGetValue_Ext(nameof(inst.fontSize), ref inst.fontSize);
@@ -109,6 +115,7 @@ public class Settings {
 
 		public string ToJson() {
 			var data = new Dictionary<string, object>() {
+				{ nameof(language), language },
 				{ nameof(theme), theme },
 				{ nameof(fontFamily), fontFamily },
 				{ nameof(fontSize), fontSize },

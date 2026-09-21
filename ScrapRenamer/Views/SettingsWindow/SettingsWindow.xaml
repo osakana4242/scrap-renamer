@@ -18,6 +18,30 @@
 				</Style>
 			</StackPanel.Resources>
 
+			<!-- 言語 -->
+			<StackPanel Margin="0 0 0 24">
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="80"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+
+					<TextBlock
+						Grid.Column="0"
+						VerticalAlignment="Center"
+						Text="{x:Static res:Strings.SettingsWindow_LanguageLabel}"/>
+
+					<ComboBox x:Name="LanguageComboBox"
+						Grid.Column="1" />
+				</Grid>
+
+				<TextBlock
+					Margin="80 0 0 6"
+					Foreground="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+					Text="{x:Static res:Strings.SettingsWindow_LanguageRestartNotice}"
+					TextWrapping="Wrap"/>
+			</StackPanel>
+
 			<!-- テーマ -->
 			<Grid>
 				<Grid.ColumnDefinitions>
@@ -30,11 +54,8 @@
 					VerticalAlignment="Center"
 					Text="{x:Static res:Strings.SettingsWindow_ThemeLabel}"/>
 
-				<ComboBox
-					Grid.Column="1"
-					SelectedIndex="0"
-					x:Name="ThemeComboBox">
-				</ComboBox>
+				<ComboBox x:Name="ThemeComboBox"
+					Grid.Column="1" />
 			</Grid>
 
 			<!-- フォント -->
@@ -50,9 +71,8 @@
 					VerticalAlignment="Center"
 					Text="{x:Static res:Strings.SettingsWindow_FontFamilyLabel}"/>
 
-				<ComboBox
-					Grid.Column="1"
-					x:Name="FontFamilyComboBox"/>
+				<ComboBox x:Name="FontFamilyComboBox"
+					Grid.Column="1" />
 
 			</Grid>
 
@@ -69,9 +89,8 @@
 					VerticalAlignment="Center"
 					Text="{x:Static res:Strings.SettingsWindow_FontSizeLabel}"/>
 
-				<ComboBox
+				<ComboBox x:Name="FontSizeComboBox"
 					Grid.Column="1"
-					x:Name="FontSizeComboBox"
 					IsEditable="True"/>
 
 			</Grid>

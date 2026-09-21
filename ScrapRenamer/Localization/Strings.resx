@@ -263,6 +263,14 @@ Details:
     <value>Settings</value>
   </data>
 
+  <data name="SettingsWindow_LanguageLabel" xml:space="preserve">
+    <value>Language</value>
+  </data>
+
+  <data name="SettingsWindow_LanguageRestartNotice" xml:space="preserve">
+    <value>Restart the app to apply the language change</value>
+  </data>
+
   <data name="SettingsWindow_ThemeLabel" xml:space="preserve">
     <value>Theme</value>
   </data>

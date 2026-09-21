@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,22 +14,21 @@ public partial class SettingsWindow : Window {
 	public SettingsWindow() {
 		InitializeComponent();
 
-		ThemeComboBox.ItemsSource = new[] {
-			ThemeMode.System,
-			ThemeMode.Dark,
-			ThemeMode.Light,
-		};
+		LanguageComboBox.ItemsSource = CultureInfoUtil.Values;
+		LanguageComboBox.DisplayMemberPath = "NativeName"; /// <see cref="CultureInfo.NativeName" />
+		LanguageComboBox.SelectedItem = Settings.Instance.languageProp.Value;
+		LanguageComboBox.SelectionChanged += OnLanguageSelectionChanged;
+
+		ThemeComboBox.ItemsSource = ThemeMode.Values;
 		ThemeComboBox.SelectedItem = Settings.Instance.themeProp.Value;
 		ThemeComboBox.SelectionChanged += OnThemeSelectionChanged;
 
-		var f = new FontFamily(Settings.Instance.fontFamilyProp.Value);
-
 		FontFamilyComboBox.ItemsSource = Fonts.SystemFontFamilies
 			.OrderBy(x => x.Source);
-
-		FontFamilyComboBox.DisplayMemberPath = "Source";
-		FontFamilyComboBox.SelectedValuePath = "Source";
+		var f = new FontFamily(Settings.Instance.fontFamilyProp.Value);
 		FontFamilyComboBox.SelectedItem = f;
+		FontFamilyComboBox.DisplayMemberPath = "Source"; /// <see cref="FontFamily.Source" />
+		FontFamilyComboBox.SelectedValuePath = "Source"; /// <see cref="FontFamily.Source" />
 		FontFamilyComboBox.SelectionChanged += OnSelectionChanged;
 
 		FontSizeComboBox.ItemsSource = new double[] {
@@ -37,8 +37,15 @@ public partial class SettingsWindow : Window {
 		};
 		FontSizeComboBox.SelectionChanged += OnFontSizeSelectionChanged;
 		FontSizeComboBox.Text = Settings.Instance.fontSizeProp.Value.ToString();
+
 		ThemeManager.Add(this);
 	}
+
+	public void OnLanguageSelectionChanged(object sender, SelectionChangedEventArgs e) {
+		if (LanguageComboBox.SelectedItem is not CultureInfo language) return;
+		Settings.Instance.languageProp.Value = language;
+	}
+
 
 	public void OnThemeSelectionChanged(object sender, SelectionChangedEventArgs e) {
 		if (ThemeComboBox.SelectedItem is not ThemeMode themeMode) return;

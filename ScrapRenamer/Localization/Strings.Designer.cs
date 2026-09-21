@@ -370,6 +370,18 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string SettingsWindow_LanguageLabel {
+            get {
+                return ResourceManager.GetString("SettingsWindow_LanguageLabel", resourceCulture);
+            }
+        }
+
+        public static string SettingsWindow_LanguageRestartNotice {
+            get {
+                return ResourceManager.GetString("SettingsWindow_LanguageRestartNotice", resourceCulture);
+            }
+        }
+
         public static string SettingsWindow_ThemeLabel {
             get {
                 return ResourceManager.GetString("SettingsWindow_ThemeLabel", resourceCulture);
