@@ -1,4 +1,4 @@
-# ScrapRenamer
+﻿# ScrapRenamer
 
 ## Basic Information
 
@@ -52,6 +52,11 @@ You may use, modify, and redistribute it freely without crediting the author.
 See `LICENSE.txt` for details.
 
 ## Changelog
+
+### v1.1.0
+
+* Added support for pasting multi-line text with a single cursor
+* Improved multi-cursor paste to allow partial pasting when the number of selected lines differs from the number of lines in the clipboard
 
 ### v1.0.0
 
