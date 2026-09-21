@@ -121,20 +121,187 @@ require([
 		}
 	});
 
+	// テキストに変更が入った際に呼ばれる.
+	// テキストの行数が変わってしまった場合、行数が変わらない変更に調整をする.
 	editor.onDidChangeModelContent((e) => {
 		debugLog("Content changed:", e);
 		const model = editor.getModel();
+
+		// e の中身の例:
+		// {
+		//     "changes": [
+		//         {
+		//             "range": {
+		//                 "startLineNumber": 5,
+		//                 "startColumn": 13,
+		//                 "endLineNumber": 5,
+		//                 "endColumn": 13
+		//             },
+		//             "rangeLength": 0,
+		//             "text": "AppIcon_x64.png\nSS_01.gif\nSS_01_01.png\nSS_01_02.png\nSS_01_03.pnga",
+		//             "rangeOffset": 64,
+		//             "forceMoveMarkers": false
+		//         }
+		//     ],
+		//     "eol": "\n",
+		//     "isEolChange": false,
+		//     "versionId": 3,
+		//     "isUndoing": false,
+		//     "isRedoing": false,
+		//     "isFlush": false,
+		//     "detailedReasons": [
+		//         {
+		//             "metadata": {
+		//                 "source": "cursor",
+		//                 "kind": "paste",
+		//                 "detailedSource": "keyboard"
+		//             }
+		//         }
+		//     ],
+		//     "detailedReasonsChangeLengths": [
+		//         1
+		//     ]
+		// }
+		//
+		// undo のとき:
+		// {
+		//     "changes": [
+		//         {
+		//             "range": {
+		//                 "startLineNumber": 5,
+		//                 "startColumn": 13,
+		//                 "endLineNumber": 9,
+		//                 "endColumn": 14
+		//             },
+		//             "rangeLength": 65,
+		//             "text": "",
+		//             "rangeOffset": 64,
+		//             "forceMoveMarkers": false
+		//         }
+		//     ],
+		//     "eol": "\n",
+		//     "isEolChange": false,
+		//     "versionId": 4,
+		//     "isUndoing": true,
+		//     "isRedoing": false,
+		//     "isFlush": false,
+		//     "detailedReasons": [
+		//         {
+		//             "metadata": {
+		//                 "source": "applyEdits"
+		//             }
+		//         }
+		//     ],
+		//     "detailedReasonsChangeLengths": [
+		//         1
+		//     ]
+		// }
 
 		if (model.getLineCount() !== scrapRenamer.lineCount) {
 			// 元に戻す
 			editor.trigger("keyboard", "undo", {});
 			debugLog("Line count changed, undoing the change.");
+
+			if (e.changes.length === 1) {
+				// シングルカーソル
+
+				// コピーしたテキスト
+				//   E
+				//   F
+				//   G
+				//
+				// 元のテキスト( | はカーソル位置 )
+				//   AAA
+				//   BBB
+				//   C|CC
+				//   DDD
+				//
+				// ペースト後のテキスト
+				//   AAA
+				//   BBB
+				//   CECC
+				//   DFDD
+
+
+				// 開始カーソル行から終端までの行数以内に lines を収める
+				const change = e.changes[0];
+				let pastedLines = change.text.split("\n");
+				const restLineCount = model.getLineCount() - change.range.startLineNumber + 1;
+				if (restLineCount < pastedLines.length) {
+					pastedLines = pastedLines.slice(0, restLineCount);
+				}
+				
+				const edits = [];
+
+				// カーソルが行末の場合は、後続もすべて行末を対象とする
+				const startOrigLine = model.getLineContent(change.range.startLineNumber);
+				const endOfColumn = startOrigLine.length + 1 === change.range.startColumn;
+
+				for (let i = 0; i < pastedLines.length; ++i) {
+					const pastedLine = pastedLines[i];
+					const lineNumber = change.range.startLineNumber + i;
+					const origLine = model.getLineContent(lineNumber);
+					const column = endOfColumn ?
+						origLine.length + 1 :
+						Math.min(change.range.startColumn, origLine.length + 1);
+					edits.push({
+						range: {
+							startLineNumber: lineNumber,
+							startColumn: column,
+							endLineNumber: lineNumber,
+							endColumn: column,
+						},
+						text: pastedLine,
+					});
+				}
+
+				editor.executeEdits("paste", edits);
+			} else {
+				// マルチカーソル
+				// カーソル数とコピーした行数が一致している場合とそうでない場合で挙動が異なる.
+				// 前者なら
+				//
+				// コピーしたテキスト
+				//   D
+				//   E
+				//   F
+				//
+				// 元のテキスト
+				//   AA|A
+				//   BB|B
+				//   CC|C
+				//
+				// コピー後のテキスト (これは行数に変化がなく、ここのフローに来ない)
+				//   AADA
+				//   BBEB
+				//   CCFC
+				//
+				// 元のテキスト
+				//   AAA
+				//   BB|B
+				//   CC|C
+				// コピー後のテキスト
+				//   AAA
+				//   BBDB
+				//   CCDC
+				const edits = [];
+
+				// 各ペースト行の1行目のみを各行に差し込む
+				for (let i = 0; i < e.changes.length; ++i) {
+					const change = e.changes[i];
+					const pastedLine = change.text.split("\n")[0];
+					edits.push({
+						range: change.range,
+						text: pastedLine,
+					});
+				}
+
+				editor.executeEdits("paste", edits);
+			}
 			return;
 		}
 
 		refreshDecorations();
-
-		//editor.layout();
 
 		e.changes.forEach(change => {
 			const n = change.range.startLineNumber;
