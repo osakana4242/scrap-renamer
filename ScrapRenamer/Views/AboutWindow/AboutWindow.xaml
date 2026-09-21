@@ -72,13 +72,11 @@
 			HorizontalAlignment="Right">
 
 			<Button
-				Width="110"
 				Margin="0 0 8 0"
 				Content="{x:Static res:Strings.AboutWindow_CopyInfoButton}"
 				Click="OnCopyClick"/>
 
 			<Button
-				Width="80"
 				Content="{x:Static res:Strings.AboutWindow_OKButton}"
 				IsDefault="True"
 				IsCancel="True"
