@@ -11,96 +11,71 @@
 	WindowStartupLocation="CenterOwner">
 
 	<Grid Margin="16">
+		<StackPanel>
+			<StackPanel.Resources>
+				<Style TargetType="Grid">
+					<Setter Property="Margin" Value="0 6"/>
+				</Style>
+			</StackPanel.Resources>
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="12"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="12"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="16"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
-
-		<!-- テーマ -->
-		<Grid Grid.Row="0">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="80"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-
-			<TextBlock
-				Grid.Column="0"
-				VerticalAlignment="Center"
-				Text="{x:Static res:Strings.SettingsWindow_ThemeLabel}"/>
-
-			<ComboBox
-				Grid.Column="2"
-				SelectedIndex="0"
-				x:Name="ThemeComboBox">
-			</ComboBox>
-		</Grid>
-
-		<!-- フォント -->
-		<Grid Grid.Row="2">
-
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="80"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-
-			<TextBlock
-				Grid.Column="0"
-				VerticalAlignment="Center"
-				Text="{x:Static res:Strings.SettingsWindow_FontFamilyLabel}"/>
-
-			<ComboBox
-				Grid.Column="1"
-				x:Name="FontFamilyComboBox"/>
-
-		</Grid>
-
-		<!-- サイズ -->
-		<Grid Grid.Row="4">
-
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="80"/>
-				<ColumnDefinition Width="120"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-
-			<TextBlock
-				Grid.Column="0"
-				VerticalAlignment="Center"
-				Text="{x:Static res:Strings.SettingsWindow_FontSizeLabel}"/>
-
-			<ComboBox
-				Grid.Column="1"
-				x:Name="FontSizeComboBox"
-				IsEditable="True"/>
-
-		</Grid>
-
-		<!-- サンプル -->
-		<!--
-		<GroupBox
-			Grid.Row="6"
-			Grid.RowSpan="2"
-			Header="サンプル"
-			Margin="0 8 0 0">
-
-			<Border Padding="12">
+			<!-- テーマ -->
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="80"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
 
 				<TextBlock
-					x:Name="SampleTextBlock"
-					Text="file.txt&#10;README.md&#10;写真.jpg&#10;フォルダー"
-					TextWrapping="NoWrap"/>
+					Grid.Column="0"
+					VerticalAlignment="Center"
+					Text="{x:Static res:Strings.SettingsWindow_ThemeLabel}"/>
 
-			</Border>
+				<ComboBox
+					Grid.Column="1"
+					SelectedIndex="0"
+					x:Name="ThemeComboBox">
+				</ComboBox>
+			</Grid>
 
-		</GroupBox>
-		-->
+			<!-- フォント -->
+			<Grid>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="80"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock
+					Grid.Column="0"
+					VerticalAlignment="Center"
+					Text="{x:Static res:Strings.SettingsWindow_FontFamilyLabel}"/>
+
+				<ComboBox
+					Grid.Column="1"
+					x:Name="FontFamilyComboBox"/>
+
+			</Grid>
+
+			<!-- サイズ -->
+			<Grid>
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="80"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<TextBlock
+					Grid.Column="0"
+					VerticalAlignment="Center"
+					Text="{x:Static res:Strings.SettingsWindow_FontSizeLabel}"/>
+
+				<ComboBox
+					Grid.Column="1"
+					x:Name="FontSizeComboBox"
+					IsEditable="True"/>
+
+			</Grid>
+		</StackPanel>
 	</Grid>
 
 </Window>
