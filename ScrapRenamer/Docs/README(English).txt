@@ -57,6 +57,8 @@ See `LICENSE.txt` for details.
 
 * Added support for pasting multi-line text with a single cursor
 * Improved multi-cursor paste to allow partial pasting when the number of selected lines differs from the number of lines in the clipboard
+* Added the ability to change the language from Settings
+
 
 ### v1.0.0
 
