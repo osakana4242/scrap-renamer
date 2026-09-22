@@ -26,7 +26,18 @@
 		<PackageReference Include="IndexRange" Version="1.0.3" />
 		<Resource Include="AppIcon\AppIcon.ico" />
 		<Resource Include="AppIcon\AppIcon_x32.png" />
-		<Content Include="Views\MainWindow\Editor\**" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
+
+		<!-- Editor は通常時は dev からコピー -->
+		<Content Include="Views\MainWindow\Editor\dev\**"
+			CopyToOutputDirectory="PreserveNewest"
+			CopyToPublishDirectory="Never"
+			TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
+		<!-- Publish 時は min からコピー -->
+		<Content Include="Views\MainWindow\Editor\min\**"
+			CopyToOutputDirectory="Never"
+			CopyToPublishDirectory="PreserveNewest"
+			TargetPath="bin\Editor\%(RecursiveDir)%(Filename)%(Extension)" />
+			
 		<Content Include="Docs\*" CopyToPublishDirectory="PreserveNewest" TargetPath="%(Filename)%(Extension)" />
 		<Content Include="..\LICENSE.txt" CopyToPublishDirectory="PreserveNewest" />
 		<Content Include="..\THIRD-PARTY-NOTICES.txt" CopyToPublishDirectory="PreserveNewest" />
@@ -43,6 +54,12 @@
 			</ReferenceCopyLocalPaths>
 		</ItemGroup>
 
+	</Target>
+
+	<Target Name="BuildEditor" BeforeTargets="Publish">
+		<Exec
+			Command="npm run build"
+			WorkingDirectory="$(ProjectDir)\Views\MainWindow\Editor" />
 	</Target>
 
 	<!--
