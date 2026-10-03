@@ -7,9 +7,9 @@ using ScrapRenamer.Lib.MiniJSON;
 
 namespace ScrapRenamer.Views.MainWindow;
 
-class Editor {
+sealed class Editor {
 	MainWindow _owner;
-	System.Action<(string text, System.Exception? ex)>? _onTextGet;
+	Action<(string text, Exception? ex)>? _onTextGet;
 	bool _loaded;
 	bool _hasFocus;
 
@@ -128,7 +128,10 @@ class Editor {
 
 	// エディターに現テキストを設定する
 	public void SetLines() {
-		if (null == EditorView.CoreWebView2) return;
+		if (null == EditorView.CoreWebView2) {
+			Debug.Fail($"{nameof(SetLines)}");
+			return;
+		}
 
 		var message = new Dictionary<string, object>() {
 			{ "type", "setLines" },

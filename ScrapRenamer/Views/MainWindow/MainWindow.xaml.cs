@@ -10,7 +10,6 @@ using Microsoft.Web.WebView2.Core;
 using ScrapRenamer.Common;
 using ScrapRenamer.Lib.MiniJSON;
 using ScrapRenamer.Views.ProgressWindow;
-
 using ProgressWindowRoot = ScrapRenamer.Views.ProgressWindow.ProgressWindow;
 
 namespace ScrapRenamer.Views.MainWindow;
@@ -30,9 +29,11 @@ public partial class MainWindow : Window {
 
 	readonly Editor _editor;
 	LineContainer _lineContainer;
-	string[] _args = Array.Empty<string>();
+	// 起動一発目のファイル
+	string[] _startupPaths = Array.Empty<string>();
 	// 起動一発目のファイルオープン
 	bool _needsStartupFileOpen;
+	State _state;
 
 
 
@@ -41,15 +42,20 @@ public partial class MainWindow : Window {
 
 
 	public MainWindow(string[] args) {
-
+		SetState(State.StartupLoading);
 		InitializeComponent();
 		ThemeManager.Add(this);
-		_args = args;
+		_startupPaths = args;
 		_needsStartupFileOpen = 0 < args.Length;
 		_editor = new Editor(this);
 		_lineContainer = new(Settings.Instance.renameMode.Value);
 
 		Loaded += MainWindow_Loaded;
+	}
+
+	void SetState(State state) {
+		Debug.Print($"SetState, {_state} to {state}");
+		_state = state;
 	}
 
 	void UpdateTheme() {
@@ -126,13 +132,20 @@ public partial class MainWindow : Window {
 			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
 
 			UpdateVisibility(false);
+#if DEBUG
+			// ロード中にファイルがドロップされたときの挙動確認のために、
+			// ロード時間を遅延させる
+			await Task.Delay(3000);
+#endif
 			await CreateEditorView();
+			Debug.Print($"MainWindow_Loaded: {e}");
+			SetState(State.Ready);
+
 
 			// 引数があればパスを追加する
-			if (0 < _args.Length) {
-				OpenFilesOrSerachDirectory(_args);
+			if (0 < _startupPaths.Length) {
+				OpenFilesOrSerachDirectory(_startupPaths);
 			}
-			Debug.Print($"MainWindow_Loaded: {e}");
 		} catch (Exception ex) {
 			Debug.Print($"ex: {ex}");
 			var w = new ResultWindow.ResultWindow(ex.ToString()) {
@@ -347,6 +360,27 @@ public partial class MainWindow : Window {
 		// フォーカスを他のアプリ(エクスプローラーなど)からこのアプリに移す
 		Activate();
 
+		// ロードがまだ終わってない
+		// ロード後にファイルを読む予約をする
+		switch (_state) {
+		case State.StartupLoading:
+			Debug.Print("ロード中にドロップを検出");
+			_startupPaths = _startupPaths.Concat(files).ToArray();
+			_needsStartupFileOpen = true;
+			UpdateVisibility(false);
+			return;
+		case State.Ready:
+			// 通常
+			break;
+		default:
+			Debug.Fail($"{nameof(OpenFilesOrSerachDirectory)}, 想定外の state: {_state}");
+			return;
+		}
+
+		_needsStartupFileOpen = false;
+		SetState(State.FilelistLoading);
+		UpdateVisibility(false);
+
 		ProgressReport report = new ProgressReport();
 		using var cts = new CancellationTokenSource();
 		var token = cts.Token;
@@ -394,7 +428,14 @@ public partial class MainWindow : Window {
 
 		try {
 			var lines = await ProgressWindowRoot.Show(this, task, report, cts);
-			OpenFiles(lines);
+
+			if (Settings.Instance.sortOnAdd.Value) {
+				_lineContainer.Sort(Settings.Instance.sortType.Value);
+			}
+
+			_editor.SetLines();
+			UpdateVisibility(false);
+			SetState(State.Ready);
 			EditorView.Focus();
 		} catch (OperationCanceledException) {
 			// キャンセルはスルー
@@ -405,6 +446,8 @@ public partial class MainWindow : Window {
 				Owner = this
 			};
 			resultWnd.ShowDialog();
+		} finally {
+			SetState(State.Ready);
 		}
 	}
 
@@ -420,35 +463,6 @@ public partial class MainWindow : Window {
 			report.SetFormat(Localization.Strings.Strings.FileOpenProgress_FileChecking, lines.Count);
 		}
 		return lines;
-	}
-
-	void OpenFiles(List<Line> lines) {
-		var sw = Stopwatch.StartNew();
-		_needsStartupFileOpen = false;
-
-		if (Settings.Instance.sortOnAdd.Value) {
-			_lineContainer.Sort(Settings.Instance.sortType.Value);
-		}
-
-		Debug.Print($"StopWatch2, {sw.Elapsed.TotalSeconds:F1}");
-		sw.Restart();
-
-		if (null == EditorView.CoreWebView2) return;
-
-		UpdateVisibility(false);
-
-		Debug.Print($"StopWatch3, {sw.Elapsed.TotalSeconds:F1}");
-		sw.Restart();
-
-		if (lines.Count == 0) {
-			Debug.WriteLine("No new lines to add.");
-			return;
-		}
-		_editor.SetLines();
-
-		Debug.Print($"StopWatch4, {sw.Elapsed.TotalSeconds:F1}");
-		sw.Restart();
-
 	}
 
 	async Task SyncTextFromEditorAsync() {
@@ -637,6 +651,13 @@ public partial class MainWindow : Window {
 	}
 
 	// ------------------------------------------------------------------------
+
+	public enum State {
+		None,
+		StartupLoading,
+		Ready,
+		FilelistLoading,
+	}
 
 	public class MyCommand : ICommand {
 		public event EventHandler? CanExecuteChanged;
