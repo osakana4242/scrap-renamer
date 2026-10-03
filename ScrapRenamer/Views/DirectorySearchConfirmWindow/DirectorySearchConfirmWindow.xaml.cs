@@ -1,10 +1,5 @@
-﻿using System.Diagnostics;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Documents;
-using System.Windows.Navigation;
+﻿using System.Windows;
 using ScrapRenamer.Common;
-using ScrapRenamer.Views.SettingsWindow;
 
 namespace ScrapRenamer;
 

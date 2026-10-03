@@ -65,3 +65,8 @@ dotnet_diagnostic.IDE0051.severity = none
 dotnet_diagnostic.IDE0090.severity = none
 ## member can be made readonly
 dotnet_diagnostic.IDE0251.severity = none
+## 未使用 using
+dotnet_diagnostic.IDE0005.severity = warning
+## using で System を先頭に持ってくるか
+dotnet_sort_system_directives_first = true
+

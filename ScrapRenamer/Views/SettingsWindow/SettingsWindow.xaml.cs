@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using System.Globalization;
-using System.Reflection;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Navigation;
 using ScrapRenamer.Common;
 
 namespace ScrapRenamer.Views.SettingsWindow;
