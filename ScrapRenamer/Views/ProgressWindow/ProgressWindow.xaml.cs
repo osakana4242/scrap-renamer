@@ -36,7 +36,7 @@ public sealed partial class ProgressWindow : Window {
 
 	// タスクの終了を待つ
 	// 一定時間経過してもタスクが終わらない場合は進行状況の表示をする
-	public static async Task<T> Show<T>(Window owner, Task<T> task, ProgressReport report, CancellationTokenSource cts) {
+	public static async Task Show(Window owner, Task task, ProgressReport report, CancellationTokenSource cts) {
 		try {
 			owner.IsEnabled = false;
 			await Task.Delay(FirstDelayMsec, cts.Token);
@@ -49,12 +49,19 @@ public sealed partial class ProgressWindow : Window {
 					wnd.Close();
 				}
 			}
-			return await task;
+			await task;
 		} finally {
 			Debug.Print($"ProgressWindow6");
 			owner.IsEnabled = true;
 			Debug.Print($"ProgressWindow7");
 		}
+	}
+
+	// タスクの終了を待つ
+	// 一定時間経過してもタスクが終わらない場合は進行状況の表示をする
+	public static async Task<T> Show<T>(Window owner, Task<T> task, ProgressReport report, CancellationTokenSource cts) {
+		await Show(owner, (Task)task, report, cts);
+		return await task;
 	}
 
 	// 100ms 置きにステータスを更新する

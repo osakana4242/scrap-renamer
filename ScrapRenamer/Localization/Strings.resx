@@ -44,6 +44,10 @@
     <value>ScrapRenamer</value>
   </data>
 
+  <data name="Startup_Preparing" xml:space="preserve">
+    <value>Starting...</value>
+  </data>
+
   <data name="Menu_App" xml:space="preserve">
     <value>App(_A)</value>
   </data>

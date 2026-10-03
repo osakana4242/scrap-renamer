@@ -424,5 +424,11 @@ namespace ScrapRenamer.Localization.Strings {
             }
         }
 
+        public static string Startup_Preparing {
+            get {
+                return ResourceManager.GetString("Startup_Preparing", resourceCulture);
+            }
+        }
+
     }
 }

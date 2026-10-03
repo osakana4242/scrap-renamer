@@ -42,7 +42,7 @@ public partial class MainWindow : Window {
 
 
 	public MainWindow(string[] args) {
-		SetState(State.StartupLoading);
+		SetState(State.Startup_WindowLoading);
 		InitializeComponent();
 		ThemeManager.Add(this);
 		_startupPaths = args;
@@ -59,7 +59,7 @@ public partial class MainWindow : Window {
 	}
 
 	void UpdateTheme() {
-		if (null == EditorView?.CoreWebView2) return;
+		if (!_editor.Loaded) return;
 		_editor.SetTheme(Settings.Instance.themeProp.Value.MonacoEditorTheme);
 	}
 
@@ -78,11 +78,24 @@ public partial class MainWindow : Window {
 
 	async void MainWindow_Loaded(object sender, RoutedEventArgs e) {
 		try {
-			// 設定の読み込み
+			if (_state != State.Startup_WindowLoading) {
+				Debug.Fail($"MainWindow_Loaded, state: {_state}");
+				return;
+			}
+			SetState(State.Startup_Preparing);
+			// 外部のイベント登録
 			Settings.Instance.themeProp.OnChanged += OnThemeChanged;
 			Settings.Instance.fontFamilyProp.OnChanged += OnFontFamilyChanged;
 			Settings.Instance.fontSizeProp.OnChanged += OnFontSizeChanged;
 			Settings.Instance.renameMode.OnChanged += OnRenameModeChanged;
+			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
+			Closed += (_, _) => {
+				Settings.Instance.themeProp.OnChanged -= OnThemeChanged;
+				Settings.Instance.fontFamilyProp.OnChanged -= OnFontFamilyChanged;
+				Settings.Instance.fontSizeProp.OnChanged -= OnFontSizeChanged;
+				Settings.Instance.renameMode.OnChanged -= OnRenameModeChanged;
+				Microsoft.Win32.SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
+			};
 
 			// コマンドの作成
 			_commands.quit = new MyCommand(_ => Quit());
@@ -129,18 +142,38 @@ public partial class MainWindow : Window {
 			DragOver += OnDragOver;
 			Drop += OnDrop;
 
-			Microsoft.Win32.SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
-
 			UpdateVisibility(false);
+
+			ProgressReport report = new ProgressReport();
+			report.SetFormat(Localization.Strings.Strings.Startup_Preparing);
+			using var cts = new CancellationTokenSource();
+			var ct = cts.Token;
+			var preparationTask = CreateEditorView(ct);
 #if DEBUG
 			// ロード中にファイルがドロップされたときの挙動確認のために、
 			// ロード時間を遅延させる
-			await Task.Delay(3000);
+			preparationTask = Task.WhenAll(preparationTask, Task.Delay(5000, ct));
 #endif
-			await CreateEditorView();
-			Debug.Print($"MainWindow_Loaded: {e}");
-			SetState(State.Ready);
+			while (!preparationTask.IsCompleted) {
+				await Task.Delay(100, ct);
+				if (0 < _startupPaths.Length) {
+					// ロード中にファイルがドロップされた場合は
+					// 「ここにファイルをドロップ」の受付をやめて、
+					// プログレスウィンドウを出す
+					try {
+						await ProgressWindowRoot.Show(this, preparationTask, report, cts);
+					} catch (OperationCanceledException) {
+						// 起動をキャンセルされたら終了するしかない
+						Quit();
+						return;
+					}
+				}
+			}
+			// task はここでは Completed だが、
+			// 例外を拾うには await が必要
+			await preparationTask;
 
+			SetState(State.Ready);
 
 			// 引数があればパスを追加する
 			if (0 < _startupPaths.Length) {
@@ -155,7 +188,7 @@ public partial class MainWindow : Window {
 		}
 	}
 
-	async Task CreateEditorView() {
+	async Task CreateEditorView(CancellationToken cts) {
 		EditorView.DefaultBackgroundColor = Settings.Instance.themeProp.Value.IsDarkMode() ?
 			System.Drawing.Color.Black :
 			System.Drawing.Color.White;
@@ -202,10 +235,11 @@ public partial class MainWindow : Window {
 				"Editor",
 				"index.html");
 		EditorView.Source = new Uri(path);
-		
+
 		// エディターのロード待機
 		while (!_editor.Loaded) {
 			await Dispatcher.Yield();
+			cts.ThrowIfCancellationRequested();
 		}
 	}
 
@@ -363,7 +397,7 @@ public partial class MainWindow : Window {
 		// ロードがまだ終わってない
 		// ロード後にファイルを読む予約をする
 		switch (_state) {
-		case State.StartupLoading:
+		case State.Startup_Preparing:
 			Debug.Print("ロード中にドロップを検出");
 			_startupPaths = _startupPaths.Concat(files).ToArray();
 			_needsStartupFileOpen = true;
@@ -654,7 +688,8 @@ public partial class MainWindow : Window {
 
 	public enum State {
 		None,
-		StartupLoading,
+		Startup_WindowLoading,
+		Startup_Preparing,
 		Ready,
 		FilelistLoading,
 	}
