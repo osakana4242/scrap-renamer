@@ -3,7 +3,7 @@
 ## Basic Information
 
 * Software: ScrapRenamer
-* Version: 1.0.0
+* Version: 1.1.1
 * Type: Freeware
 * Supported OS: Windows 11 (64-bit)
 * Author: Osakana Sankawa
@@ -52,6 +52,10 @@ You may use, modify, and redistribute it freely without crediting the author.
 See `LICENSE.txt` for details.
 
 ## Changelog
+
+### v1.1.1
+
+* Fixed a bug where dropping files while the application was preparing to start prevented the editor screen from being displayed.
 
 ### v1.1.0
 
