@@ -56,6 +56,7 @@ See `LICENSE.txt` for details.
 ### v1.1.1
 
 * Fixed a bug where dropping files while the application was preparing to start prevented the editor screen from being displayed.
+* Fixed a bug where switching from "File Name (without extension)" to another mode could modify filenames consisting only of an extension.
 
 ### v1.1.0
 
