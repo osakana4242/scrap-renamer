@@ -58,6 +58,7 @@ See `LICENSE.txt` for details.
 * Fixed a bug where dropping files while the application was preparing to start prevented the editor screen from being displayed.
 * Fixed a bug where switching from "File Name (without extension)" to another mode could modify filenames consisting only of an extension.
 * Fixed a bug where the pointer remained hidden on a dialog displayed when there was a problem with the rename operation while "Hide pointer while typing" was enabled in Windows.
+* Fixed a bug where selecting "Overwrite" or "Overwrite All" when duplicate file names were detected did not perform the rename operation.
 
 ### v1.1.0
 
