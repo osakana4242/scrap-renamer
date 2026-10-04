@@ -10,6 +10,10 @@ public partial class OverwriteWindow : Window {
 		InitializeComponent();
 		ThemeManager.Add(this);
 	}
+	protected override void OnContentRendered(EventArgs e) {
+		base.OnContentRendered(e);
+		SkipAllButton.Focus();
+	}
 
 	void OnOverwriteClicked(object sender, RoutedEventArgs e) {
 		Result = OverwriteWindowResult.Overwrite;

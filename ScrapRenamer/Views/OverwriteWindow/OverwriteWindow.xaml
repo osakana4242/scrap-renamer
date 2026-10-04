@@ -34,13 +34,13 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
-			<Button
+			<Button x:Name="OverwriteButton"
 				Grid.Column="0"
 				Height="32"
 				Content="上書き"
 				Click="OnOverwriteClicked"/>
 
-			<Button
+			<Button x:Name="OverwriteAllButton"
 				Grid.Column="2"
 				Height="32"
 				Content="すべて上書き"
@@ -58,13 +58,13 @@
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
-			<Button
+			<Button x:Name="SkipButton"
 				Grid.Column="0"
 				Height="32"
 				Content="スキップ"
 				Click="OnSkipClicked"/>
 
-			<Button
+			<Button x:Name="SkipAllButton"
 				Grid.Column="2"
 				Height="32"
 				Content="すべてスキップ"
@@ -72,7 +72,7 @@
 
 		</Grid>
 
-		<Button
+		<Button x:Name="CancelButton"
 			Grid.Row="3"
 			Width="120"
 			Height="32"
