@@ -45,7 +45,7 @@ class Line {
 			case RenameMode.FullPath:
 				return origPath;
 			default:
-				throw new System.NotSupportedException($"{_mode}");
+				throw new NotSupportedException($"{_mode}");
 			}
 		}
 	}
@@ -61,9 +61,9 @@ class Line {
 	}
 
 	public Line(string origPath, RenameMode mode) {
-		this.origPath = System.IO.Path.GetFullPath(origPath);
-		isDirectory = System.IO.Directory.Exists(this.origPath);
-		var isFile = System.IO.File.Exists(this.origPath);
+		this.origPath = Path.GetFullPath(origPath);
+		isDirectory = Directory.Exists(this.origPath);
+		var isFile = File.Exists(this.origPath);
 		if (!isDirectory && !isFile) {
 			_error = Localization.Strings.Strings.Error_FileNotFound;
 		}
@@ -96,8 +96,8 @@ class Line {
 		case RenameMode.FileNameWithoutExtension:
 			return Path.Combine(
 				Path.GetDirectoryName(origPath) ?? "",
-				editedLine) +
-				Path.GetExtension(origPath);
+				editedLine +
+				Path.GetExtension(origPath));
 		case RenameMode.FullPath:
 			return editedLine;
 		default:
