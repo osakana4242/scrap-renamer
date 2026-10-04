@@ -24,6 +24,7 @@ public partial class MainWindow : Window {
 #else
 		false;
 #endif
+	static bool s_openDevToolsWindow = true;
 
 	Commands _commands;
 
@@ -149,11 +150,11 @@ public partial class MainWindow : Window {
 			using var cts = new CancellationTokenSource();
 			var ct = cts.Token;
 			var preparationTask = CreateEditorView(ct);
-#if DEBUG
-			// ロード中にファイルがドロップされたときの挙動確認のために、
-			// ロード時間を遅延させる
-			preparationTask = Task.WhenAll(preparationTask, Task.Delay(5000, ct));
-#endif
+// #if DEBUG
+//			// ロード中にファイルがドロップされたときの挙動確認のために、
+//			// ロード時間を遅延させる
+//			preparationTask = Task.WhenAll(preparationTask, Task.Delay(5000, ct));
+// #endif
 			while (!preparationTask.IsCompleted) {
 				await Task.Delay(100, ct);
 				if (0 < _startupPaths.Length) {
@@ -192,6 +193,15 @@ public partial class MainWindow : Window {
 		EditorView.DefaultBackgroundColor = Settings.Instance.themeProp.Value.IsDarkMode() ?
 			System.Drawing.Color.Black :
 			System.Drawing.Color.White;
+		
+
+		// Windows11の文字入力中にマウスカーソルを消す設定がオンの場合、
+		// マウスカーソルが消えたままCtrl+Sすると、消えたままになってしまう。
+		// この不具合を回避するために、
+		// WebView2 のホスティングモードを変更する
+		Environment.SetEnvironmentVariable(
+			"COREWEBVIEW2_FORCED_HOSTING_MODE",
+			"COREWEBVIEW2_HOSTING_MODE_WINDOW_TO_VISUAL");
 
 		var env = await CoreWebView2Environment.CreateAsync(
 				userDataFolder: Path.Combine(
@@ -200,6 +210,8 @@ public partial class MainWindow : Window {
 					"WebView2"));
 
 		await EditorView.EnsureCoreWebView2Async(env);
+
+		Debug.WriteLine($"BrowserVersionString: {EditorView.CoreWebView2.Environment.BrowserVersionString}");
 
 		EditorView.WebMessageReceived += _editor.WebMessageReceived;
 		EditorView.AllowExternalDrop = true;
@@ -211,7 +223,7 @@ public partial class MainWindow : Window {
 		EditorView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
 
 
-		if (s_isDebug) {
+		if (s_isDebug && s_openDevToolsWindow) {
 			EditorView.CoreWebView2.OpenDevToolsWindow();
 		}
 
@@ -514,6 +526,8 @@ public partial class MainWindow : Window {
 
 	internal async void Apply() {
 		await SyncTextFromEditorAsync();
+
+		// リネーム実行
 		_lineContainer.Apply();
 		var lines = _lineContainer.Lines.
 			Select((elem, i) => new {index = i, elem}).

@@ -18,7 +18,9 @@
 
 		<!-- メニューバー -->
 		<Menu DockPanel.Dock="Top"
-			Padding="4 0">
+			Padding="4 0"
+			KeyboardNavigation.DirectionalNavigation="None"
+			KeyboardNavigation.TabNavigation="None">
 			<MenuItem Header="{x:Static res:Strings.Menu_App}"
 				x:Name="AppMenu">
 				<MenuItem x:Name="Menu_OpenSettings"
@@ -39,7 +41,9 @@
 		<Border DockPanel.Dock="Top"
 				BorderThickness="0 1 0 1"
 				Padding="4 0">
-			<DockPanel LastChildFill="False">
+			<DockPanel LastChildFill="False"
+				KeyboardNavigation.DirectionalNavigation="None"
+				KeyboardNavigation.TabNavigation="None">
 				<Button x:Name="ApplyButton"
 						Content="{x:Static res:Strings.Button_Apply}"
 						Margin="2"
@@ -60,15 +64,16 @@
 		</Border>
 
 		<!-- ドロップ or エディター領域 -->		
-		<Grid>
+		<Grid
+			KeyboardNavigation.DirectionalNavigation="None"
+			KeyboardNavigation.TabNavigation="None">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="24"/>
 			</Grid.RowDefinitions>
 
-			<Border
+			<Border x:Name="DropOverlay"
 				Grid.Row="0"
-				x:Name="DropOverlay"
 				AllowDrop="True">
 
 				<Border
@@ -87,14 +92,11 @@
 				</Border>
 			</Border>
 
-			<wv2:WebView2
-				Grid.Row="0"
-				x:Name="EditorView"/>
+			<wv2:WebView2 x:Name="EditorView"
+				Grid.Row="0"/>
 
-
-			<Border
+			<Border x:Name="StatusBar"
 				Grid.Row="1"
-				x:Name="StatusBar"
 				HorizontalAlignment="Left"
 				BorderThickness="1"
 				Padding="4 0">
