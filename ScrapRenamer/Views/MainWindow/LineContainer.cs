@@ -327,8 +327,14 @@ class LineContainer {
 								// 前回の結果を流用する
 								break;
 							default:
+								// TODO: このダイアログ表示時に、マウスポインターが非表示になってしまう問題がある
+								// * 実行ボタンをマウスでクリックした場合は問題ない
+								// * Ctrl+S で実行した場合に、ダイアログ上にマウスポインターを持っていくと非表示になってしまう
+
 								// ユーザーに対応方法を確認する
-								var window = new OverwriteWindow.OverwriteWindow();
+								var window = new OverwriteWindow.OverwriteWindow() {
+									Owner = System.Windows.Application.Current.MainWindow,
+								};
 								window.ShowDialog();
 								_lastOverwriteWindowResult = window.Result;
 								break;

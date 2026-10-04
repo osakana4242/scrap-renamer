@@ -295,8 +295,7 @@ public partial class MainWindow : Window {
 			Multiselect = true,
 			CheckFileExists = true
 		};
-
-		if (dialog.ShowDialog() != true) {
+		if (dialog.ShowDialog(this) != true) {
 			return;
 		}
 
