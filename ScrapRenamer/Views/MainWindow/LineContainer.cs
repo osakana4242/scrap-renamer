@@ -38,8 +38,8 @@ class LineContainer {
 		switch (sortType) {
 		case SortType.FileName:
 			Lines.Sort((a, b) => {
-				var cmp = System.IO.Path.GetFileName(a.origPath).
-					CompareTo(System.IO.Path.GetFileName(b.origPath));
+				var cmp = Path.GetFileName(a.origPath).
+					CompareTo(Path.GetFileName(b.origPath));
 				if (cmp != 0) return cmp;
 
 				return a.origPath.CompareTo(b.origPath);
@@ -59,8 +59,8 @@ class LineContainer {
 				var cmp = aExt.CompareTo(bExt);
 				if (cmp != 0) return cmp;
 
-				cmp = System.IO.Path.GetFileName(a.origPath).
-					CompareTo(System.IO.Path.GetFileName(b.origPath));
+				cmp = Path.GetFileName(a.origPath).
+					CompareTo(Path.GetFileName(b.origPath));
 				if (cmp != 0) return cmp;
 
 				return a.origPath.CompareTo(b.origPath);
@@ -150,7 +150,7 @@ class LineContainer {
 				ProcessChain();
 				// 残りは Cycle
 				ProcessCycle();
-			} catch (System.OperationCanceledException ex) {
+			} catch (OperationCanceledException ex) {
 				Debug.Print($"canceled, ex: {ex}");
 			}
 		}
@@ -307,12 +307,12 @@ class LineContainer {
 					var protectedDirectory = GetProtectedDirectory(item.before, item.after);
 
 					if (line.isDirectory) {
-						if (System.IO.Directory.Exists(item.after)) {
+						if (Directory.Exists(item.after)) {
 							// ディレクトリのマージはたいへんなのでサポートしない
 							line.Error = Localization.Strings.Strings.Error_DestinationDirectoryExists;
-							throw new System.Exception(line.Error);
+							throw new Exception(line.Error);
 						} else {
-							System.IO.Directory.Move(item.before, item.after);
+							Directory.Move(item.before, item.after);
 							DeleteEmptyDirectories(
 								item.before,
 								protectedDirectory);
@@ -320,7 +320,7 @@ class LineContainer {
 					} else {
 						bool overwrite = false;
 
-						if (System.IO.File.Exists(item.after)) {
+						if (File.Exists(item.after)) {
 							switch (_lastOverwriteWindowResult) {
 							case OverwriteWindowResult.SkipAll:
 							case OverwriteWindowResult.OverwriteAll:
@@ -344,13 +344,13 @@ class LineContainer {
 								overwrite = true;
 								return;
 							case OverwriteWindowResult.Cancel:
-								throw new System.OperationCanceledException();
+								throw new OperationCanceledException();
 							}
 						}
 						if (overwrite) {
-							System.IO.File.Delete(item.after);
+							File.Delete(item.after);
 						}
-						System.IO.File.Move(item.before, item.after);
+						File.Move(item.before, item.after);
 						DeleteEmptyDirectories(
 							Path.GetDirectoryName(item.before),
 							protectedDirectory);
@@ -358,17 +358,17 @@ class LineContainer {
 
 					line.origPath = item.after;
 				}
-			} catch (System.OperationCanceledException) {
+			} catch (OperationCanceledException) {
 				throw;
-			} catch (System.Exception ex) {
+			} catch (Exception ex) {
 				if (string.IsNullOrEmpty(line.Error)) {
 					switch (ex) {
-					case System.IO.FileNotFoundException:
+					case FileNotFoundException:
 						// 移動元のファイルが存在しません
 						line.Error = Localization.Strings.Strings.Error_SrcFileNotFound;
 						break;
-					case System.IO.DirectoryNotFoundException:
-						if (!System.IO.Directory.Exists(line.origPath)) {
+					case DirectoryNotFoundException:
+						if (!Directory.Exists(line.origPath)) {
 							// 移動元のディレクトリが存在しません
 							line.Error = Localization.Strings.Strings.Error_SrcDirectoryNotFound;
 						} else {
@@ -376,7 +376,7 @@ class LineContainer {
 							line.Error = Localization.Strings.Strings.Error_DestinationDirectoryNotFound;
 						}
 						break;
-					case System.IO.IOException ex2:
+					case IOException ex2:
 						if (line.isDirectory) {
 							// 移動元のディレクトリ以下が使用中の可能性があります
 							line.Error = Localization.Strings.Strings.Error_SrcDirectoryLocked;
@@ -385,7 +385,7 @@ class LineContainer {
 							line.Error = Localization.Strings.Strings.Error_SrcFileLocked;
 						}
 						break;
-					case System.UnauthorizedAccessException:
+					case UnauthorizedAccessException:
 						if (line.isDirectory) {
 							// Error_DirectoryUnautorizedAccess: ディレクトリを移動する権限がありません
 							line.Error = Localization.Strings.Strings.Error_DirectoryMoveUnautorizedAccess;
@@ -432,7 +432,7 @@ class LineContainer {
 
 					directory = Path.GetDirectoryName(directory);
 				}
-			} catch (System.Exception ex) {
+			} catch (Exception ex) {
 				Debug.Print($"ex: {ex}, directory: {directory}");
 			}
 		}
