@@ -344,7 +344,7 @@ class LineContainer {
 							case OverwriteWindowResult.Overwrite:
 							case OverwriteWindowResult.OverwriteAll:
 								overwrite = true;
-								return;
+								break;
 							case OverwriteWindowResult.Cancel:
 								throw new OperationCanceledException();
 							}
